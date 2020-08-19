@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>characters (v0.0.1)</title>
+		<title>characters (demo 0.0.1)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -144,18 +144,34 @@
 
 		<script>
 
+			var url = "/characters/rlc/female/DancingRunningMan.fbx";
+			var loader = new THREE.FBXLoader();
+			loader.load( url, function( group ){
 
+			//	object is THREE.Group.
+				group.name = "Female";
+			//	var s = 1; group.scale.set(s,s,s); // important!
+				group.position.y = -localPlayer.controller.radius;
+				debugMode && console.log( group ); 
 
+			//	Add group to scene before animation controller.
+				localPlayer.add( group ); 
+				localPlayer.controller.direction += Math.PI; // important!
+				localPlayer.getObjectByName("local helper").visible = false;
 
+				localPlayer.animationController = new MW.AnimationController( group );
+				debugMode && console.log( "animationController:", localPlayer.animationController );
 
+				localPlayer.animationController.play("mixamo.com");
 
+				var clock = new THREE.Clock();
+				(function update(){
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					localPlayer.animationController.update( delta );
+				})();
 
-
-
-
-
-
-
+			});
 
 		</script>
 
