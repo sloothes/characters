@@ -185,7 +185,7 @@
 						var radius = 1; // player radius.
 						var player = new THREE.Object3D();
 						++k; player.name = "player_"+k;
-						player.position.set(0,1,3);
+						player.position.set(0,1,-3);
 						group.position.y = -radius;
 
 						scene.add( player ); // important!
@@ -194,7 +194,7 @@
 						player.controller = new MW.CharacterController( player, radius );
 						player.controller.movementSpeed = 5;
 						world.add( player.controller ); // important!
-						cameraControls.trackObject = player; // debug!
+					//	cameraControls.trackObject = player; // debug!
 
 						player.add( group ); // Add group to scene (before animation controller).
 
