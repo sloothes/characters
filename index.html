@@ -178,8 +178,8 @@
 						var data = reader.result;
 						var loader = new THREE.FBXLoader();
 						var group = loader.parse( data );
-						group.name = filename;
 						debugMode && console.log( group );
+					//	group.name = filename;
 
 					//	New player.
 						var radius = 1; // player radius.
@@ -212,7 +212,7 @@
 						})();
 
 					//	Skeleton helper.
-						var armature = group.getObjectByName("Armature");
+						var armature = player.getObjectByName("Armature");
 						var skeletonHelper = new THREE.SkeletonHelper(armature);
 						skeletonHelper.visible = true; scene.add( skeletonHelper );
 
