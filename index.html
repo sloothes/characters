@@ -186,6 +186,7 @@
 						var player = new THREE.Object3D();
 						++k; player.name = "player_"+k;
 						player.position.set(0,1,3);
+						group.position.y = -radius;
 
 						scene.add( player ); // important!
 
