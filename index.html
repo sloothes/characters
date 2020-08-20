@@ -133,14 +133,14 @@
 
 	<!-- Engine.js -->
 
-		<script src="/editor/core/helpers.js"></script>
-		<script src="/editor/core/keyboard.js"></script>
-		<script src="/editor/core/enviroment.js"></script>
-		<script src="/editor/core/localPlayer.js"></script>
-		<script src="/editor/core/cameraControls.js"></script>
-		<script src="/editor/core/keyboardState.js"></script>
-		<script src="/editor/core/keyInputControls.js"></script>
-		<script src="/editor/core/joystickControls.js"></script>
+		<script src="/core/helpers.js"></script>
+		<script src="/core/keyboard.js"></script>
+		<script src="/core/enviroment.js"></script>
+		<script src="/core/localPlayer.js"></script>
+		<script src="/core/cameraControls.js"></script>
+		<script src="/core/keyboardState.js"></script>
+		<script src="/core/keyInputControls.js"></script>
+		<script src="/core/joystickControls.js"></script>
 
 		<script>
 
@@ -158,15 +158,10 @@
 
 			(function( tab ){
 
-				var row = document.createElement("div"); row.style.cssText = "margin:10px 12px;height:35px;text-align:center;";
+				var row = document.createElement("div"); row.style.cssText = "margin:10px 15px 0 0;height:35px;text-align:center;";
 				var idlebutton = document.createElement("div"); idlebutton.id = "animations-idle-button"; idlebutton.textContent = "Pause";
 				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
 				idlebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-			//	idlebutton.addEventListener( "click", function(){
-			//		if ( animationController.currentMotionName == "idling" ) return;
-			//		animationController.play( "idling" ); 
-			//	});
 
 				var button = document.createElement("div"); button.id = "animations-import-button"; button.textContent = "Import animations";
 				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
@@ -176,16 +171,9 @@
 				input.style.display = "none"; input.setAttribute("multiple", "");
 				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
 
-
-
-
-
-
-
-
-
-
-
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
 
 			})( TabUI.Character.tab );
 
@@ -247,7 +235,7 @@
 
 					//	Animation controller. if ( group.animations.length ) ...
 						player.animationController = new MW.AnimationController( group );
-						debugMode && console.log( "animations:", Object.keys( player.animationController.motion ).join() );
+					//	debugMode && console.log( "animations:", Object.keys( player.animationController.motion ).join() );
 					//	player.animationController.play( Object.keys( player.animationController.motion )[0] );
 
 					//	Update animations.
