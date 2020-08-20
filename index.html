@@ -201,7 +201,7 @@
 					//	Animation controller. if ( group.animations.length ) ...
 						player.animationController = new MW.AnimationController( group );
 						debugMode && console.log( "animations:", Object.keys( player.animationController.motion ).join() );
-						player.animationController.play( Object.keys( player.animationController.motion )[0] );
+					//	player.animationController.play( Object.keys( player.animationController.motion )[0] );
 
 					//	Update animations.
 						var clock = new THREE.Clock();
@@ -237,7 +237,7 @@
 			TabUI.Character.pill.scrollIntoViewIfNeeded(false);
 
 			localPlayer.visible = false;
-			localPlayer.controller.movementSpeed = 2;
+			localPlayer.controller.movementSpeed = 2; cameraControls.offset.y = 0.5;
 			cameraControls.radius = cameraControls.maxRadius = cameraControls.minRadius = 0.1;
 
 		</script>
