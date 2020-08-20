@@ -245,11 +245,11 @@
 			(function( tab ){
 
 				var row = document.createElement("div"); row.style.cssText = "margin:10px 12px;height:35px;text-align:center;";
-				var pauseBtn = document.createElement("div"); button.id = "pause-animaton"; button.textContent = "Pause";
-				pauseBtn.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
-				pauseBtn.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				var pausebutton = document.createElement("div"); pausebutton.id = "pause-animaton"; pausebutton.textContent = "Pause";
+				pausebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+				pausebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
-			//	pauseBtn.addEventListener( "click", function(){
+			//	pausebutton.addEventListener( "click", function(){
 			//		if ( animationController.currentMotionName == "idling" ) return;
 			//		animationController.play( "idling" ); 
 			//	});
@@ -260,7 +260,7 @@
 
 				var input = document.createElement("input"); input.type = "file";
 				input.style.display = "none"; input.setAttribute("multiple", "");
-				row.appendChild( pauseBtn ); row.appendChild( button ); tab.appendChild( row );
+				row.appendChild( pausebutton ); row.appendChild( button ); tab.appendChild( row );
 
 
 
