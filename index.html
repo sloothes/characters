@@ -206,14 +206,14 @@
 									var mixer = character.animationController.mixer;
 									var object = character.animationController.object;
 									var animations = group.animations;
-									var select = tab.querySelector("select#animation-droplist");
+									var select = tab.querySelector("select#animations-droplist");
 									animations.forEach( function( clip ){
-										++k; var name = k+"."+filename;
+										var name = filename; var text = ++k+"."+filename; 
 										character.animationController.motion[ name ] = mixer.clipAction( clip, object );
-										select && select.appendChild( createOption( name ) );
-										function createOption(name){
+										select && select.appendChild( createOption( text, name ) );
+										function createOption(text, value){
 											var option = document.createElement("option");
-											option.text = option.value = name;
+											option.text = text; option.value = value;
 											return option;
 										}
 									});
