@@ -176,7 +176,7 @@
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
 				var input = document.createElement("input"); input.type = "file"; input.id = "animations-file-input";
-				input.style.display = "none"; input.setAttribute("multiple", "");
+				input.style.display = "none"; input.setAttribute("multiple", ""); button.appendChild( input );
 				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
 
 				watch( input, "onchange", function(prop,event,value){
