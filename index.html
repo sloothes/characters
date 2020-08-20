@@ -232,6 +232,53 @@
 
 		<script>
 
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "Animation";
+				var select = document.createElement("select"); select.id = "animation-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";"
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				row.appendChild( select ); tab.appendChild( row );
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("div"); row.style.cssText = "margin:10px 12px;height:35px;text-align:center;";
+				var pauseBtn = document.createElement("div"); button.id = "pause-animaton"; button.textContent = "Pause";
+				pauseBtn.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+				pauseBtn.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+			//	pauseBtn.addEventListener( "click", function(){
+			//		if ( animationController.currentMotionName == "idling" ) return;
+			//		animationController.play( "idling" ); 
+			//	});
+
+				var button = document.createElement("div"); button.id = "import-animaton"; button.textContent = "Import animation";
+				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				var input = document.createElement("input"); input.type = "file";
+				input.style.display = "none"; input.setAttribute("multiple", "");
+				row.appendChild( pauseBtn ); row.appendChild( button ); tab.appendChild( row );
+
+
+
+
+
+
+
+
+
+
+
+
+			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+
 			TabUI.Character.role.classList.add("active");
 			TabUI.Character.tab.classList.add("in","active");
 			TabUI.Character.pill.scrollIntoViewIfNeeded(false);
