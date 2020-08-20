@@ -144,7 +144,7 @@
 
 		<script>
 
-			var player;
+			var character;
 
 			TabUI.add( "Character", "character-tab" ); TabUI.append("Character");
 
@@ -174,6 +174,7 @@
 				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
 
 				var k = 0; // important!
+
 				input.addEventListener( "change", function(){
 
 					for ( var i = 0; i < input.files.length; i++ ) {
@@ -198,19 +199,17 @@
 								group.name = filename;
 								console.log( group );
 
-							//	fbx = group; // debug!
-
 							//	Add animations.
 								console.log( group.animations );
 
 								if ( group.animations.length ) {
-									var mixer = player.animationController.mixer;
-									var object = player.animationController.object;
+									var mixer = character.animationController.mixer;
+									var object = character.animationController.object;
 									var animations = group.animations;
 									var select = tab.querySelector("select#animation-droplist");
 									animations.forEach( function( clip ){
 										++k; var name = k+"."+filename;
-										player.animationController.motion[ name ] = mixer.clipAction( clip, object );
+										character.animationController.motion[ name ] = mixer.clipAction( clip, object );
 										select && select.appendChild( createOption( name ) );
 										function createOption(name){
 											var option = document.createElement("option");
@@ -230,7 +229,7 @@
 				});
 
 				button.addEventListener( "click", function(){
-					input.value = ""; if ( !player ) return; input.click();
+					input.value = ""; if ( !character ) return; input.click();
 				});
 
 			})( TabUI.Character.tab );
@@ -273,36 +272,36 @@
 
 					//	New player.
 						var radius = 1; // player radius.
-						player = new THREE.Object3D();
-						++k; player.name = "player_"+k;
-						player.position.set(0,1,-2);
+						character = new THREE.Object3D();
+						++k; character.name = "player_"+k;
+						character.position.set(0,1,-2);
 						group.position.y = -radius;
 
-						scene.add( player ); // important!
+						scene.add( character ); // important!
 
 					//	Remote player controller.
-						player.controller = new MW.CharacterController( player, radius );
-						player.controller.movementSpeed = 5;
-						world.add( player.controller ); // important!
-					//	cameraControls.trackObject = player; // debug!
+						character.controller = new MW.CharacterController( character, radius );
+						character.controller.movementSpeed = 5;
+						world.add( character.controller ); // important!
+					//	cameraControls.trackObject = character; // debug!
 
-						player.add( group ); // Add group to scene (before animation controller).
+						character.add( group ); // Add group to scene (before animation controller).
 
 					//	Animation controller. if ( group.animations.length ) ...
-						player.animationController = new MW.AnimationController( group );
-					//	debugMode && console.log( "animations:", Object.keys( player.animationController.motion ).join() );
-					//	player.animationController.play( Object.keys( player.animationController.motion )[0] );
+						character.animationController = new MW.AnimationController( group );
+					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
+					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
 
 					//	Update animations.
 						var clock = new THREE.Clock();
 						(function update(){
 							requestAnimationFrame( update );
 							var delta = clock.getDelta();
-							player.animationController.update( delta );
+							character.animationController.update( delta );
 						})();
 
 					//	Skeleton helper.
-						var armature = player.getObjectByName("Armature");
+						var armature = character.getObjectByName("Armature");
 						var skeletonHelper = new THREE.SkeletonHelper(armature);
 						skeletonHelper.visible = true; scene.add( skeletonHelper );
 
