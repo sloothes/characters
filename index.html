@@ -144,8 +144,6 @@
 
 		<script>
 
-			var character;
-
 			TabUI.add( "Character", "character-tab" ); TabUI.append("Character");
 
 			(function( tab ){
@@ -155,6 +153,14 @@
 				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
 				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
 				row.appendChild( select ); tab.appendChild( row );
+
+				watch( select, "onchange", function(prop,event,value){
+					debugMode && console.log({item:select,event:event,value:value});
+				});
+
+				select.addEventListener( "change", function(){
+					callWatchers( this, "onchange", "change", this.value );
+				})
 
 			})( TabUI.Character.tab );
 
@@ -173,11 +179,135 @@
 				input.style.display = "none"; input.setAttribute("multiple", "");
 				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
 
-				var k = 0; // important!
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
 
 				input.addEventListener( "change", function(){
+					callWatchers( this, "onchange", "change", this.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; if ( !character ) return; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
+				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); input.type = "file"; input.id = "character-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input );
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( this, "onchange", "change", this.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+
+			var character;
+
+			(function(input){
+
+				var k = 0;
+
+				watch( input, "onchange", function(prop,event,files){
+
+					if ( !input.files.length ) return;
+					debugMode && console.log( input.files );
+
+					var file = input.files[0]; 
+					var filename = file.name.replace(".fbx", "");
+					var extension = file.name.split( "." ).pop().toLowerCase();
+
+					var reader = new FileReader();
+
+					reader.addEventListener( "progress", function ( e ) {
+						var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+						var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+						console.log( "Loading", filename, size, progress );
+					});
+
+					reader.addEventListener( "load", function ( e ) {
+
+						var data = reader.result;
+						var loader = new THREE.FBXLoader();
+						var group = loader.parse( data );
+						debugMode && console.log( group );
+
+					//	New character.
+						var radius = 1; // player radius.
+						character = new THREE.Object3D();
+						++k; character.name = "player_"+k;
+						character.position.set(0,1,-2);
+						scene.add( character ); // important!
+
+					//	Remote player controller.
+						character.controller = new MW.CharacterController( character, radius );
+						character.controller.movementSpeed = 5;
+						world.add( character.controller ); // important!
+					//	cameraControls.trackObject = character; // debug!
+
+					//	Add group to scene (before animation controller).
+						group.name = filename; group.position.y = -radius; character.add( group ); 
+
+					//	Animation controller. if ( group.animations.length ) ...
+						character.animationController = new MW.AnimationController( group );
+					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
+					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
+
+					//	Update animations.
+						var clock = new THREE.Clock();
+						(function update(){
+							requestAnimationFrame( update );
+							var delta = clock.getDelta();
+							character.animationController.update( delta );
+						})();
+
+						try {
+
+						//	Skeleton helper.
+							var armature = character.getObjectByName("Armature");
+							var skeletonHelper = new THREE.SkeletonHelper(armature);
+							skeletonHelper.visible = true; scene.add( skeletonHelper );
+
+						} catch(err){ console.error(err); }
+
+					}, false );
+
+					reader.readAsArrayBuffer( file );
+
+				});
+
+			})( TabUI.Character.tab.querySelector("input#character-file-input") );
+
+			(function(character,input,animations_droplist){
+
+				var k = 0; // important!
+
+				watch( input, "onchange", function(prop, event, files){
+
+					if ( !character ) return; if ( !input.files.length ) return;
 
 					for ( var i = 0; i < input.files.length; i++ ) {
+
 						setTimeout(function( file ){
 
 							var filename = file.name.replace(".fbx", "");
@@ -206,11 +336,11 @@
 									var mixer = character.animationController.mixer;
 									var object = character.animationController.object;
 									var animations = group.animations;
-									var select = tab.querySelector("select#animations-droplist");
+								//	var animations_droplist = tab.querySelector("select#animations-droplist");
 									animations.forEach( function( clip ){
 										var name = filename; var text = ++k+"."+filename; 
 										character.animationController.motion[ name ] = mixer.clipAction( clip, object );
-										select && select.appendChild( createOption( text, name ) );
+										animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
 										function createOption(text, value){
 											var option = document.createElement("option");
 											option.text = text; option.value = value;
@@ -228,94 +358,19 @@
 
 				});
 
-				button.addEventListener( "click", function(){
-					input.value = ""; if ( !character ) return; input.click();
+			})(
+				character, TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
+				TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
+			);
+
+			(function(character,animations_droplist){
+
+				watch( animations_droplist, "onchange", function(prop,event,name){
+					if ( !(character && character.animationController) ) return;
+					character.animationController.play( name );
 				});
 
-			})( TabUI.Character.tab );
-
-
-			(function( tab ){
-
-				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
-				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
-				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
-
-				var input = document.createElement("input"); input.type = "file"; input.id = "character-file-input";
-				input.style.cssText = "display:none;"; button.appendChild( input );
-				row.appendChild( button ); tab.appendChild( row );
-
-				var k=0;
-
-				input.addEventListener( "change", function(){
-					debugMode && console.log( input.files );
-
-					var file = input.files[0]; var filename = file.name;
-					var extension = file.name.split( "." ).pop().toLowerCase();
-
-					var reader = new FileReader();
-
-					reader.addEventListener( "progress", function ( e ) {
-						var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
-						var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
-						console.log( "Loading", filename, size, progress );
-					});
-
-					reader.addEventListener( "load", function ( e ) {
-
-						var data = reader.result;
-						var loader = new THREE.FBXLoader();
-						var group = loader.parse( data );
-						debugMode && console.log( group );
-					//	group.name = filename;
-
-					//	New player.
-						var radius = 1; // player radius.
-						character = new THREE.Object3D();
-						++k; character.name = "player_"+k;
-						character.position.set(0,1,-2);
-						group.position.y = -radius;
-
-						scene.add( character ); // important!
-
-					//	Remote player controller.
-						character.controller = new MW.CharacterController( character, radius );
-						character.controller.movementSpeed = 5;
-						world.add( character.controller ); // important!
-					//	cameraControls.trackObject = character; // debug!
-
-						character.add( group ); // Add group to scene (before animation controller).
-
-					//	Animation controller. if ( group.animations.length ) ...
-						character.animationController = new MW.AnimationController( group );
-					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
-					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
-
-					//	Update animations.
-						var clock = new THREE.Clock();
-						(function update(){
-							requestAnimationFrame( update );
-							var delta = clock.getDelta();
-							character.animationController.update( delta );
-						})();
-
-					//	Skeleton helper.
-						var armature = character.getObjectByName("Armature");
-						var skeletonHelper = new THREE.SkeletonHelper(armature);
-						skeletonHelper.visible = true; scene.add( skeletonHelper );
-
-					}, false );
-
-					reader.readAsArrayBuffer( file );
-
-				});
-
-				button.addEventListener( "click", function(){
-					input.value = ""; input.click();
-				});
-
-			})( TabUI.Character.tab );
+			})( character, TabUI.Character.tab.querySelector("select#animations-droplist") );
 
 		</script>
 
