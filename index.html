@@ -159,8 +159,8 @@
 				});
 
 				select.addEventListener( "change", function(){
-					callWatchers( this, "onchange", "change", this.value );
-				})
+					callWatchers( select, "onchange", "change", select.value );
+				});
 
 			})( TabUI.Character.tab );
 
@@ -184,7 +184,7 @@
 				});
 
 				input.addEventListener( "change", function(){
-					callWatchers( this, "onchange", "change", this.files);
+					callWatchers( input, "onchange", "change", input.files);
 				});
 
 				button.addEventListener( "click", function(){
@@ -209,7 +209,7 @@
 				});
 
 				input.addEventListener( "change", function(){
-					callWatchers( this, "onchange", "change", this.files);
+					callWatchers( input, "onchange", "change", input.files);
 				});
 
 				button.addEventListener( "click", function(){
