@@ -148,6 +148,53 @@
 
 			(function( tab ){
 
+				var row = document.createElement("h3"); row.textContent = "Animation";
+				var select = document.createElement("select"); select.id = "animations-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				row.appendChild( select ); tab.appendChild( row );
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("div"); row.style.cssText = "margin:10px 12px;height:35px;text-align:center;";
+				var idlebutton = document.createElement("div"); idlebutton.id = "animations-idle-button"; idlebutton.textContent = "Pause";
+				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+				idlebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+			//	idlebutton.addEventListener( "click", function(){
+			//		if ( animationController.currentMotionName == "idling" ) return;
+			//		animationController.play( "idling" ); 
+			//	});
+
+				var button = document.createElement("div"); button.id = "animations-import-button"; button.textContent = "Import animations";
+				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				var input = document.createElement("input"); input.type = "file"; input.id = "animations-file-input";
+				input.style.display = "none"; input.setAttribute("multiple", "");
+				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
+
+
+
+
+
+
+
+
+
+
+
+
+			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+
+			(function( tab ){
+
 				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
 				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
@@ -225,53 +272,6 @@
 				button.addEventListener( "click", function(){
 					input.value = ""; input.click();
 				});
-
-			})( TabUI.Character.tab );
-
-		</script>
-
-		<script>
-
-			(function( tab ){
-
-				var row = document.createElement("h3"); row.textContent = "Animation";
-				var select = document.createElement("select"); select.id = "animation-droplist";
-				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
-				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
-				row.appendChild( select ); tab.appendChild( row );
-
-			})( TabUI.Character.tab );
-
-			(function( tab ){
-
-				var row = document.createElement("div"); row.style.cssText = "margin:10px 12px;height:35px;text-align:center;";
-				var pausebutton = document.createElement("div"); pausebutton.id = "pause-animaton"; pausebutton.textContent = "Pause";
-				pausebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
-				pausebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-			//	pausebutton.addEventListener( "click", function(){
-			//		if ( animationController.currentMotionName == "idling" ) return;
-			//		animationController.play( "idling" ); 
-			//	});
-
-				var button = document.createElement("div"); button.id = "import-animaton"; button.textContent = "Import animation";
-				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
-				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
-
-				var input = document.createElement("input"); input.type = "file";
-				input.style.display = "none"; input.setAttribute("multiple", "");
-				row.appendChild( pausebutton ); row.appendChild( button ); tab.appendChild( row );
-
-
-
-
-
-
-
-
-
-
-
 
 			})( TabUI.Character.tab );
 
