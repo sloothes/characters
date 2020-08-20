@@ -144,6 +144,8 @@
 
 		<script>
 
+			var player;
+
 			TabUI.add( "Character", "character-tab" ); TabUI.append("Character");
 
 			(function( tab ){
@@ -171,15 +173,68 @@
 				input.style.display = "none"; input.setAttribute("multiple", "");
 				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
 
+				var k = 0; // important!
+				input.addEventListener( "change", function(){
+
+					for ( var i = 0; i < input.files.length; i++ ) {
+						setTimeout(function( file ){
+
+							var filename = file.name.replace(".fbx", "");
+							var extension = file.name.split( "." ).pop().toLowerCase();
+
+							var reader = new FileReader();
+
+							reader.addEventListener( "progress", function ( e ) {
+								var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+								var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+								console.log( "Loading", filename, size, progress );
+							});
+
+							reader.addEventListener( "load", function ( e ) {
+
+								var data = reader.result;
+								var loader = new THREE.FBXLoader();
+								var group = loader.parse( data );
+								group.name = filename;
+								console.log( group );
+
+							//	fbx = group; // debug!
+
+							//	Add animations.
+								console.log( group.animations );
+
+								if ( group.animations.length ) {
+									var mixer = player.animationController.mixer;
+									var object = player.animationController.object;
+									var animations = group.animations;
+									var select = tab.querySelector("select#animation-droplist");
+									animations.forEach( function( clip ){
+										++k; var name = k+"."+filename;
+										player.animationController.motion[ name ] = mixer.clipAction( clip, object );
+										select && select.appendChild( createOption( name ) );
+										function createOption(name){
+											var option = document.createElement("option");
+											option.text = option.value = name;
+											return option;
+										}
+									});
+								}
+
+							}, false );
+
+							reader.readAsArrayBuffer( file );
+
+						}, 0, input.files[i] );
+					}
+
+				});
+
 				button.addEventListener( "click", function(){
-					input.value = ""; input.click();
+					input.value = ""; if ( !player ) return; input.click();
 				});
 
 			})( TabUI.Character.tab );
 
-		</script>
-
-		<script>
 
 			(function( tab ){
 
@@ -218,7 +273,7 @@
 
 					//	New player.
 						var radius = 1; // player radius.
-						var player = new THREE.Object3D();
+						player = new THREE.Object3D();
 						++k; player.name = "player_"+k;
 						player.position.set(0,1,-2);
 						group.position.y = -radius;
