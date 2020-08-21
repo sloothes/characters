@@ -281,8 +281,7 @@
 						if ( isNaN(value) ) return; // important!
 						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
-						if ( !isNaN(value) ) return; // important!
-						scale_input.value = value.toFixed(2);
+						if ( !isNaN(value) ) return; scale_input.value = value.toFixed(2);
 						animationController.motion[ name ].timeScale = value; 
 					})( this, 0.01, -1, 1, currentMotionName, character.animationController );
 				}
@@ -739,20 +738,24 @@
 					clearTimeout( interval ); // important!
 					interval = setTimeout( function update( button, step, min, max, name ){
 						var value = character.animationController.motion[ name ].timeScale;
+						if ( isNaN(value) ) return clearTimeout( interval );
 						if (button === increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
+						if ( isNaN(value) ) return clearTimeout( interval );
 						timescale_input.value = value.toFixed(2);
 						character.animationController.motion[ name ].timeScale = value;
-						interval = setTimeout( update, 20, button );
+						interval = setTimeout( update, 20, button, step, min, max, name );
 					}, 500, this, 0.01, -1, 1, currentMotionName );
 				}
 
 				function onMouseClick(){
-					clearTimeout( interval ); var name = currentMotionName;
+					clearTimeout( interval ); 
+					var button = this; var name = currentMotionName;
 					var value = character.animationController.motion[ name ].timeScale;
+					if ( isNaN(value) ) return;
 					if (button === increase) value = THREE.Math.clamp(value+step, min,max);
 					if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
-					timescale_input.value = value.toFixed(2);
+					if ( isNaN(value) ) return; timescale_input.value = value.toFixed(2);
 					character.animationController.motion[ name ].timeScale = value;
 				}
 
