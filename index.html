@@ -267,26 +267,30 @@
 						character.position.set(0,1,-2);
 						scene.add( character ); // important!
 
-					//	Remote player controller.
-						character.controller = new MW.CharacterController( character, radius );
-						character.controller.movementSpeed = 5;
-						world.add( character.controller ); // important!
-					//	cameraControls.trackObject = character; // debug!
+						(function(){
 
-					//	Add group to scene (before animation controller).
-						group.name = filename; group.position.y = -radius; character.add( group ); // or scene.add(group)?
+						//	Character controller.
+							character.controller = new MW.CharacterController( character, radius );
+							character.controller.movementSpeed = 5;
+							world.add( character.controller ); // important!
+						//	cameraControls.trackObject = character; // debug!
 
-					//	Animation controller. if ( group.animations.length ) ...
-						character.animationController = new MW.AnimationController( group );
-					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
-					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
+						//	Add group to scene (before animation controller).
+							group.name = filename; group.position.y = -radius; character.add( group ); // or scene.add(group)?
 
-					//	Update animations.
-						var clock = new THREE.Clock();
-						(function update(){
-							requestAnimationFrame( update );
-							var delta = clock.getDelta();
-							character.animationController.update( delta );
+						//	Animation controller. if ( group.animations.length ) ...
+							character.animationController = new MW.AnimationController( group );
+						//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
+						//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
+
+						//	Update animations.
+							var clock = new THREE.Clock();
+							(function update(){
+								requestAnimationFrame( update );
+								var delta = clock.getDelta();
+								character.animationController.update( delta );
+							})();
+
 						})();
 
 						(function(){
