@@ -317,7 +317,7 @@
 
 							intersectHead.geometry.translate(0,0.1,0);
 							intersectBody.geometry.translate(0,0.25,0);
-							intersectLibs.geometry.translate(0,-0.25,0);
+							intersectLibs.geometry.translate(0,0.5,0);
 
 							character.params = {
 								health:0, 
@@ -411,6 +411,7 @@
 							var headBone = character.getObjectByName(prefix+"Head");
 							var bodyBone = character.getObjectByName(prefix+"Spine1");
 
+							var leftuplegBone = character.getObjectByName(prefix+"LeftUpLeg");
 							var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
 							var leftfootBone = character.getObjectByName(prefix+"LeftFoot");
 							var lefttoeBone = character.getObjectByName(prefix+"LeftToeBase");
@@ -418,8 +419,8 @@
 							var leftforeBone = character.getObjectByName(prefix+"LeftForeArm");
 							var lefthandBone = character.getObjectByName(prefix+"LeftHand");
 							var leftindexBone = character.getObjectByName(prefix+"LeftHandIndex1");
-							var leftuplegBone = character.getObjectByName(prefix+"LeftUpLeg");
 
+							var rightuplegBone = character.getObjectByName(prefix+"RightUpLeg");
 							var rightlegBone = character.getObjectByName(prefix+"RightLeg");
 							var rightfootBone = character.getObjectByName(prefix+"RightFoot");
 							var righttoeBone = character.getObjectByName(prefix+"RightToeBase");
@@ -427,7 +428,6 @@
 							var rightforeBone = character.getObjectByName(prefix+"RightForeArm");
 							var righthandBone = character.getObjectByName(prefix+"RightHand");
 							var rightindexBone = character.getObjectByName(prefix+"RightHandIndex1");
-							var rightuplegBone = character.getObjectByName(prefix+"RightUpLeg");
 
 							(function update(){
 
@@ -449,6 +449,7 @@
 								character.params.Head.position.setFromMatrixPosition(headBone.matrixWorld);
 								character.params.Spine1.position.setFromMatrixPosition(bodyBone.matrixWorld);
 
+								character.params.LeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
 								character.params.LeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
 								character.params.LeftFoot.position.setFromMatrixPosition(leftfootBone.matrixWorld);
 								character.params.LeftToe.position.setFromMatrixPosition(lefttoeBone.matrixWorld);
@@ -457,6 +458,7 @@
 								character.params.LeftForeArm.position.setFromMatrixPosition(leftforeBone.matrixWorld);
 								character.params.LeftHandIndex1.position.setFromMatrixPosition(leftindexBone.matrixWorld);
 
+								character.params.RightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
 								character.params.RightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
 								character.params.RightFoot.position.setFromMatrixPosition(rightfootBone.matrixWorld);
 								character.params.RightToe.position.setFromMatrixPosition(righttoeBone.matrixWorld);
