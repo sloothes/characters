@@ -314,8 +314,8 @@
 
 					//	Animation controller. if ( group.animations.length ) ...
 						character.animationController = new MW.AnimationController( group );
+						character.animationController.play( Object.keys( character.animationController.motion )[0] );
 					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
-					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
 
 					//	Update animations.
 						var clock = new THREE.Clock();
