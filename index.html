@@ -396,7 +396,7 @@
 							var prefix = "mixamorig";
 							var hipsBone = character.getObjectByName(prefix+"Hips");
 							var headBone = character.getObjectByName(prefix+"Head");
-							var spineBone = character.getObjectByName(prefix+"Spine");
+							var bodyBone = character.getObjectByName(prefix+"Spine");
 
 							var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
 							var leftfootBone = character.getObjectByName(prefix+"LeftFoot");
@@ -419,11 +419,11 @@
 								var requestAnimationFrameID = requestAnimationFrame( update );
 
 								character.params.intersectHead.position.setFromMatrixPosition(headBone.matrixWorld);
-								character.params.intersectBody.position.setFromMatrixPosition(spineBone.matrixWorld);
+								character.params.intersectBody.position.setFromMatrixPosition(bodyBone.matrixWorld);
 
 								character.params.Hips.position.setFromMatrixPosition(hipsBone.matrixWorld);
 								character.params.Head.position.setFromMatrixPosition(headBone.matrixWorld);
-								character.params.Body.position.setFromMatrixPosition(spineBone.matrixWorld);
+								character.params.Body.position.setFromMatrixPosition(bodyBone.matrixWorld);
 
 								character.params.LeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
 								character.params.LeftFoot.position.setFromMatrixPosition(leftfootBone.matrixWorld);
