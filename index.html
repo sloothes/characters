@@ -268,9 +268,8 @@
 						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
 						if ( isNaN(value) ) return clearTimeout( interval ); // important!
-						scale_input.value = value.toFixed(2); 
-						animationController.motion[ name ].timeScale = value; 
-						interval = setTimeout( update, 20, button );
+						scale_input.value = value.toFixed(2); animationController.motion[ name ].timeScale = value; 
+						interval = setTimeout( update, 20, button, step, min, max, name, animationController );
 					}, 500, this, 0.01, -1, 1, currentMotionName, character.animationController );
 				}
 
