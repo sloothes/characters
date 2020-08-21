@@ -267,8 +267,10 @@
 						if ( isNaN(value) ) return clearTimeout( interval ); // important!
 						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
-						if ( !isNaN(value) ) animationController.motion[ name ].timeScale = value;
-						scale_input.value = value.toFixed(2); interval = setTimeout( update, 20, button );
+						if ( isNaN(value) ) return clearTimeout( interval ); // important!
+						scale_input.value = value.toFixed(2); 
+						animationController.motion[ name ].timeScale = value; 
+						interval = setTimeout( update, 20, button );
 					}, 500, this, 0.01, -1, 1, currentMotionName, character.animationController );
 				}
 
@@ -280,8 +282,9 @@
 						if ( isNaN(value) ) return; // important!
 						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
-						if ( !isNaN(value) ) animationController.motion[ name ].timeScale = value;
+						if ( !isNaN(value) ) return; // important!
 						scale_input.value = value.toFixed(2);
+						animationController.motion[ name ].timeScale = value; 
 					})( this, 0.01, -1, 1, currentMotionName, character.animationController );
 				}
 
