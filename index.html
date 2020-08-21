@@ -419,7 +419,9 @@
 								var requestAnimationFrameID = requestAnimationFrame( update );
 
 								character.params.intersectHead.position.setFromMatrixPosition(headBone.matrixWorld);
+								character.params.intersectHead.rotation.setFromRotationMatrix(headBone.matrixWorld);
 								character.params.intersectBody.position.setFromMatrixPosition(bodyBone.matrixWorld);
+								character.params.intersectBody.rotation.setFromRotationMatrix(bodyBone.matrixWorld);
 
 								character.params.Hips.position.setFromMatrixPosition(hipsBone.matrixWorld);
 								character.params.Head.position.setFromMatrixPosition(headBone.matrixWorld);
