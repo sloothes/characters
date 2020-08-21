@@ -310,7 +310,7 @@
 							var keys = "Hips,Head,Neck,";
 							keys += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex,LeftLeg,LeftFoot,LeftToe,";
 							keys += "RightArm,RightForeArm,RightHand,RightHandIndex,RightLeg,RightFoot,RightToe";
-							var boneNames = keys.split(",").map(function(name){return "mixamorig"+name;});
+							var boneNames = keys.split(",") // .map(function(name){return "mixamorig"+name;});
 							debugMode && console.log("boneNames:",boneNames);
 
 							boneNames.forEach(function( name ){ 
@@ -350,6 +350,7 @@
 
 					//	Take camera control.
 						cameraControls.trackObject = character; // debug!
+						debugMode && console.log("character:",character);
 
 					}, false );
 
