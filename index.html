@@ -281,6 +281,15 @@
 					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
 					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
 
+					//	debug demo on animation finished event!
+						character.objectToWatch = {}; // debug!
+						watch(character, "objectToWatch", function(prop,action,value){
+							debugMode && console.log({item:character.objectToWatch,action:action,value:value});
+						})
+						character.animationController.mixer.addEventListener( "finished", function finishedEventHandler(e){
+							callWatchers(character, "objectToWatch", "do", function(){} );
+						});
+
 						try {
 
 						//	Pause button.
