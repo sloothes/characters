@@ -388,7 +388,64 @@
 
 							boneNames.forEach(function( name ){ 
 								character.params[ name ] = positionHelper.clone(); // new THREE.Object3D(); 
+								scene.add( character.params[ name ] ); // debug!
 							});
+
+							var prefix = "mixamorig";
+							var hipsBone = character.getObjectByName(prefix+"Hips");
+							var headBone = character.getObjectByName(prefix+"Head");
+							var bodyBone = character.getObjectByName(prefix+"Spine");
+
+							var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
+							var leftfootBone = character.getObjectByName(prefix+"LeftFoot");
+							var lefttoeBone = character.getObjectByName(prefix+"LeftToeBase");
+							var leftarmBone = character.getObjectByName(prefix+"LeftArm");
+							var leftforeBone = character.getObjectByName(prefix+"LeftForeArm");
+							var lefthandBone = character.getObjectByName(prefix+"LeftHand");
+
+							var rightlegBone = character.getObjectByName(prefix+"RightLeg");
+							var rightfootBone = character.getObjectByName(prefix+"RightFoot");
+							var righttoeBone = character.getObjectByName(prefix+"RightToeBase");
+							var rightarmBone = character.getObjectByName(prefix+"RightArm");
+							var rightforeBone = character.getObjectByName(prefix+"RightForeArm");
+							var righthandBone = character.getObjectByName(prefix+"RightHand");
+
+							(function update(){
+
+								var requestAnimationFrameID = requestAnimationFrame( update );
+
+								character.params.intersectHead.position.setFromMatrixPosition(headBone.matrixWorld);
+								character.params.intersectBody.position.setFromMatrixPosition(bodyBone.matrixWorld);
+								character.params.Hips.position.setFromMatrixPosition(hipsBone.matrixWorld);
+
+								character.params.LeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+								character.params.LeftFoot.position.setFromMatrixPosition(leftfootBone.matrixWorld);
+								character.params.LeftToe.position.setFromMatrixPosition(lefttoeBone.matrixWorld);
+								character.params.LeftArm.position.setFromMatrixPosition(leftarmBone.matrixWorld);
+								character.params.LeftHand.position.setFromMatrixPosition(lefthandBone.matrixWorld);
+								character.params.LeftForeArm.position.setFromMatrixPosition(leftforeBone.matrixWorld);
+
+								character.params.RightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
+								character.params.RightFoot.position.setFromMatrixPosition(rightfootBone.matrixWorld);
+								character.params.RightToe.position.setFromMatrixPosition(righttoeBone.matrixWorld);
+								character.params.RightArm.position.setFromMatrixPosition(rightarmBone.matrixWorld);
+								character.params.RightHand.position.setFromMatrixPosition(righthandBone.matrixWorld);
+								character.params.RightForeArm.position.setFromMatrixPosition(rightforeBone.matrixWorld);
+
+							})();
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
