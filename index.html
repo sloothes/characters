@@ -323,8 +323,8 @@
 								health:0, 
 								intersectHead: intersectHead.clone(), 
 								intersectBody: intersectBody.clone(),
-								intersectLeftUpLeg: intersectLibs.clone();
-								intersectRightUpLeg: intersectLibs.clone();
+								intersectLeftUpLeg: intersectLibs.clone(),
+								intersectRightUpLeg: intersectLibs.clone(),
 							};
 
 							scene.add(character.params.intersectHead);
@@ -409,7 +409,6 @@
 							var headBone = character.getObjectByName(prefix+"Head");
 							var bodyBone = character.getObjectByName(prefix+"Spine1");
 
-							var leftuplegBone = character.getObjectByName(prefix+"LeftUpLeg");
 							var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
 							var leftfootBone = character.getObjectByName(prefix+"LeftFoot");
 							var lefttoeBone = character.getObjectByName(prefix+"LeftToeBase");
@@ -417,8 +416,8 @@
 							var leftforeBone = character.getObjectByName(prefix+"LeftForeArm");
 							var lefthandBone = character.getObjectByName(prefix+"LeftHand");
 							var leftindexBone = character.getObjectByName(prefix+"LeftHandIndex1");
+							var leftuplegBone = character.getObjectByName(prefix+"LeftUpLeg");
 
-							var rightuplegBone = character.getObjectByName(prefix+"RightUpLeg");
 							var rightlegBone = character.getObjectByName(prefix+"RightLeg");
 							var rightfootBone = character.getObjectByName(prefix+"RightFoot");
 							var righttoeBone = character.getObjectByName(prefix+"RightToeBase");
@@ -426,6 +425,7 @@
 							var rightforeBone = character.getObjectByName(prefix+"RightForeArm");
 							var righthandBone = character.getObjectByName(prefix+"RightHand");
 							var rightindexBone = character.getObjectByName(prefix+"RightHandIndex1");
+							var rightuplegBone = character.getObjectByName(prefix+"RightUpLeg");
 
 							(function update(){
 
