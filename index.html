@@ -227,13 +227,13 @@
 			(function( tab ){
 
 				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
-				var button = document.createElement("div"); button.id = "local-player-import-button"; button.textContent = "Import Local Player";
+				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 				var input = document.createElement("input"); 
-				input.type = "file"; input.id = "local-player-file-input";
-				input.style.cssText = "display:none;"; button.appendChild( input ); 
+				input.type = "file"; input.id = "character-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input );
 				row.appendChild( button ); tab.appendChild( row );
 
 				watch( input, "onchange", function(prop,event,value){
@@ -253,13 +253,13 @@
 			(function( tab ){
 
 				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
-				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
+				var button = document.createElement("div"); button.id = "local-player-import-button"; button.textContent = "Import Local Player";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
 				var input = document.createElement("input"); 
-				input.type = "file"; input.id = "character-file-input";
-				input.style.cssText = "display:none;"; button.appendChild( input );
+				input.type = "file"; input.id = "local-player-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input ); 
 				row.appendChild( button ); tab.appendChild( row );
 
 				watch( input, "onchange", function(prop,event,value){
