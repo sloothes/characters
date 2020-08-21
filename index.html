@@ -679,19 +679,19 @@
 								character.params.Head.position.setFromMatrixPosition(headBone.matrixWorld);
 								character.params.Spine1.position.setFromMatrixPosition(bodyBone.matrixWorld);
 
-								character.params.LeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+								character.params.LeftToe.position.setFromMatrixPosition(lefttoeBone.matrixWorld);
 								character.params.LeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
 								character.params.LeftFoot.position.setFromMatrixPosition(leftfootBone.matrixWorld);
-								character.params.LeftToe.position.setFromMatrixPosition(lefttoeBone.matrixWorld);
+								character.params.LeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
 								character.params.LeftArm.position.setFromMatrixPosition(leftarmBone.matrixWorld);
 								character.params.LeftHand.position.setFromMatrixPosition(lefthandBone.matrixWorld);
 								character.params.LeftForeArm.position.setFromMatrixPosition(leftforeBone.matrixWorld);
 								character.params.LeftHandIndex1.position.setFromMatrixPosition(leftindexBone.matrixWorld);
 
-								character.params.RightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+								character.params.RightToe.position.setFromMatrixPosition(righttoeBone.matrixWorld);
 								character.params.RightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
 								character.params.RightFoot.position.setFromMatrixPosition(rightfootBone.matrixWorld);
-								character.params.RightToe.position.setFromMatrixPosition(righttoeBone.matrixWorld);
+								character.params.RightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
 								character.params.RightArm.position.setFromMatrixPosition(rightarmBone.matrixWorld);
 								character.params.RightHand.position.setFromMatrixPosition(righthandBone.matrixWorld);
 								character.params.RightForeArm.position.setFromMatrixPosition(rightforeBone.matrixWorld);
@@ -701,8 +701,8 @@
 
 							character.params.leftPunch = weponRaycaster( character.params.LeftForeArm, character.params.LeftHand, 0.5 );
 							character.params.rightPunch = weponRaycaster( character.params.RightForeArm, character.params.RightHand, 0.5 );
-							character.params.leftKick = weponRaycaster( character.params.LeftLeg, character.params.LeftFoot, 0.5 );
-							character.params.rightKick = weponRaycaster( character.params.RightLeg, character.params.RightFoot, 0.5 );
+							character.params.leftKick = weponRaycaster( character.params.LeftLeg, character.params.LeftToe, 0.6 );
+							character.params.rightKick = weponRaycaster( character.params.RightLeg, character.params.RightToe, 0.6 );
 
 							function weponRaycaster( originObject, directionObject, far ){
 
