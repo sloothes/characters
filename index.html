@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>characters (v0.0.3)</title>
+		<title>characters (v0.0.4)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -227,11 +227,38 @@
 			(function( tab ){
 
 				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
+				var button = document.createElement("div"); button.id = "local-player-import-button"; button.textContent = "Import Local Player";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "local-player-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input ); 
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
 				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
 
-				var input = document.createElement("input"); input.type = "file"; input.id = "character-file-input";
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "character-file-input";
 				input.style.cssText = "display:none;"; button.appendChild( input );
 				row.appendChild( button ); tab.appendChild( row );
 
@@ -248,6 +275,141 @@
 				});
 
 			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+
+		//	localPlayer.
+
+			(function(character,input){
+
+				watch( input, "onchange", function(prop,event,files){
+
+					if ( !input.files.length ) return;
+					debugMode && console.log( input.files );
+
+					var file = input.files[0]; 
+					var filename = file.name.replace(".fbx", "");
+					var extension = file.name.split( "." ).pop().toLowerCase();
+
+					var reader = new FileReader();
+
+					reader.addEventListener( "progress", function ( e ) {
+						var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+						var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+						console.log( "Loading", filename, size, progress );
+					});
+
+					reader.addEventListener( "load", function ( e ) {
+
+						var data = reader.result;
+						var loader = new THREE.FBXLoader();
+						var group = loader.parse( data );
+
+						group.name = filename; 
+						group.position.y = -character.controller.radius; 
+						character.add( group ); // or scene.add(group)?
+						debugMode && console.log( group );
+
+					//	Animation controller. if ( group.animations.length ) ...
+						character.animationController = new MW.AnimationController( group );
+					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
+					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
+
+					//	Update animations.
+						var clock = new THREE.Clock();
+						(function update(){
+							requestAnimationFrame( update );
+							var delta = clock.getDelta();
+							character.animationController.update( delta );
+						})();
+
+					//	Skeleton helper.
+
+						var armature = character.getObjectByName("Armature");
+						character.skeletonHelper = new THREE.SkeletonHelper(armature);
+						character.skeletonHelper.visible = true; scene.add( character.skeletonHelper );
+
+					//	Intersects body.
+
+						var intersectHead = new THREE.Mesh(
+							new THREE.BoxGeometry(0.2,0.2,0.2),
+							new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+						); 
+
+						var intersectBody = new THREE.Mesh(
+							new THREE.BoxGeometry(0.3,0.5,0.3),
+							new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+						);
+
+						var intersectLibs = new THREE.Mesh(
+							new THREE.BoxGeometry(0.1,0.5,0.1),
+							new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+						);
+
+						intersectHead.geometry.translate(0,0.1,0);
+						intersectBody.geometry.translate(0,0.25,0);
+						intersectLibs.geometry.translate(0,0.25,0);
+
+						character.params = {
+							health:0, 
+							intersectHead: intersectHead.clone(), 
+							intersectBody: intersectBody.clone(),
+							intersectLeftLeg: intersectLibs.clone(),
+							intersectLeftUpLeg: intersectLibs.clone(),
+							intersectRightLeg: intersectLibs.clone(),
+							intersectRightUpLeg: intersectLibs.clone(),
+						};
+
+						scene.add(character.params.intersectHead);
+						scene.add(character.params.intersectBody);
+						scene.add(character.params.intersectLeftUpLeg);
+						scene.add(character.params.intersectRightUpLeg);
+						scene.add(character.params.intersectLeftLeg);
+						scene.add(character.params.intersectRightLeg);
+
+						var prefix = "mixamorig";
+						var hipsBone = character.getObjectByName(prefix+"Hips");
+						var headBone = character.getObjectByName(prefix+"Head");
+						var bodyBone = character.getObjectByName(prefix+"Spine1");
+
+						var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
+						var leftuplegBone = character.getObjectByName(prefix+"LeftUpLeg");
+						var rightlegBone = character.getObjectByName(prefix+"RightLeg");
+						var rightuplegBone = character.getObjectByName(prefix+"RightUpLeg");
+
+						(function update(){
+
+							var requestAnimationFrameID = requestAnimationFrame( update );
+
+						//	Position.
+							character.params.intersectHead.position.setFromMatrixPosition(headBone.matrixWorld);
+							character.params.intersectBody.position.setFromMatrixPosition(hipsBone.matrixWorld);
+							character.params.intersectLeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+							character.params.intersectRightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+							character.params.intersectLeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+							character.params.intersectRightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
+
+						//	Rotation.
+							character.params.intersectHead.rotation.setFromRotationMatrix(headBone.matrixWorld);
+							character.params.intersectBody.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
+							character.params.intersectLeftUpLeg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
+							character.params.intersectRightUpLeg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
+							character.params.intersectLeftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
+							character.params.intersectRightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
+
+						})();
+
+						debugMode && console.log("character:",character);
+
+					}, false ); // end of reader load eventListener.
+
+					reader.readAsArrayBuffer( file );
+
+				});
+
+			})( localPlayer, TabUI.Character.tab.querySelector("input#local-player-file-input") );
 
 		</script>
 
@@ -378,6 +540,15 @@
 								intersectRightLeg: intersectLibs.clone(),
 								intersectRightUpLeg: intersectLibs.clone(),
 							};
+
+							character.params.intersectObjects = [
+								localPlayer.params.intersectHead,
+								localPlayer.params.intersectBody,
+								localPlayer.params.intersectLeftUpLeg,
+								localPlayer.params.intersectRightUpLeg,
+								localPlayer.params.intersectLeftLeg,
+								localPlayer.params.intersectRightLeg,
+							];
 
 							scene.add(character.params.intersectHead);
 							scene.add(character.params.intersectBody);
@@ -528,17 +699,14 @@
 
 							})();
 
-							character.params.leftPunch = weponRaycaster( 0.2, character.params.LeftHand, character.params.LeftHandIndex1 );
-							character.params.rightPunch = weponRaycaster( 0.2, character.params.RightHand, character.params.RightHandIndex1 );
-							character.params.leftKick = weponRaycaster( 0.2, character.params.LeftFoot, character.params.LeftToe );
-							character.params.rightKick = weponRaycaster( 0.2, character.params.RightFoot, character.params.RightToe );
+							character.params.leftPunch = weponRaycaster( character.params.LeftHand, character.params.LeftHandIndex1, 0.2 );
+							character.params.rightPunch = weponRaycaster( character.params.RightHand, character.params.RightHandIndex1, 0.2 );
+							character.params.leftKick = weponRaycaster( character.params.LeftFoot, character.params.LeftToe, 0.2 );
+							character.params.rightKick = weponRaycaster( character.params.RightFoot, character.params.RightToe, 0.2 );
 
-							function weponRaycaster( far, originObject, directionObject ){
+							function weponRaycaster( originObject, directionObject, far ){
 
-								var origin = new THREE.Vector3();
-								var direction = new THREE.Vector3();
-								var intersectObjects = []; // [localPlayer.intersectBody, localPlayer.intersectHead];
-								var raycaster = new THREE.Raycaster(); raycaster.far = far;
+								var origin = new THREE.Vector3(), direction = new THREE.Vector3(), raycaster = new THREE.Raycaster(); raycaster.far = far;
 								var arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, raycaster.far ); scene.add( arrow );
 
 								(function update(){
@@ -558,7 +726,7 @@
 									arrow.position.copy( raycaster.ray.origin );
 									arrow.setDirection( raycaster.ray.direction );
 
-									var intersects = raycaster.intersectObjects( intersectObjects );
+									var intersects = raycaster.intersectObjects( character.params.intersectObjects );
 									intersects.length && console.log(intersects); // debug!
 
 								//	if ( !intersects.length ) return;
@@ -622,12 +790,12 @@
 
 						} catch(err){ console.error(err); }
 
-						try {
-
-						//	Take camera control.
-							cameraControls.trackObject = character; // debug!
-
-						} catch(err){ console.error(err); }
+					//	try {
+					//
+					//	//	Take camera control.
+					//		cameraControls.trackObject = character; // debug!
+					//
+					//	} catch(err){ console.error(err); }
 
 						animations_droplist.value = ""; // important!
 						debugMode && console.log("character:",character);
