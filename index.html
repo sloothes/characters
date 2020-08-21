@@ -269,7 +269,7 @@
 						character.animationController.motion[ currentMotionName ].timeScale = value;
 						interval = setTimeout( update, 20, button );
 					}, 500, this, 0.01, -1, 1 );
-				});
+				}
 
 				function onTimescaleMouseClick(){
 					clearTimeout( interval ); var button = this;
@@ -278,7 +278,7 @@
 					if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
 					scale_input.value = value.toFixed(2);
 					character.animationController.motion[ currentMotionName ].timeScale = value;
-				});
+				}
 
 				watch( input, "onchange", function(prop,event,files){
 
@@ -738,7 +738,7 @@
 						character.animationController.motion[ currentMotionName ].timeScale = value;
 						interval = setTimeout( update, 20, button );
 					}, 500, this, 0.01, -1, 1 );
-				});
+				}
 
 				function onMouseClick(){
 					clearTimeout( interval );
@@ -747,7 +747,7 @@
 					if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
 					timescale_input.value = value.toFixed(2);
 					character.animationController.motion[ currentMotionName ].timeScale = value;
-				});
+				}
 
 				watch( character.animationController, "currentMotionName", function(prop,action,value){
 					increase.removeEventListener( "click", onMouseClick ); 
