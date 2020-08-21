@@ -322,7 +322,7 @@
 							scene.add(character.params.intersectHead);
 							scene.add(character.params.intersectBody);
 
-							var keys = "Hips,Spine,Head,";
+							var keys = "Hips,Spine1,Head,";
 							keys += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex1,LeftLeg,LeftFoot,LeftToe,";
 							keys += "RightArm,RightForeArm,RightHand,RightHandIndex1,RightLeg,RightFoot,RightToe";
 							var boneNames = keys.split(","); debugMode && console.log("boneNames:", boneNames);
@@ -399,7 +399,7 @@
 							var prefix = "mixamorig";
 							var hipsBone = character.getObjectByName(prefix+"Hips");
 							var headBone = character.getObjectByName(prefix+"Head");
-							var bodyBone = character.getObjectByName(prefix+"Spine");
+							var bodyBone = character.getObjectByName(prefix+"Spine1");
 
 							var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
 							var leftfootBone = character.getObjectByName(prefix+"LeftFoot");
@@ -423,14 +423,14 @@
 
 							//	Position.
 								character.params.intersectHead.position.setFromMatrixPosition(headBone.matrixWorld);
-								character.params.intersectBody.position.setFromMatrixPosition(bodyBone.matrixWorld);
+								character.params.intersectBody.position.setFromMatrixPosition(hipsBone.matrixWorld);
 							//	Rotation.
 								character.params.intersectHead.rotation.setFromRotationMatrix(headBone.matrixWorld);
-								character.params.intersectBody.rotation.setFromRotationMatrix(bodyBone.matrixWorld);
+								character.params.intersectBody.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
 
 								character.params.Hips.position.setFromMatrixPosition(hipsBone.matrixWorld);
 								character.params.Head.position.setFromMatrixPosition(headBone.matrixWorld);
-								character.params.Spine.position.setFromMatrixPosition(bodyBone.matrixWorld);
+								character.params.Spine1.position.setFromMatrixPosition(bodyBone.matrixWorld);
 
 								character.params.LeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
 								character.params.LeftFoot.position.setFromMatrixPosition(leftfootBone.matrixWorld);
