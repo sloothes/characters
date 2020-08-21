@@ -281,18 +281,59 @@
 					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
 					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
 
-						try {
-						
-							character.params = {}; // experimental!
-							watch(character, "params", function(prop,action,value){
-								debugMode && console.log({item:character.params,action:action,value:value});
+					//	Update animations.
+						var clock = new THREE.Clock();
+						(function update(){
+							requestAnimationFrame( update );
+							var delta = clock.getDelta();
+							character.animationController.update( delta );
+						})();
+
+						(function(){
+
+							var intersectHead = new THREE.Mesh(
+								new THREE.BoxGeometry(0.2,0.2,0.2),
+								new THREE.MeshLambertMaterial()
+							); 
+
+							var intersectBody = new THREE.Mesh(
+								new THREE.BoxGeometry(0.5,0.5,0.5),
+								new THREE.MeshLambertMaterial()
+							};
+
+							character.params = {
+								health:0, 
+								intersectHead: intersectHead.clone(), 
+								intersectBody: intersectBody.clone(),
+							};
+
+							var boneNames = "Hips,Head,Neck,";
+							boneNames += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex,LeftLeg,LeftFoot,LeftToe,";
+							boneNames += "RightArm,RightForeArm,RightHand,RightHandIndex,RightLeg,RightFoot,RightToe";
+							boneNames.split(",").map(function(name){return "mixamorig"+name;});
+							debugMode && console.log("bone keys:",keys);
+
+							boneNames.forEach(function( name ){ 
+								character.params[ name ] = new THREE.Object3D(); 
 							});
 
-							character.animationController.mixer.addEventListener( "finished", function(){
-								callWatchers(character, "params", "finished", function(){;} );
-							});
+						//	Skeleton helper.
+							var armature = character.getObjectByName("Armature");
+							character.skeletonHelper = new THREE.SkeletonHelper(armature);
+							character.skeletonHelper.visible = true; scene.add( character.skeletonHelper );
 
-						} catch(err){ console.error(err); }
+
+
+
+
+
+
+
+
+
+
+						})();
+
 
 						try {
 
@@ -303,21 +344,8 @@
 
 						} catch(err){ console.error(err); }
 
-					//	Update animations.
-						var clock = new THREE.Clock();
-						(function update(){
-							requestAnimationFrame( update );
-							var delta = clock.getDelta();
-							character.animationController.update( delta );
-						})();
-
 						try {
-
 						//	Skeleton helper.
-							var armature = character.getObjectByName("Armature");
-							var skeletonHelper = new THREE.SkeletonHelper(armature);
-							skeletonHelper.visible = true; scene.add( skeletonHelper );
-
 						} catch(err){ console.error(err); }
 
 					//	Take camera control.
