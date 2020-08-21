@@ -166,10 +166,8 @@
 
 			(function( tab ){
 
-				var row = document.createElement("h3"); row.textContent = "scale(t):"; 
-				row.style.cssText = "margin:10px 15px 0 0;text-align:center;height:40px;";
-
-				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var row = document.createElement("h3"); row.textContent = "scale(t):"; row.style.cssText = "margin:10px 15px 0 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
 				var prev = document.createElement("li"); prev.id = "animations-timescale-decrease"; 
 				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 				var next = document.createElement("li"); next.id = "animations-timescale-increase";
