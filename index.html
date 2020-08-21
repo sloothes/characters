@@ -590,7 +590,8 @@
 							});
 
 							watch( character.animationController, "currentMotionName", function(prop,action,value){
-								currentMotionName = value; scale_input.value = character.animationController.motion[value].timeScale.toFixed(2);
+								currentMotionName = value; character.animationController.motion[ value ].reset();
+								scale_input.value = character.animationController.motion[value].timeScale.toFixed(2);
 							});
 
 							watch( character.animationController, "currentMotionName", function(prop,action,value){
