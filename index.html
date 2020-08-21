@@ -171,6 +171,14 @@
 				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
 				idlebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
 
+				watch( idlebutton, "onclick", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,value:value});
+				});
+
+				idlebutton.addEventListener( "click", function(){
+					callWatchers( idlebutton, "onclick", "click", "mixamo.com");
+				});
+
 				var button = document.createElement("div"); button.id = "animations-import-button"; button.textContent = "Import animations";
 				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
 				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
@@ -224,7 +232,7 @@
 
 			var character;
 
-			(function(input){
+			(function(input,pause_button){
 
 				var k = 0;
 
@@ -273,6 +281,15 @@
 					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
 					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
 
+						try {
+
+						//	Pause button.
+							watch(pause_button, "onclick", function(prop,event,value){
+								character.animationController.play("mixamo.com");
+							});
+
+						} catch(err){ console.error(err); }
+
 					//	Update animations.
 						var clock = new THREE.Clock();
 						(function update(){
@@ -296,7 +313,10 @@
 
 				});
 
-			})( TabUI.Character.tab.querySelector("input#character-file-input") );
+			})( 
+				TabUI.Character.tab.querySelector("input#character-file-input"), // input,
+				TabUI.Character.tab.querySelector("div#animations-idle-button")  // pause_button.
+			);
 
 			(function(input,animations_droplist){
 
