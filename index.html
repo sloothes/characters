@@ -302,13 +302,16 @@
 
 							var intersectHead = new THREE.Mesh(
 								new THREE.BoxGeometry(0.2,0.2,0.2),
-								new THREE.MeshNormalMaterial()
+								new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
 							); 
 
 							var intersectBody = new THREE.Mesh(
 								new THREE.BoxGeometry(0.3,0.5,0.3),
-								new THREE.MeshNormalMaterial()
+								new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
 							);
+
+							intersectHead.geometry.translate(0,0.1,0);
+							intersectBody.geometry.translate(0,0.25,0);
 
 							character.params = {
 								health:0, 
