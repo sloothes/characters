@@ -522,14 +522,6 @@
 								return raycaster;
 							}
 
-
-
-
-
-
-
-
-
 						})();
 
 
@@ -544,7 +536,12 @@
 						} catch(err){ console.error(err); }
 
 						try {
-						//	Skeleton helper.
+
+						//	animations droplist.
+							while (animations_droplist.options.length){
+								animations_droplist.options[0].remove();
+							}
+
 						} catch(err){ console.error(err); }
 
 					//	Take camera control.
