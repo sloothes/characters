@@ -274,7 +274,7 @@
 					//	cameraControls.trackObject = character; // debug!
 
 					//	Add group to scene (before animation controller).
-						group.name = filename; group.position.y = -radius; character.add( group ); 
+						group.name = filename; group.position.y = -radius; character.add( group ); // or scene.add(group)?
 
 					//	Animation controller. if ( group.animations.length ) ...
 						character.animationController = new MW.AnimationController( group );
@@ -290,6 +290,11 @@
 						})();
 
 						(function(){
+
+						//	Skeleton helper.
+							var armature = character.getObjectByName("Armature");
+							character.skeletonHelper = new THREE.SkeletonHelper(armature);
+							character.skeletonHelper.visible = true; scene.add( character.skeletonHelper );
 
 							var intersectHead = new THREE.Mesh(
 								new THREE.BoxGeometry(0.2,0.2,0.2),
@@ -313,17 +318,73 @@
 							var boneNames = keys.split(",") // .map(function(name){return "mixamorig"+name;});
 							debugMode && console.log("boneNames:",boneNames);
 
+							var positionHelper = (function(){
+
+								var helper = new THREE.Object3D(); // helper.
+								var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+
+							//	haircross.
+
+								(function(x){
+									var geometry = new THREE.Geometry();
+									geometry.vertices.push(
+										new THREE.Vector3( -x, 0, 0 ),
+										new THREE.Vector3(  x, 0, 0 )
+									);
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "axis x"; helper.add( segments );
+								})( 0.1 );
+
+								(function(y){
+									var geometry = new THREE.Geometry();
+									geometry.vertices.push(
+										new THREE.Vector3( 0,-y, 0 ),
+										new THREE.Vector3( 0, y, 0 )
+									);
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "axis y"; helper.add( segments );
+								})( 0.1 );
+
+								(function(z){
+									var geometry = new THREE.Geometry();
+									geometry.vertices.push(
+										new THREE.Vector3( 0, 0,-z ),
+										new THREE.Vector3( 0, 0, z )
+									);
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "axis z"; helper.add( segments );
+								})( 0.1 );
+
+							//	cycles.
+
+								(function(r){
+									var cycleGeometry = new THREE.CircleGeometry(r,32);
+									var geometry = new THREE.EdgesGeometry( cycleGeometry );
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "plane xy"; helper.add( segments );
+								})( 0.04 );
+
+								(function(r){
+									var cycleGeometry = new THREE.CircleGeometry(r,32).rotateX(-Math.PI/2);
+									var geometry = new THREE.EdgesGeometry( cycleGeometry );
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "plane xz"; helper.add( segments );
+								})( 0.04 );
+
+								(function(r){
+									var cycleGeometry = new THREE.CircleGeometry(r,32).rotateY(-Math.PI/2);
+									var geometry = new THREE.EdgesGeometry( cycleGeometry );
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "plane yz"; helper.add( segments );
+								})( 0.04 );
+
+								return helper;
+
+							})();
+
 							boneNames.forEach(function( name ){ 
-								character.params[ name ] = new THREE.Object3D(); 
+								character.params[ name ] = positionHelper.clone(); // new THREE.Object3D(); 
 							});
-
-						//	Skeleton helper.
-							var armature = character.getObjectByName("Armature");
-							character.skeletonHelper = new THREE.SkeletonHelper(armature);
-							character.skeletonHelper.visible = true; scene.add( character.skeletonHelper );
-
-
-
 
 
 
