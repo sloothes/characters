@@ -281,15 +281,18 @@
 					//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
 					//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
 
-					//	debug demo on animation finished event!
-						character.params = {}; // debug!
-						watch(character, "params", function(prop,action,value){
-							debugMode && console.log({item:character.params,action:action,value:value});
-						});
+						try {
+						
+							character.params = {}; // experimental!
+							watch(character, "params", function(prop,action,value){
+								debugMode && console.log({item:character.params,action:action,value:value});
+							});
 
-						character.animationController.mixer.addEventListener( "finished", function finishedEventHandler(e){
-							callWatchers(character, "params", "finished", function(){;} );
-						});
+							character.animationController.mixer.addEventListener( "finished", function(){
+								callWatchers(character, "params", "finished", function(){;} );
+							});
+
+						} catch(err){ console.error(err); }
 
 						try {
 
