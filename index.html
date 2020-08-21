@@ -619,6 +619,8 @@
 						cameraControls.trackObject = character; // debug!
 						debugMode && console.log("character:",character);
 
+						animations_droplist.value = ""; // important!
+
 					}, false ); // end load eventListener.
 
 					reader.readAsArrayBuffer( file );
