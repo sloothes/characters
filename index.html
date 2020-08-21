@@ -232,7 +232,7 @@
 
 			var character;
 
-			(function(input,pause_button){
+			(function(input,pause_button,animations_droplist){
 
 				var k = 0;
 
@@ -475,6 +475,7 @@
 
 						//	Pause button.
 							watch(pause_button, "onclick", function(prop,event,value){
+								animations_droplist.value = "";
 								character.animationController.play("mixamo.com");
 							});
 
@@ -496,7 +497,8 @@
 
 			})( 
 				TabUI.Character.tab.querySelector("input#character-file-input"), // input,
-				TabUI.Character.tab.querySelector("div#animations-idle-button")  // pause_button.
+				TabUI.Character.tab.querySelector("div#animations-idle-button"), // pause_button,
+				TabUI.Character.tab.querySelector("select#animations-droplist")  // animations_droplist.
 			);
 
 			(function(input,animations_droplist){
@@ -549,6 +551,8 @@
 										}
 									});
 								}
+
+								animations_droplist.value = "";
 
 							}, false );
 
