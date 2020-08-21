@@ -188,7 +188,7 @@
 				});
 
 				button.addEventListener( "click", function(){
-					input.value = ""; if ( !character ) return; input.click();
+					input.value = ""; input.click();
 				});
 
 			})( TabUI.Character.tab );
@@ -298,7 +298,7 @@
 
 			})( TabUI.Character.tab.querySelector("input#character-file-input") );
 
-			(function(character,input,animations_droplist){
+			(function(input,animations_droplist){
 
 				var k = 0; // important!
 
@@ -359,18 +359,18 @@
 				});
 
 			})(
-				character, TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
+				TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
 				TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
 			);
 
-			(function(character,animations_droplist){
+			(function(animations_droplist){
 
 				watch( animations_droplist, "onchange", function(prop,event,name){
 					if ( !(character && character.animationController) ) return;
 					character.animationController.play( name );
 				});
 
-			})( character, TabUI.Character.tab.querySelector("select#animations-droplist") );
+			})( TabUI.Character.tab.querySelector("select#animations-droplist") );
 
 		</script>
 
