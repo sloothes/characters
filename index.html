@@ -263,7 +263,7 @@
 					clearTimeout( interval ); // important!
 					interval = setTimeout( function update( button, step, min, max, name, animationController ){
 						if ( !name ) return clearTimeout( interval );
-						var value = animationController.motion[ name ].timescale;
+						var value = animationController.motion[ name ].timeScale;
 						if ( isNaN(value) ) return clearTimeout( interval ); // important!
 						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
@@ -276,7 +276,7 @@
 					clearTimeout( interval ); if ( !currentMotionName ) return;
 					(function( button, step, min, max, name, animationController ){
 						if ( !name ) return; if ( !animationController ) return;
-						var value = animationController.motion[ name ].timescale; 
+						var value = animationController.motion[ name ].timeScale; 
 						if ( isNaN(value) ) return; // important!
 						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
@@ -576,6 +576,10 @@
 						try {
 
 						//	Timescale inputs.
+						//	scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown ); 
+						//	scale_decrease.removeEventListener( "mousedown", onTimescaleMouseDown );
+						//	scale_increase.removeEventListener( "click", onTimescaleMouseClick ); 
+						//	scale_decrease.removeEventListener( "click", onTimescaleMouseClick );
 
 							watch( character.animationController, "currentMotionName", function(prop,action,value){
 								scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown );
@@ -732,7 +736,7 @@
 				function onMouseDown(){
 					clearTimeout( interval ); // important!
 					interval = setTimeout( function update( button, step, min, max, name ){
-						var value = character.animationController.motion[ name ].timescale;
+						var value = character.animationController.motion[ name ].timeScale;
 						if (button === increase) value = THREE.Math.clamp(value+step, min,max);
 						if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
 						timescale_input.value = value.toFixed(2);
@@ -743,7 +747,7 @@
 
 				function onMouseClick(){
 					clearTimeout( interval ); var name = currentMotionName;
-					var value = character.animationController.motion[ name ].timescale;
+					var value = character.animationController.motion[ name ].timeScale;
 					if (button === increase) value = THREE.Math.clamp(value+step, min,max);
 					if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
 					timescale_input.value = value.toFixed(2);
