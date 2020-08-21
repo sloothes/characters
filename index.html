@@ -166,6 +166,28 @@
 
 			(function( tab ){
 
+				var row = document.createElement("h3"); row.textContent = "scale(t):"; row.style.cssText = "margin:10px 15px;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:150px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "animations-timescale-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "animations-timescale-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "animations-timescale-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,timescale:value});
+				});
+
+			//	input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", timescale); });
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
 				var row = document.createElement("div"); row.style.cssText = "margin:10px 15px 0 0;height:35px;text-align:center;";
 				var idlebutton = document.createElement("div"); idlebutton.id = "animations-idle-button"; idlebutton.textContent = "Pause";
 				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
