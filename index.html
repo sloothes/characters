@@ -320,6 +320,9 @@
 
 						} catch(err){ console.error(err); }
 
+					//	Take camera control.
+						cameraControls.trackObject = character; // debug!
+
 					}, false );
 
 					reader.readAsArrayBuffer( file );
@@ -413,9 +416,9 @@
 			TabUI.Character.tab.classList.add("in","active");
 			TabUI.Character.pill.scrollIntoViewIfNeeded(false);
 
-			localPlayer.visible = false;
-			localPlayer.controller.movementSpeed = 2; // cameraControls.offset.y = 0.5;
-			cameraControls.radius = cameraControls.maxRadius = cameraControls.minRadius = 0.1;
+		//	localPlayer.visible = false;
+		//	localPlayer.controller.movementSpeed = 2; // cameraControls.offset.y = 0.5;
+		//	cameraControls.radius = cameraControls.maxRadius = cameraControls.minRadius = 0.1;
 
 		</script>
 
