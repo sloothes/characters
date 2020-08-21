@@ -699,10 +699,10 @@
 
 							})();
 
-							character.params.leftPunch = weponRaycaster( character.params.LeftHand, character.params.LeftHandIndex1, 0.2 );
-							character.params.rightPunch = weponRaycaster( character.params.RightHand, character.params.RightHandIndex1, 0.2 );
-							character.params.leftKick = weponRaycaster( character.params.LeftFoot, character.params.LeftToe, 0.2 );
-							character.params.rightKick = weponRaycaster( character.params.RightFoot, character.params.RightToe, 0.2 );
+							character.params.leftPunch = weponRaycaster( character.params.LeftForeArm, character.params.LeftHand, 0.5 );
+							character.params.rightPunch = weponRaycaster( character.params.RightForeArm, character.params.RightHand, 0.5 );
+							character.params.leftKick = weponRaycaster( character.params.LeftLeg, character.params.LeftFoot, 0.5 );
+							character.params.rightKick = weponRaycaster( character.params.RightLeg, character.params.RightFoot, 0.5 );
 
 							function weponRaycaster( originObject, directionObject, far ){
 
