@@ -166,15 +166,18 @@
 
 			(function( tab ){
 
-				var row = document.createElement("h3"); row.textContent = "scale(t):"; row.style.cssText = "margin:10px 15px;height:40px;";
-				var vect = document.createElement("div"); vect.style.cssText = "width:150px;height:40px;float:right;";
+				var row = document.createElement("h3"); row.textContent = "scale(t):"; 
+				row.style.cssText = "margin:10px 15px 0 0;text-align:center;height:40px;";
+
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
 				var prev = document.createElement("li"); prev.id = "animations-timescale-decrease"; 
 				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
 				var next = document.createElement("li"); next.id = "animations-timescale-increase";
 				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
 				var input = document.createElement("input"); input.id = "animations-timescale-input"; 
 				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
-				input.style.cssText = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
 				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
 				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
 
@@ -254,7 +257,7 @@
 
 			var character;
 
-			(function(input,pause_button,animations_droplist){
+			(function(input,pause_button,animations_droplist,timescale_input){
 
 				var k = 0;
 
@@ -549,6 +552,15 @@
 
 						try {
 
+						//	Timescale input.
+							watch( character.animationController, "currentMotionName", function(prop,action,name){
+								timescale_input.value = character.animationController.motion[ name ].timeScale.toFixed(2);
+							})
+
+						} catch(err){ console.error(err); }
+
+						try {
+
 						//	Pause button.
 							watch(pause_button, "onclick", function(prop,event,value){
 								animations_droplist.value = "";
@@ -579,7 +591,8 @@
 			})( 
 				TabUI.Character.tab.querySelector("input#character-file-input"), // input,
 				TabUI.Character.tab.querySelector("div#animations-idle-button"), // pause_button,
-				TabUI.Character.tab.querySelector("select#animations-droplist")  // animations_droplist.
+				TabUI.Character.tab.querySelector("select#animations-droplist"), // animations_droplist.
+				TabUI.Character.tab.querySelector("input#animations-timescale-input") // timescale_input,
 			);
 
 			(function(input,animations_droplist){
