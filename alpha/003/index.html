@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>characters (v0.0.3)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/validator.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/editor/js/TabUI.js"></script>
+
+		<script>
+			const debugMode = true;
+			const Signal = signals.Signal;
+			const RAD2DEG = 57.29577951308232;
+			const DEG2RAD = 0.017453292519943295;
+			document.body.appendChild( createSidePanel() );
+		</script>
+
+		<script src="/editor/js/three.js"></script>
+		<script src="/editor/js/MeshWalk.js"></script>
+		<script src="/editor/js/UVsDebug.js"></script>
+		<script src="/editor/js/FBXLoader.js"></script>
+		<script src="/editor/js/VirtualInput.js"></script>
+		<script src="/editor/js/KeyboardState.js"></script>
+		<script src="/editor/js/EditorControls.js"></script>
+		<script src="/editor/js/camera-controls.js"></script>
+		<script src="/editor/js/SubdivisionModifier.js"></script>
+		<script src="/editor/js/three-pathfinding.umd.js"></script>
+
+		<script src="/threejs/r96/examples/js/loaders/MTLLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/OBJLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/TGALoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/DDSLoader.js"></script>
+
+		<script>
+
+		//	THREE.Loader.Handlers.add( /.tga/, new THREE.TGALoader() );
+		//	THREE.Loader.Handlers.add( /.dds/, new THREE.DDSLoader() );
+
+		</script>
+
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+	<!-- Water.js -->
+
+		<script src="/editor/js/Ocean_fft.js"></script>
+		<script src="/editor/js/MirrorRenderer.js"></script>
+		<script src="/editor/js/WaterMaterial.js"></script>
+
+	<!-- Engine.js -->
+
+		<script src="/core/helpers.js"></script>
+		<script src="/core/keyboard.js"></script>
+		<script src="/core/enviroment.js"></script>
+		<script src="/core/localPlayer.js"></script>
+		<script src="/core/cameraControls.js"></script>
+		<script src="/core/keyboardState.js"></script>
+		<script src="/core/keyInputControls.js"></script>
+		<script src="/core/joystickControls.js"></script>
+
+		<script>
+
+			TabUI.add( "Character", "character-tab" ); TabUI.append("Character");
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "Animation";
+				var select = document.createElement("select"); select.id = "animations-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				row.appendChild( select ); tab.appendChild( row );
+
+				watch( select, "onchange", function(prop,event,value){
+					debugMode && console.log({item:select,event:event,value:value});
+				});
+
+				select.addEventListener( "change", function(){
+					callWatchers( select, "onchange", "change", select.value );
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "timescl:"; row.style.cssText = "margin:10px 15px 0 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "animations-timescale-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "animations-timescale-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "animations-timescale-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,timescale:value});
+				});
+
+			//	input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", timescale); });
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("div"); row.style.cssText = "margin:10px 15px 0 0;height:35px;text-align:center;";
+				var idlebutton = document.createElement("div"); idlebutton.id = "animations-idle-button"; idlebutton.textContent = "Pause";
+				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+				idlebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				watch( idlebutton, "onclick", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,value:value});
+				});
+
+				idlebutton.addEventListener( "click", function(){
+					callWatchers( idlebutton, "onclick", "click", "mixamo.com");
+				});
+
+				var button = document.createElement("div"); button.id = "animations-import-button"; button.textContent = "Import animations";
+				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				var input = document.createElement("input"); input.type = "file"; input.id = "animations-file-input";
+				input.style.display = "none"; input.setAttribute("multiple", ""); button.appendChild( input );
+				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
+				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); input.type = "file"; input.id = "character-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input );
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+
+			var character;
+
+			(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
+
+				var k = 0; var interval, currentMotionName; 
+
+				function onTimescaleMouseDown(){
+					clearTimeout( interval ); // important!
+					interval = setTimeout( function update( button, step, min, max, name, animationController ){
+						if ( !name ) return clearTimeout( interval );
+						var value = animationController.motion[ name ].timeScale;
+						if ( isNaN(value) ) return clearTimeout( interval ); // important!
+						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+						if ( isNaN(value) ) return clearTimeout( interval ); // important!
+						scale_input.value = value.toFixed(2); animationController.motion[ name ].timeScale = value; 
+						interval = setTimeout( update, 20, button, step, min, max, name, animationController );
+					}, 500, this, 0.01, -1, 1, currentMotionName, character.animationController );
+				}
+
+				function onTimescaleMouseClick(){
+					clearTimeout( interval ); if ( !currentMotionName ) return;
+					(function( button, step, min, max, name, animationController ){
+						if ( !name ) return; if ( !animationController ) return;
+						var value = animationController.motion[ name ].timeScale; 
+						if ( isNaN(value) ) return; // important!
+						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+						if ( isNaN(value) ) return; scale_input.value = value.toFixed(2);
+						animationController.motion[ name ].timeScale = value; 
+					})( this, 0.01, -1, 1, currentMotionName, character.animationController );
+				}
+
+				watch( input, "onchange", function(prop,event,files){
+
+					if ( !input.files.length ) return;
+					debugMode && console.log( input.files );
+
+					var file = input.files[0]; 
+					var filename = file.name.replace(".fbx", "");
+					var extension = file.name.split( "." ).pop().toLowerCase();
+
+					var reader = new FileReader();
+
+					reader.addEventListener( "progress", function ( e ) {
+						var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+						var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+						console.log( "Loading", filename, size, progress );
+					});
+
+					reader.addEventListener( "load", function ( e ) {
+
+						var data = reader.result;
+						var loader = new THREE.FBXLoader();
+						var group = loader.parse( data );
+						debugMode && console.log( group );
+
+					//	New character.
+						var radius = 1; // player radius.
+						character = new THREE.Object3D();
+						++k; character.name = "player_"+k;
+						character.position.set(0,1,-2);
+						scene.add( character ); // important!
+
+						(function(){
+
+						//	Character controller.
+							character.controller = new MW.CharacterController( character, radius );
+							character.controller.movementSpeed = 5;
+							world.add( character.controller ); // important!
+						//	cameraControls.trackObject = character; // debug!
+
+						//	Add group to scene (before animation controller).
+							group.name = filename; group.position.y = -radius; character.add( group ); // or scene.add(group)?
+
+						//	Animation controller. if ( group.animations.length ) ...
+							character.animationController = new MW.AnimationController( group );
+						//	debugMode && console.log( "animations:", Object.keys( character.animationController.motion ).join() );
+						//	character.animationController.play( Object.keys( character.animationController.motion )[0] );
+
+						//	Update animations.
+							var clock = new THREE.Clock();
+							(function update(){
+								requestAnimationFrame( update );
+								var delta = clock.getDelta();
+								character.animationController.update( delta );
+							})();
+
+						})();
+
+						(function(){
+
+						//	Skeleton helper.
+							var armature = character.getObjectByName("Armature");
+							character.skeletonHelper = new THREE.SkeletonHelper(armature);
+							character.skeletonHelper.visible = true; scene.add( character.skeletonHelper );
+
+							var intersectHead = new THREE.Mesh(
+								new THREE.BoxGeometry(0.2,0.2,0.2),
+								new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+							); 
+
+							var intersectBody = new THREE.Mesh(
+								new THREE.BoxGeometry(0.3,0.5,0.3),
+								new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+							);
+
+							var intersectLibs = new THREE.Mesh(
+								new THREE.BoxGeometry(0.1,0.5,0.1),
+								new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+							);
+
+							intersectHead.geometry.translate(0,0.1,0);
+							intersectBody.geometry.translate(0,0.25,0);
+							intersectLibs.geometry.translate(0,0.25,0);
+
+							character.params = {
+								health:0, 
+								intersectHead: intersectHead.clone(), 
+								intersectBody: intersectBody.clone(),
+								intersectLeftLeg: intersectLibs.clone(),
+								intersectLeftUpLeg: intersectLibs.clone(),
+								intersectRightLeg: intersectLibs.clone(),
+								intersectRightUpLeg: intersectLibs.clone(),
+							};
+
+							scene.add(character.params.intersectHead);
+							scene.add(character.params.intersectBody);
+							scene.add(character.params.intersectLeftUpLeg);
+							scene.add(character.params.intersectRightUpLeg);
+							scene.add(character.params.intersectLeftLeg);
+							scene.add(character.params.intersectRightLeg);
+
+							var keys = "Hips,Spine1,Head,";
+							keys += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex1,LeftUpLeg,LeftLeg,LeftFoot,LeftToe,";
+							keys += "RightArm,RightForeArm,RightHand,RightHandIndex1,RightUpLeg,RightLeg,RightFoot,RightToe";
+							var boneNames = keys.split(","); debugMode && console.log("boneNames:", boneNames);
+
+							var positionHelper = (function(){
+
+								var helper = new THREE.Object3D(); // helper.
+								var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+
+							//	haircross.
+
+								(function(x){
+									var geometry = new THREE.Geometry();
+									geometry.vertices.push(
+										new THREE.Vector3( -x, 0, 0 ),
+										new THREE.Vector3(  x, 0, 0 )
+									);
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "axis x"; helper.add( segments );
+								})( 0.1 );
+
+								(function(y){
+									var geometry = new THREE.Geometry();
+									geometry.vertices.push(
+										new THREE.Vector3( 0,-y, 0 ),
+										new THREE.Vector3( 0, y, 0 )
+									);
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "axis y"; helper.add( segments );
+								})( 0.1 );
+
+								(function(z){
+									var geometry = new THREE.Geometry();
+									geometry.vertices.push(
+										new THREE.Vector3( 0, 0,-z ),
+										new THREE.Vector3( 0, 0, z )
+									);
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "axis z"; helper.add( segments );
+								})( 0.1 );
+
+							//	cycles.
+
+								(function(r){
+									var cycleGeometry = new THREE.CircleGeometry(r,32);
+									var geometry = new THREE.EdgesGeometry( cycleGeometry );
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "plane xy"; helper.add( segments );
+								})( 0.04 );
+
+								(function(r){
+									var cycleGeometry = new THREE.CircleGeometry(r,32).rotateX(-Math.PI/2);
+									var geometry = new THREE.EdgesGeometry( cycleGeometry );
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "plane xz"; helper.add( segments );
+								})( 0.04 );
+
+								(function(r){
+									var cycleGeometry = new THREE.CircleGeometry(r,32).rotateY(-Math.PI/2);
+									var geometry = new THREE.EdgesGeometry( cycleGeometry );
+									var segments = new THREE.LineSegments( geometry, material );
+									segments.name = "plane yz"; helper.add( segments );
+								})( 0.04 );
+
+								return helper;
+
+							})();
+
+							boneNames.forEach(function( name ){ 
+								character.params[ name ] = positionHelper.clone(); // new THREE.Object3D(); 
+								scene.add( character.params[ name ] ); // debug!
+							});
+
+							var prefix = "mixamorig";
+							var hipsBone = character.getObjectByName(prefix+"Hips");
+							var headBone = character.getObjectByName(prefix+"Head");
+							var bodyBone = character.getObjectByName(prefix+"Spine1");
+
+							var leftuplegBone = character.getObjectByName(prefix+"LeftUpLeg");
+							var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
+							var leftfootBone = character.getObjectByName(prefix+"LeftFoot");
+							var lefttoeBone = character.getObjectByName(prefix+"LeftToeBase");
+							var leftarmBone = character.getObjectByName(prefix+"LeftArm");
+							var leftforeBone = character.getObjectByName(prefix+"LeftForeArm");
+							var lefthandBone = character.getObjectByName(prefix+"LeftHand");
+							var leftindexBone = character.getObjectByName(prefix+"LeftHandIndex1");
+
+							var rightuplegBone = character.getObjectByName(prefix+"RightUpLeg");
+							var rightlegBone = character.getObjectByName(prefix+"RightLeg");
+							var rightfootBone = character.getObjectByName(prefix+"RightFoot");
+							var righttoeBone = character.getObjectByName(prefix+"RightToeBase");
+							var rightarmBone = character.getObjectByName(prefix+"RightArm");
+							var rightforeBone = character.getObjectByName(prefix+"RightForeArm");
+							var righthandBone = character.getObjectByName(prefix+"RightHand");
+							var rightindexBone = character.getObjectByName(prefix+"RightHandIndex1");
+
+							(function update(){
+
+								var requestAnimationFrameID = requestAnimationFrame( update );
+
+							//	Position.
+								character.params.intersectHead.position.setFromMatrixPosition(headBone.matrixWorld);
+								character.params.intersectBody.position.setFromMatrixPosition(hipsBone.matrixWorld);
+								character.params.intersectLeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+								character.params.intersectRightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+								character.params.intersectLeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+								character.params.intersectRightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
+
+							//	Rotation.
+								character.params.intersectHead.rotation.setFromRotationMatrix(headBone.matrixWorld);
+								character.params.intersectBody.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
+								character.params.intersectLeftUpLeg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
+								character.params.intersectRightUpLeg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
+								character.params.intersectLeftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
+								character.params.intersectRightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
+
+							//	Point helpers.
+								character.params.Hips.position.setFromMatrixPosition(hipsBone.matrixWorld);
+								character.params.Head.position.setFromMatrixPosition(headBone.matrixWorld);
+								character.params.Spine1.position.setFromMatrixPosition(bodyBone.matrixWorld);
+
+								character.params.LeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+								character.params.LeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+								character.params.LeftFoot.position.setFromMatrixPosition(leftfootBone.matrixWorld);
+								character.params.LeftToe.position.setFromMatrixPosition(lefttoeBone.matrixWorld);
+								character.params.LeftArm.position.setFromMatrixPosition(leftarmBone.matrixWorld);
+								character.params.LeftHand.position.setFromMatrixPosition(lefthandBone.matrixWorld);
+								character.params.LeftForeArm.position.setFromMatrixPosition(leftforeBone.matrixWorld);
+								character.params.LeftHandIndex1.position.setFromMatrixPosition(leftindexBone.matrixWorld);
+
+								character.params.RightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+								character.params.RightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
+								character.params.RightFoot.position.setFromMatrixPosition(rightfootBone.matrixWorld);
+								character.params.RightToe.position.setFromMatrixPosition(righttoeBone.matrixWorld);
+								character.params.RightArm.position.setFromMatrixPosition(rightarmBone.matrixWorld);
+								character.params.RightHand.position.setFromMatrixPosition(righthandBone.matrixWorld);
+								character.params.RightForeArm.position.setFromMatrixPosition(rightforeBone.matrixWorld);
+								character.params.RightHandIndex1.position.setFromMatrixPosition(rightindexBone.matrixWorld);
+
+							})();
+
+							character.params.leftPunch = weponRaycaster( 0.2, character.params.LeftHand, character.params.LeftHandIndex1 );
+							character.params.rightPunch = weponRaycaster( 0.2, character.params.RightHand, character.params.RightHandIndex1 );
+							character.params.leftKick = weponRaycaster( 0.2, character.params.LeftFoot, character.params.LeftToe );
+							character.params.rightKick = weponRaycaster( 0.2, character.params.RightFoot, character.params.RightToe );
+
+							function weponRaycaster( far, originObject, directionObject ){
+
+								var origin = new THREE.Vector3();
+								var direction = new THREE.Vector3();
+								var intersectObjects = []; // [localPlayer.intersectBody, localPlayer.intersectHead];
+								var raycaster = new THREE.Raycaster(); raycaster.far = far;
+								var arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, raycaster.far ); scene.add( arrow );
+
+								(function update(){
+
+									var requestAnimationFrameID = requestAnimationFrame( update );
+
+									origin.copy( originObject.position ); // origin.copy( character.params.RightHand.position );
+
+									direction.subVectors(
+										directionObject.position, // character.params.RightHandIndex1.position, // direction,
+										originObject.position     // character.params.RightHand.position        // origin
+									).normalize();  // must be noramlized, important!
+
+									raycaster.ray.set( origin, direction );
+
+								//	Arrow helper.
+									arrow.position.copy( raycaster.ray.origin );
+									arrow.setDirection( raycaster.ray.direction );
+
+									var intersects = raycaster.intersectObjects( intersectObjects );
+									intersects.length && console.log(intersects); // debug!
+
+								//	if ( !intersects.length ) return;
+								//	cancelAnimationFrame( requestAnimationFrameID ); // important!
+								//	localPlayer.health -= (raycaster.far - intersects[0].distance); // (...)/10; or (...)/100;
+								//	localPlayer.animationController.play( reaction );
+								//	localPlayer.animationController.motion[ reaction ].reset();
+
+								})();
+
+								return raycaster;
+							}
+
+						})();
+
+						try {
+
+						//	Timescale inputs.
+						//	scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown ); 
+						//	scale_decrease.removeEventListener( "mousedown", onTimescaleMouseDown );
+						//	scale_increase.removeEventListener( "click", onTimescaleMouseClick ); 
+						//	scale_decrease.removeEventListener( "click", onTimescaleMouseClick );
+
+							watch( character.animationController, "currentMotionName", function(prop,action,value){
+								scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown );
+								scale_decrease.removeEventListener( "mousedown", onTimescaleMouseDown );
+								scale_increase.removeEventListener( "click", onTimescaleMouseClick );
+								scale_decrease.removeEventListener( "click", onTimescaleMouseClick );
+							});
+
+							watch( character.animationController, "currentMotionName", function(prop,action,value){
+								currentMotionName = value; character.animationController.motion[ value ].reset();
+								scale_input.value = character.animationController.motion[value].timeScale.toFixed(2);
+							});
+
+							watch( character.animationController, "currentMotionName", function(prop,action,value){
+								scale_increase.addEventListener( "mousedown", onTimescaleMouseDown );
+								scale_decrease.addEventListener( "mousedown", onTimescaleMouseDown );
+								scale_increase.addEventListener( "click", onTimescaleMouseClick );
+								scale_decrease.addEventListener( "click", onTimescaleMouseClick );
+							});
+
+						} catch(err){ console.error(err); }
+
+						try {
+
+						//	Pause button.
+							watch(pause_button, "onclick", function(prop,event,value){
+								animations_droplist.value = "";
+								character.animationController.play("mixamo.com");
+							});
+
+						} catch(err){ console.error(err); }
+
+						try {
+
+						//	Animation droplist.
+							while (animations_droplist.options.length){
+								animations_droplist.options[0].remove();
+							}
+
+						} catch(err){ console.error(err); }
+
+						try {
+
+						//	Take camera control.
+							cameraControls.trackObject = character; // debug!
+
+						} catch(err){ console.error(err); }
+
+						animations_droplist.value = ""; // important!
+						debugMode && console.log("character:",character);
+
+					}, false ); // end of reader load eventListener.
+
+					reader.readAsArrayBuffer( file );
+
+				});
+
+			})( 
+				TabUI.Character.tab.querySelector("input#character-file-input"),       // input,
+				TabUI.Character.tab.querySelector("div#animations-idle-button"),       // pause_button,
+				TabUI.Character.tab.querySelector("select#animations-droplist"),       // animations_droplist.
+				TabUI.Character.tab.querySelector("li#animations-timescale-increase"), // scale_increase,
+				TabUI.Character.tab.querySelector("li#animations-timescale-decrease"), // scale_decrease,
+				TabUI.Character.tab.querySelector("input#animations-timescale-input"), // scale_input,
+			);
+
+			(function(input,animations_droplist){
+
+				var k = 0; // important!
+
+				watch( input, "onchange", function(prop, event, files){
+
+					if ( !character ) return; if ( !input.files.length ) return;
+
+					for ( var i = 0; i < input.files.length; i++ ) {
+
+						setTimeout(function( file ){
+
+							var filename = file.name.replace(".fbx", "");
+							var extension = file.name.split( "." ).pop().toLowerCase();
+
+							var reader = new FileReader();
+
+							reader.addEventListener( "progress", function ( e ) {
+								var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+								var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+								console.log( "Loading", filename, size, progress );
+							});
+
+							reader.addEventListener( "load", function ( e ) {
+
+								var data = reader.result;
+								var loader = new THREE.FBXLoader();
+								var group = loader.parse( data );
+								group.name = filename;
+								console.log( group );
+
+							//	Add animations.
+								console.log( group.animations );
+
+								if ( group.animations.length ) {
+									var mixer = character.animationController.mixer;
+									var object = character.animationController.object;
+									var animations = group.animations;
+								//	var animations_droplist = tab.querySelector("select#animations-droplist");
+									animations.forEach( function( clip ){
+										var name = filename; var text = ++k+"."+filename; 
+										character.animationController.motion[ name ] = mixer.clipAction( clip, object );
+										animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
+										function createOption(text, value){
+											var option = document.createElement("option");
+											option.text = text; option.value = value;
+											return option;
+										}
+									});
+								}
+
+								animations_droplist.value = "";
+
+							}, false );
+
+							reader.readAsArrayBuffer( file );
+
+						}, 0, input.files[i] );
+					}
+
+				});
+
+			})(
+				TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
+				TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
+			);
+
+		//	Animation droplist.
+
+			(function(animations_droplist){
+
+				watch( animations_droplist, "onchange", function(prop,event,name){
+					if ( !(character && character.animationController) ) return;
+					character.animationController.play( name );
+				});
+
+			})( TabUI.Character.tab.querySelector("select#animations-droplist") );
+
+		</script>
+
+		<script>
+/*
+		//	Timescale inputs.
+
+			(function(increase,decrease,timescale_input){
+
+				var interval, currentMotionName; 
+
+				function onMouseDown(){
+					clearTimeout( interval ); // important!
+					interval = setTimeout( function update( button, step, min, max, name ){
+						var value = character.animationController.motion[ name ].timeScale;
+						if ( isNaN(value) ) return clearTimeout( interval );
+						if (button === increase) value = THREE.Math.clamp(value+step, min,max);
+						if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
+						if ( isNaN(value) ) return clearTimeout( interval );
+						timescale_input.value = value.toFixed(2);
+						character.animationController.motion[ name ].timeScale = value;
+						interval = setTimeout( update, 20, button, step, min, max, name );
+					}, 500, this, 0.01, -1, 1, currentMotionName );
+				}
+
+				function onMouseClick(){
+					clearTimeout( interval ); 
+					var button = this; var name = currentMotionName;
+					var value = character.animationController.motion[ name ].timeScale;
+					if ( isNaN(value) ) return;
+					if (button === increase) value = THREE.Math.clamp(value+step, min,max);
+					if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
+					if ( isNaN(value) ) return; timescale_input.value = value.toFixed(2);
+					character.animationController.motion[ name ].timeScale = value;
+				}
+
+				watch( character.animationController, "currentMotionName", function(prop,action,value){
+					increase.removeEventListener( "click", onMouseClick ); 
+					decrease.removeEventListener( "click", onMouseClick );
+					increase.removeEventListener( "mousedown", onMouseDown ); 
+					decrease.removeEventListener( "mousedown", onMouseDown );
+				});
+
+				watch( character.animationController, "currentMotionName", function(prop,action,name){
+					currentMotionName = name; timescale_input.value = character.animationController.motion[name].timeScale.toFixed(2);
+				});
+
+				watch( character.animationController, "currentMotionName", function(prop,action,value){
+					increase.addEventListener( "mousedown", onMouseDown );
+					decrease.addEventListener( "mousedown", onMouseDown );
+					increase.addEventListener( "click", onMouseClick );
+					decrease.addEventListener( "click", onMouseClick );
+				});
+
+			})(
+				TabUI.Character.tab.querySelector("li#animations-timescale-increase"), // increase,
+				TabUI.Character.tab.querySelector("li#animations-timescale-decrease"), // decrease,
+				TabUI.Character.tab.querySelector("input#animations-timescale-input"), // timescale_input,
+			);
+*/
+		</script>
+
+		<script>
+
+			TabUI.Character.role.classList.add("active");
+			TabUI.Character.tab.classList.add("in","active");
+			TabUI.Character.pill.scrollIntoViewIfNeeded(false);
+
+		//	localPlayer.visible = false;
+		//	localPlayer.controller.movementSpeed = 2; // cameraControls.offset.y = 0.5;
+		//	cameraControls.radius = cameraControls.maxRadius = cameraControls.minRadius = 0.1;
+
+		</script>
+
+	</body>
+</html>
