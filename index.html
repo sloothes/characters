@@ -310,21 +310,29 @@
 								new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
 							);
 
+							var intersectLibs = new THREE.Mesh(
+								new THREE.BoxGeometry(0.1,0.5,0.1),
+								new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+							);
+
 							intersectHead.geometry.translate(0,0.1,0);
 							intersectBody.geometry.translate(0,0.25,0);
+							intersectLibs.geometry.translate(0,-0.25,0);
 
 							character.params = {
 								health:0, 
 								intersectHead: intersectHead.clone(), 
 								intersectBody: intersectBody.clone(),
+								intersectLeftUpLeg: intersectLibs.clone();
+								intersectRightUpLeg: intersectLibs.clone();
 							};
 
 							scene.add(character.params.intersectHead);
 							scene.add(character.params.intersectBody);
 
 							var keys = "Hips,Spine1,Head,";
-							keys += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex1,LeftLeg,LeftFoot,LeftToe,";
-							keys += "RightArm,RightForeArm,RightHand,RightHandIndex1,RightLeg,RightFoot,RightToe";
+							keys += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex1,LeftUpLeg,LeftLeg,LeftFoot,LeftToe,";
+							keys += "RightArm,RightForeArm,RightHand,RightHandIndex1,RightUpLeg,RightLeg,RightFoot,RightToe";
 							var boneNames = keys.split(","); debugMode && console.log("boneNames:", boneNames);
 
 							var positionHelper = (function(){
@@ -401,6 +409,7 @@
 							var headBone = character.getObjectByName(prefix+"Head");
 							var bodyBone = character.getObjectByName(prefix+"Spine1");
 
+							var leftuplegBone = character.getObjectByName(prefix+"LeftUpLeg");
 							var leftlegBone = character.getObjectByName(prefix+"LeftLeg");
 							var leftfootBone = character.getObjectByName(prefix+"LeftFoot");
 							var lefttoeBone = character.getObjectByName(prefix+"LeftToeBase");
@@ -409,6 +418,7 @@
 							var lefthandBone = character.getObjectByName(prefix+"LeftHand");
 							var leftindexBone = character.getObjectByName(prefix+"LeftHandIndex1");
 
+							var rightuplegBone = character.getObjectByName(prefix+"RightUpLeg");
 							var rightlegBone = character.getObjectByName(prefix+"RightLeg");
 							var rightfootBone = character.getObjectByName(prefix+"RightFoot");
 							var righttoeBone = character.getObjectByName(prefix+"RightToeBase");
@@ -424,9 +434,14 @@
 							//	Position.
 								character.params.intersectHead.position.setFromMatrixPosition(headBone.matrixWorld);
 								character.params.intersectBody.position.setFromMatrixPosition(hipsBone.matrixWorld);
+								character.params.intersectLeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+								character.params.intersectRightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+
 							//	Rotation.
 								character.params.intersectHead.rotation.setFromRotationMatrix(headBone.matrixWorld);
 								character.params.intersectBody.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
+								character.params.intersectLeftUpLeg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
+								character.params.intersectRightUpLeg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
 
 								character.params.Hips.position.setFromMatrixPosition(hipsBone.matrixWorld);
 								character.params.Head.position.setFromMatrixPosition(headBone.matrixWorld);
