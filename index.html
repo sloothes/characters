@@ -615,13 +615,17 @@
 
 						} catch(err){ console.error(err); }
 
-					//	Take camera control.
-						cameraControls.trackObject = character; // debug!
-						debugMode && console.log("character:",character);
+						try {
+
+						//	Take camera control.
+							cameraControls.trackObject = character; // debug!
+
+						} catch(err){ console.error(err); }
 
 						animations_droplist.value = ""; // important!
+						debugMode && console.log("character:",character);
 
-					}, false ); // end load eventListener.
+					}, false ); // end of reader load eventListener.
 
 					reader.readAsArrayBuffer( file );
 
