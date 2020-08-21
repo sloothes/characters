@@ -481,15 +481,17 @@
 						//	var requestAnimationFrameID; // important!
 						//	var animationController = character.animationController;
 
-							character.params.LeftHandRaycaster = weponRaycaster( character.params.LeftHand, character.params.LeftHandIndex1 );
-							character.params.RightHandRaycaster = weponRaycaster( character.params.RightHand, character.params.RightHandIndex1 );
+							character.params.LeftHandRaycaster = weponRaycaster( 0.2, character.params.LeftHand, character.params.LeftHandIndex1 );
+							character.params.RightHandRaycaster = weponRaycaster( 0.2, character.params.RightHand, character.params.RightHandIndex1 );
+							character.params.LeftLegRaycaster = weponRaycaster( 0.2, character.params.LeftFoot, character.params.LeftToe );
+							character.params.RightLegRaycaster = weponRaycaster( 0.2, character.params.RighFoot, character.params.RightToe );
 
-							function weponRaycaster( originObject, directionObject ){
+							function weponRaycaster( far, originObject, directionObject ){
 
 								var origin = new THREE.Vector3();
 								var direction = new THREE.Vector3();
 								var intersectObjects = []; // [localPlayer.intersectBody, localPlayer.intersectHead];
-								var raycaster = new THREE.Raycaster(); raycaster.far = 0.5;
+								var raycaster = new THREE.Raycaster(); raycaster.far = far;
 								var arrow = new THREE.ArrowHelper( raycaster.ray.direction, raycaster.ray.origin, raycaster.far ); scene.add( arrow );
 
 								(function update(){
