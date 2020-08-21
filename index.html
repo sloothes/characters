@@ -311,7 +311,7 @@
 							boneNames += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex,LeftLeg,LeftFoot,LeftToe,";
 							boneNames += "RightArm,RightForeArm,RightHand,RightHandIndex,RightLeg,RightFoot,RightToe";
 							boneNames.split(",").map(function(name){return "mixamorig"+name;});
-							debugMode && console.log("bone keys:",boneNames);
+							debugMode && console.log("boneNames:",boneNames);
 
 							boneNames.forEach(function( name ){ 
 								character.params[ name ] = new THREE.Object3D(); 
