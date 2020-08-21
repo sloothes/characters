@@ -323,7 +323,9 @@
 								health:0, 
 								intersectHead: intersectHead.clone(), 
 								intersectBody: intersectBody.clone(),
+								intersectLeftLeg: intersectLibs.clone(),
 								intersectLeftUpLeg: intersectLibs.clone(),
+								intersectRightLeg: intersectLibs.clone(),
 								intersectRightUpLeg: intersectLibs.clone(),
 							};
 
@@ -331,6 +333,8 @@
 							scene.add(character.params.intersectBody);
 							scene.add(character.params.intersectLeftUpLeg);
 							scene.add(character.params.intersectRightUpLeg);
+							scene.add(character.params.intersectLeftLeg);
+							scene.add(character.params.intersectRightLeg);
 
 							var keys = "Hips,Spine1,Head,";
 							keys += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex1,LeftUpLeg,LeftLeg,LeftFoot,LeftToe,";
@@ -438,12 +442,16 @@
 								character.params.intersectBody.position.setFromMatrixPosition(hipsBone.matrixWorld);
 								character.params.intersectLeftUpLeg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
 								character.params.intersectRightUpLeg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+								character.params.intersectLeftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+								character.params.intersectRightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
 
 							//	Rotation.
 								character.params.intersectHead.rotation.setFromRotationMatrix(headBone.matrixWorld);
 								character.params.intersectBody.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
 								character.params.intersectLeftUpLeg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
 								character.params.intersectRightUpLeg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
+								character.params.intersectLeftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
+								character.params.intersectRightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
 
 							//	Point helpers.
 								character.params.Hips.position.setFromMatrixPosition(hipsBone.matrixWorld);
