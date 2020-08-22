@@ -736,8 +736,8 @@
 								//	localPlayer.animationController.motion[ reaction ].reset();
 
 									if ( intersects.length ) {
-										clearTimeout( interval ); localPlayer.params.health -= 0.01;
-										interval = setTimeout(function(){
+										localPlayer.params.health -= 0.01; 
+										clearTimeout( interval ); interval = setTimeout(function(){
 											debugMode && console.log( "localPlayer health:", localPlayer.params.health );
 										},50);
 									}
