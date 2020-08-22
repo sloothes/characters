@@ -727,7 +727,6 @@
 									arrow.setDirection( raycaster.ray.direction );
 
 									var intersects = raycaster.intersectObjects( character.params.intersectObjects );
-									intersects.length && console.log( intersects ); // debug!
 
 								//	if ( !intersects.length ) return;
 								//	cancelAnimationFrame( requestAnimationFrameID ); // important!
@@ -736,7 +735,7 @@
 								//	localPlayer.animationController.motion[ reaction ].reset();
 
 									if ( intersects.length ) {
-										localPlayer.params.health -= 0.01; 
+										localPlayer.params.health -= 0.01; debugMode && console.log( intersects );
 										clearTimeout( interval ); interval = setTimeout(function(){
 											debugMode && console.log( "localPlayer health:", localPlayer.params.health );
 										},50);
