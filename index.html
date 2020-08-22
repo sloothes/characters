@@ -508,8 +508,8 @@
 						(function(){
 
 						//	Skeleton helper.
-							var armature = character.getObjectByName("Armature");
-							character.skeletonHelper = new THREE.SkeletonHelper(armature);
+						//	var armature = character.getObjectByName("Armature"); if ( !armature ) armature = group;
+							character.skeletonHelper = new THREE.SkeletonHelper(group); // testing! 
 							character.skeletonHelper.visible = true; scene.add( character.skeletonHelper );
 
 							var intersectHead = new THREE.Mesh(
