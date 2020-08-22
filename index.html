@@ -284,6 +284,46 @@
 
 			(function(character,input){
 
+			//	Intersects body.
+
+				var intersectHead = new THREE.Mesh(
+					new THREE.BoxGeometry(0.2,0.2,0.2),
+					new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+				); 
+
+				var intersectBody = new THREE.Mesh(
+					new THREE.BoxGeometry(0.3,0.5,0.3),
+					new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+				);
+
+				var intersectLibs = new THREE.Mesh(
+					new THREE.BoxGeometry(0.1,0.5,0.1),
+					new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+				);
+
+				intersectHead.geometry.translate(0,0.1,0);
+				intersectBody.geometry.translate(0,0.25,0);
+				intersectLibs.geometry.translate(0,0.25,0);
+
+				character.params = {
+					health:100,  intersectObjects: [],
+					intersectHead: intersectHead.clone(), 
+					intersectBody: intersectBody.clone(),
+					intersectLeftLeg: intersectLibs.clone(),
+					intersectLeftUpLeg: intersectLibs.clone(),
+					intersectRightLeg: intersectLibs.clone(),
+					intersectRightUpLeg: intersectLibs.clone(),
+				};
+
+				scene.add(character.params.intersectHead);
+				scene.add(character.params.intersectBody);
+				scene.add(character.params.intersectLeftUpLeg);
+				scene.add(character.params.intersectRightUpLeg);
+				scene.add(character.params.intersectLeftLeg);
+				scene.add(character.params.intersectRightLeg);
+
+			//
+
 				watch( input, "onchange", function(prop,event,files){
 
 					if ( !input.files.length ) return;
@@ -331,7 +371,7 @@
 						character.skeletonHelper.visible = true; scene.add( character.skeletonHelper );
 
 					//	Intersects body.
-
+/*
 						var intersectHead = new THREE.Mesh(
 							new THREE.BoxGeometry(0.2,0.2,0.2),
 							new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
@@ -352,7 +392,7 @@
 						intersectLibs.geometry.translate(0,0.25,0);
 
 						character.params = {
-							health:100, 
+							health:100,  intersectObjects: [],
 							intersectHead: intersectHead.clone(), 
 							intersectBody: intersectBody.clone(),
 							intersectLeftLeg: intersectLibs.clone(),
@@ -367,7 +407,7 @@
 						scene.add(character.params.intersectRightUpLeg);
 						scene.add(character.params.intersectLeftLeg);
 						scene.add(character.params.intersectRightLeg);
-
+*/
 						var prefix = "mixamorig";
 						var hipsBone = character.getObjectByName(prefix+"Hips");
 						var headBone = character.getObjectByName(prefix+"Head");
@@ -532,7 +572,7 @@
 							intersectLibs.geometry.translate(0,0.25,0);
 
 							character.params = {
-								health:100, 
+								health:100,  intersectObjects: [],
 								intersectHead: intersectHead.clone(), 
 								intersectBody: intersectBody.clone(),
 								intersectLeftLeg: intersectLibs.clone(),
@@ -541,21 +581,28 @@
 								intersectRightUpLeg: intersectLibs.clone(),
 							};
 
-							character.params.intersectObjects = [
-								localPlayer.params.intersectHead,
-								localPlayer.params.intersectBody,
-							//	localPlayer.params.intersectLeftUpLeg,
-							//	localPlayer.params.intersectRightUpLeg,
-							//	localPlayer.params.intersectLeftLeg,
-							//	localPlayer.params.intersectRightLeg,
-							];
-
 							scene.add(character.params.intersectHead);
 							scene.add(character.params.intersectBody);
 							scene.add(character.params.intersectLeftUpLeg);
 							scene.add(character.params.intersectRightUpLeg);
 							scene.add(character.params.intersectLeftLeg);
 							scene.add(character.params.intersectRightLeg);
+
+						//	Get localPlayer intersect objects.
+							character.params.intersectObjects.push( localPlayer.params.intersectHead );
+							character.params.intersectObjects.push( localPlayer.params.intersectBody );
+						//	character.params.intersectObjects.push( localPlayer.params.intersectLeftUpLeg );
+						//	character.params.intersectObjects.push( localPlayer.params.intersectRightUpLeg );
+						//	character.params.intersectObjects.push( localPlayer.params.intersectLeftLeg );
+						//	character.params.intersectObjects.push( localPlayer.params.intersectRightLeg );
+
+						//	Give to localPlayer your intersect objects.
+							localPlayer.params.intersectObjects.push( character.params.intersectHead );
+							localPlayer.params.intersectObjects.push( character.params.intersectBody );
+							localPlayer.params.intersectObjects.push( character.params.intersectLeftUpLeg );
+							localPlayer.params.intersectObjects.push( character.params.intersectRightUpLeg );
+							localPlayer.params.intersectObjects.push( character.params.intersectLeftLeg );
+							localPlayer.params.intersectObjects.push( character.params.intersectRightLeg );
 
 							var keys = "Hips,Spine1,Head,";
 							keys += "LeftArm,LeftForeArm,LeftHand,LeftHandIndex1,LeftUpLeg,LeftLeg,LeftFoot,LeftToe,";
