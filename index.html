@@ -738,7 +738,7 @@
 									if ( intersects.length ) {
 										clearTimeout( interval ); localPlayer.params.health -= 0.01;
 										interval = setTimeout(function(){
-											debugMode && console.log( "localPlayer", localPlayer.params.health );
+											debugMode && console.log( "localPlayer health:", localPlayer.params.health );
 										},50);
 									}
 
