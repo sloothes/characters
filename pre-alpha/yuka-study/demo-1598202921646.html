@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>Yuka (pre-alpha 0.02)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+
+	</head>
+
+	<body ontouchstart="">
+
+		<style>
+			#info {
+				width: 100%;
+				color: #ffffff;
+				position: fixed;
+				text-align: center;
+			}
+
+			#intro {
+				position: fixed;
+				height: 100%;
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				background-color: rgba(0,0,0,0.7);
+				color: #ffffff;
+				font-size: 40;
+				z-index: 999;
+			}
+
+			#intro.hidden {
+				display: none;
+			}
+
+			#intro .sub {
+				font-size: 20;
+			}
+
+			#loading-screen{
+				position: fixed;
+				height: 100%;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				background-color: #000000;
+				z-index: 1000;
+				opacity: 1;
+				transition: 0.5s opacity;
+			}
+
+			#loading-screen.fade-out {
+				opacity: 0;
+			}
+
+			.spinner {
+				margin: 100px auto;
+				width: 50px;
+				height: 40px;
+				text-align: center;
+				font-size: 10px;
+			}
+
+			.spinner > div {
+				background-color: #ffffff;
+				height: 100%;
+				width: 6px;
+				display: inline-block;
+
+				-webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+				animation: sk-stretchdelay 1.2s infinite ease-in-out;
+			}
+
+			.spinner .rect2 {
+				-webkit-animation-delay: -1.1s;
+				animation-delay: -1.1s;
+			}
+
+			.spinner .rect3 {
+				-webkit-animation-delay: -1.0s;
+				animation-delay: -1.0s;
+			}
+
+			.spinner .rect4 {
+				-webkit-animation-delay: -0.9s;
+				animation-delay: -0.9s;
+			}
+
+			.spinner .rect5 {
+				-webkit-animation-delay: -0.8s;
+				animation-delay: -0.8s;
+			}
+
+			@-webkit-keyframes sk-stretchdelay {
+				0%, 40%, 100% { -webkit-transform: scaleY(0.4) }
+				20% { -webkit-transform: scaleY(1.0) }
+			}
+
+			@keyframes sk-stretchdelay {
+				0%, 40%, 100% {
+					transform: scaleY(0.4);
+					-webkit-transform: scaleY(0.4);
+				}  20% {
+					transform: scaleY(1.0);
+					-webkit-transform: scaleY(1.0);
+				}
+			}
+
+			/* hide some information on small devices */
+
+			@media screen and (max-width: 414px) {
+				#info {
+					display: none;
+				}
+				.dg {
+					display: none;
+				}
+			}
+
+		</style>
+
+		<style>
+
+			#status {
+				position: absolute;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 28px;
+				color: #ffffff;
+				text-align: center;
+				line-height: 20px;
+				width: 100%;
+				bottom: 0;
+			}
+			#status>div {
+				background-color: #282828;
+				width: 350px;
+				padding: 16px;
+				margin-right: 370px;
+			}
+			#status>div>span {
+				display: inline-block;
+			}
+
+		</style>
+
+		<section id="status">
+			<div>
+				<span>Current State:</span>
+				<span id="currentState"></span>
+			</div>
+		</section>
+
+		<script src="/js/yuka.js"></script>
+		<script src="/ecs/js/TabUI.js"></script>
+		<script src="/ecs/js/three.js"></script>
+		<script src="/ecs/js/MeshWalk.js"></script>
+		<script src="/ecs/js/UVsDebug.js"></script>
+		<script src="/ecs/js/FBXLoader.js"></script>
+		<script src="/ecs/js/VirtualInput.js"></script>
+		<script src="/ecs/js/KeyboardState.js"></script>
+		<script src="/ecs/js/EditorControls.js"></script>
+		<script src="/ecs/js/camera-controls.js"></script>
+		<script src="/ecs/js/SubdivisionModifier.js"></script>
+		<script src="/ecs/js/three-pathfinding.umd.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+		<script src="/core/helpers.js"></script>
+		<script src="/core/enviroment.js"></script>
+
+<!--
+		<script src="/ecs/engine/core/entity.js"></script>
+		<script src="/ecs/engine/core/localPlayer.js"></script>
+		<script src="/ecs/engine/core/cameraControls.js"></script>
+		<script src="/ecs/engine/core/keyboardState.js"></script>
+		<script src="/ecs/engine/core/keyInputControls.js"></script>
+		<script src="/ecs/engine/core/joystickControls.js"></script>
+		<script src="/ecs/engine/core/keyboard.js"></script>
+-->
+
+		<script>
+
+			debugMode = true;
+		//	const Signal = signals.Signal;
+
+		//	TabUI.
+			(function(){
+				var sidePanel = createSidePanel();
+				document.body.appendChild( sidePanel );
+			})();
+
+		</script>
+
+		<script>
+
+			const cameraControls = (function( camera, object ){
+
+				var options = { 
+					el: renderer.domElement, // dom element,
+					offset: new THREE.Vector3( 0, 0.5, 0 ), // eye height,
+					radius: 6, // default distance of the character to the camera
+					minRadius: 2, maxRadius: +Infinity, rigidObjects: [],
+				}
+
+				var cameraControls = new MW.TPSCameraControl(
+					camera, object, options // three camera, tracking object, options.
+				);
+
+				(function update(){
+					requestFrameID = requestAnimationFrame( update );
+					if ( !cameraControls.camera ) return;
+					if ( !cameraControls.trackObject ) return;
+					cameraControls.update();
+					cameraControls.frontAngle = cameraControls.getFrontAngle();
+				})();
+
+				return cameraControls;
+
+			})( camera, scene );
+
+		//	Helpers.
+
+			function takeCameraControls( object, offset ){
+				cameraControls.trackObject = object;
+				cameraControls.offset.y = offset || 0;
+			}
+
+		</script>
+
+		<script>
+
+			TabUI.add( "Character", "character-tab" ); TabUI.append("Character");
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "Animation";
+				var select = document.createElement("select"); select.id = "animations-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				row.appendChild( select ); tab.appendChild( row );
+
+				watch( select, "onchange", function(prop,event,value){
+					debugMode && console.log({item:select,event:event,value:value});
+				});
+
+				select.addEventListener( "change", function(){
+					callWatchers( select, "onchange", "change", select.value );
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "timescl:"; row.style.cssText = "margin:10px 15px 0 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "animations-timescale-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "animations-timescale-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "animations-timescale-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,timescale:value});
+				});
+
+			//	input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", timescale); });
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("div"); row.style.cssText = "margin:10px 15px 0 0;height:35px;text-align:center;";
+				var idlebutton = document.createElement("div"); idlebutton.id = "animations-idle-button"; idlebutton.textContent = "Pause";
+				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+				idlebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				watch( idlebutton, "onclick", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,value:value});
+				});
+
+				idlebutton.addEventListener( "click", function(){
+					callWatchers( idlebutton, "onclick", "click", "mixamo.com");
+				});
+
+				var button = document.createElement("div"); button.id = "animations-import-button"; button.textContent = "Import animations";
+				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				var input = document.createElement("input"); input.type = "file"; input.id = "animations-file-input";
+				input.style.display = "none"; input.setAttribute("multiple", ""); button.appendChild( input );
+				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
+				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "character-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input );
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;display:none;"
+				var button = document.createElement("div"); button.id = "local-player-import-button"; button.textContent = "Import Local Player";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "local-player-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input ); 
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+/*
+			class IdleState extends YUKA.State {
+
+				enter( girl ) {
+
+					const idle = girl.animations.get( IDLE );
+				//	idle.reset().fadeIn( girl.crossFadeDuration );
+				//	console.log( "on enter:", idle );
+					girl.ui.currentState.textContent = IDLE;
+
+				}
+
+				execute( girl ) {
+
+					if ( girl.currentTime >= girl.stateDuration ) {
+						girl.currentTime = 0;
+						girl.stateMachine.changeTo( WALK );
+					//	girl.animatonController.play(WALK);
+					}
+
+				}
+
+				exit( girl ) {
+
+					const idle = girl.animations.get( IDLE );
+				//	idle.fadeOut( girl.crossFadeDuration );
+				//	console.log( "on exit:", idle );
+
+				}
+
+			}
+
+			class WalkState extends YUKA.State {
+
+				enter( girl ) {
+
+					girl.ui.currentState.textContent = WALK;
+					const walk = girl.animations.get( WALK );
+				//	walk.reset().fadeIn( girl.crossFadeDuration );
+				//	console.log( "on enter:", walk );
+
+				}
+
+				execute( girl ) {
+
+					if ( girl.currentTime >= girl.stateDuration ) {
+						girl.currentTime = 0;
+						girl.stateMachine.changeTo( IDLE );
+					//	girl.animatonController.play(IDLE);
+					}
+
+				}
+
+				exit( girl ) {
+
+					const walk = girl.animations.get( WALK );
+				//	walk.fadeOut( girl.crossFadeDuration );
+				//	console.log( "on exit:", walk );
+
+				}
+
+			}
+*/
+		</script>
+
+		<script>
+
+/*
+			class Girl extends YUKA.GameEntity {
+
+				constructor( animationController, animations ) {
+
+					super();
+
+					this.animations = animations;
+					this.animationController = animationController;
+
+					this.ui = {
+						currentState: document.getElementById( "currentState" )
+					};
+
+				//
+
+					this.stateMachine = new YUKA.StateMachine( this );
+					this.stateMachine.add( "idle", new IdleState() );
+					this.stateMachine.add( "walking", new WalkState() );
+					this.stateMachine.changeTo( "idle" );
+					console.log( "girl.stateMachine:", this.stateMachine );
+
+				//
+
+					this.currentTime = 0; // tracks how long the entity is in the current state
+					this.stateDuration = 5; // duration of a single state in seconds
+				//	this.crossFadeDuration = 1; // duration of a crossfade in seconds
+
+				}
+
+				update( delta ) {
+
+					this.currentTime += delta;
+					this.stateMachine.update();
+					this.animationController.update( delta );
+
+				}
+
+			}
+*/
+		</script>
+
+		<script>
+
+			const entityManager = new YUKA.EntityManager(); 
+			(function update() {
+				requestAnimationFrame( update );
+				var delta = clock.getDelta();
+				entityManager.update( delta );
+			})();
+
+		</script>
+
+		<script>
+
+		//	var skeletonHelper;
+		//	var input = TabUI.Character.tab.querySelector("input#local-player-file-input");
+
+			(function( entityManager, input ){
+
+				const IDLE = "idle";
+				const WALK = "walking";
+				const idleState = new YUKA.State();
+				const TPoseState = new YUKA.State();
+				const walkingState = new YUKA.State();
+
+			//	Executed onces on enter to state.
+				idleState.enter = function( entity ){
+					entity.ui.currentState.textContent = IDLE;
+					if ( entity.animationController.motion[ IDLE ] ) {
+						entity.animationController.play(IDLE);
+						entity.animationController.motion[IDLE].reset();
+					}
+				};
+
+			//	Executed continiously during update.
+				idleState.execute = function( entity ){
+					if ( entity.currentTime >= entity.stateDuration ) {
+						entity.currentTime = 0; entity.stateMachine.changeTo( WALK );
+					}
+				};
+
+			//	Executed onces on exit from state.
+				idleState.exit = function( entity ){};
+
+			//
+
+			//	Executed onces on enter to state.
+				walkingState.enter = function( entity ){
+					entity.ui.currentState.textContent = WALK;
+					if ( entity.animationController.motion[ WALK ] ) {
+						entity.animationController.play(WALK);
+						entity.animationController.motion[WALK].reset();
+					}
+				};
+
+			//	Executed continiously during update.
+				walkingState.execute = function( entity ){
+					if ( entity.currentTime >= entity.stateDuration ) {
+						entity.currentTime = 0; entity.stateMachine.changeTo( IDLE );
+					}
+				};
+
+			//	Executed onces on exit from state.
+				walkingState.exit = function( entity ){};
+
+			//
+
+				TPoseState.enter = function( entity ){
+					entity.ui.currentState.textContent = "T-Pose";
+				};
+
+				TPoseState.execute = function( entity ){
+					if ( entity.currentTime >= entity.stateDuration ) {
+						entity.currentTime = 0; entity.stateMachine.changeTo( IDLE );
+					}
+				};
+
+				TPoseState.exit = function( entity ){};
+
+			//
+				
+				watch( input, "onchange", function(prop,event,files){
+
+					if ( !input.files.length ) return;
+					debugMode && console.log( input.files );
+
+					var file = input.files[0]; 
+					var filename = file.name.replace(".fbx", "");
+					var extension = file.name.split( "." ).pop().toLowerCase();
+
+					var reader = new FileReader();
+
+					reader.addEventListener( "progress", function ( e ) {
+						var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+						var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+						console.log( "Loading", filename, size, progress );
+					});
+
+					reader.addEventListener( "load", function ( e ) {
+
+					//	YUKA.
+						entity = new YUKA.GameEntity(); entity.name = filename;
+
+					//	avatar.
+						var data = reader.result;
+						var loader = new THREE.FBXLoader();
+						var group = loader.parse( data );
+
+					//	player.
+						var radius = 0.85; group.position.y = -radius; 
+						var object = new THREE.Object3D(); object.name = filename; 
+						object.add( group ); scene.add( object );
+						entity.object = object;
+
+					//	group.name = filename; 
+					//	scene.add( group ); debugMode && console.log( group );
+
+					//	Character controller.
+						var controller = new MW.CharacterController( object, radius );
+						controller.movementSpeed = 5;
+						controller.center.set(0, 1, 0);
+						controller.maxSlopeGradient = 0.5;
+						world.add( controller );
+						(function reset(){
+							requestAnimationFrame( reset );
+							if ( controller.center.y < -1 ) {
+								controller.center.set(0, 1, 0);
+							}
+						})(); entity.controller = controller;
+
+					//	Animation controller.
+						var animationController = new MW.AnimationController( group );
+						entity.animationController = animationController;
+					//	var animationController = new MW.AnimationController( group );
+					//	animationController.play( Object.keys( animationController.motion )[0] );
+					//	debugMode && console.log( "animations:", Object.keys( animationController.motion ).join() );
+					//	Update animations.
+					//	var clock = new THREE.Clock();
+					//	(function update(){
+					//		requestAnimationFrame( update );
+					//		var delta = clock.getDelta();
+					//		animationController.update( delta );
+					//	})();
+
+					//	Skeleton helper.
+						var skeletonHelper = new THREE.SkeletonHelper(group);
+						skeletonHelper.visible = true; scene.add( skeletonHelper );
+						entity.skeletonHelper = skeletonHelper;
+
+					//	entity UI.
+						entity.ui = { currentState: document.getElementById( "currentState" ) };
+
+						var stateMachine = new YUKA.StateMachine( entity );
+						stateMachine.add( "idle", idleState );
+						stateMachine.add( "walking", walkingState );
+						stateMachine.add( "restPose", TPoseState );
+						stateMachine.changeTo( "restPose" );
+						console.log( "stateMachine:", stateMachine );
+						entity.stateMachine = stateMachine;
+
+						entity.currentTime = 0; // tracks how long the entity is in the current state.
+						entity.stateDuration = 5; // duration of a single state in seconds.
+
+					//	entity Update.
+						entity.update = function(dt){
+							entity.currentTime += dt;
+							entity.stateMachine.update();
+							entity.animationController.update( dt );
+							group.rotation.y = entity.controller.direction + Math.PI;
+						}; console.log( "entity:", entity );
+						
+						entityManager.add( entity ); console.log( "entityManager:", entityManager );
+
+					//	Take Camera controls.
+						takeCameraControls( group, 1 );
+
+					}, false ); // end of reader load eventListener.
+
+					reader.readAsArrayBuffer( file );
+
+				});
+
+			})( entityManager, TabUI.Character.tab.querySelector("input#character-file-input") );
+
+		</script>
+
+		<script>
+
+			(function(input,animations_droplist){
+
+				var k = 0; // important!
+
+				watch( input, "onchange", function(prop, event, files){
+
+					if ( !entity ) return; if ( !input.files.length ) return;
+
+					for ( var i = 0; i < input.files.length; i++ ) {
+
+						setTimeout(function( file ){
+
+							var filename = file.name.replace(".fbx", "");
+							var extension = file.name.split( "." ).pop().toLowerCase();
+
+							var reader = new FileReader();
+
+							reader.addEventListener( "progress", function ( e ) {
+								var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+								var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+								console.log( "Loading", filename, size, progress );
+							});
+
+							reader.addEventListener( "load", function ( e ) {
+
+								var data = reader.result;
+								var loader = new THREE.FBXLoader();
+								var group = loader.parse( data );
+								group.name = filename;
+								console.log( group );
+
+							//	Add animations.
+								console.log( group.animations );
+
+								if ( group.animations.length ) {
+									var mixer = entity.animationController.mixer;
+									var object = entity.animationController.object;
+									var animations = group.animations;
+									animations.forEach( function( clip ){
+										var name = filename; var text = ++k+"."+filename; 
+										entity.animationController.motion[ name ] = mixer.clipAction( clip, object );
+										animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
+										function createOption(text, value){
+											var option = document.createElement("option");
+											option.text = text; option.value = value;
+											return option;
+										}
+									});
+								}
+
+								animations_droplist.value = "";
+
+							}, false );
+
+							reader.readAsArrayBuffer( file );
+
+						}, 0, input.files[i] );
+					}
+
+				});
+
+			})( 
+				TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
+				TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
+			);
+
+		</script>
+
+		<script>
+
+			TabUI.Character.role.classList.add("active");
+			TabUI.Character.tab.classList.add("in","active");
+			TabUI.Character.pill.scrollIntoViewIfNeeded(false);
+
+		</script>
+
+	</body>
+</html>
