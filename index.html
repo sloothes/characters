@@ -393,23 +393,24 @@
 					rightUpleg: intersectLibs.clone(),
 				};
 
-				for ( var name in intersectBodies ){
-					(function( name ){
-					//	intersectObjects.push( intersectBodies[name] ); // debug!
-						var mesh =  intersectBodies[ name ]; scene.add( mesh ); 
-						var entity = new YUKA.GameEntity(); entity.name = name;
-						mesh.matrixAutoUpdate = false; // important!
-						entity.setRenderComponent( mesh, sync ); // important!
-						entityManager.add( entity );
-					})( name );
+				for ( var name in intersectBodies ) {
+					intersectObjects.push( intersectBodies[name] ); // debug!
 				}
 
-			//	scene.add(intersectBodies.body);
-			//	scene.add(intersectBodies.head);
-			//	scene.add(intersectBodies.leftLeg);
-			//	scene.add(intersectBodies.rightLeg);
-			//	scene.add(intersectBodies.leftUpleg);
-			//	scene.add(intersectBodies.rightUpleg);
+				//	(function( name ){
+				//		var mesh =  intersectBodies[ name ]; scene.add( mesh ); 
+				//		var entity = new YUKA.GameEntity(); entity.name = name;
+				//		mesh.matrixAutoUpdate = false; // important!
+				//		entity.setRenderComponent( mesh, sync ); // important!
+				//		entityManager.add( entity );
+				//	})( name );
+
+				scene.add(intersectBodies.body);
+				scene.add(intersectBodies.head);
+				scene.add(intersectBodies.leftLeg);
+				scene.add(intersectBodies.rightLeg);
+				scene.add(intersectBodies.leftUpleg);
+				scene.add(intersectBodies.rightUpleg);
 
 				var prefix = "mixamorig";
 				var hipsBone = group.getObjectByName(prefix+"Hips");
@@ -434,24 +435,26 @@
 				var rightforeBone = group.getObjectByName(prefix+"RightForeArm");
 				var rightindexBone = group.getObjectByName(prefix+"RightHandIndex1");
 
-			//	(function update(){
-				//	requestAnimationFrame( update );
-				//	Position.
-				//	intersectBodies.head.position.setFromMatrixPosition(headBone.matrixWorld);
-				//	intersectBodies.body.position.setFromMatrixPosition(hipsBone.matrixWorld);
-				//	intersectBodies.leftUpleg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
-				//	intersectBodies.rightUpleg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
-				//	intersectBodies.leftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
-				//	intersectBodies.rightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
-				//	Rotation.
-				//	intersectBodies.head.rotation.setFromRotationMatrix(headBone.matrixWorld);
-				//	intersectBodies.body.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
-				//	intersectBodies.leftUpleg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
-				//	intersectBodies.rightUpleg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
-				//	intersectBodies.leftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
-				//	intersectBodies.rightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
-			//	})();
+				(function update(){
+					requestAnimationFrame( update );
 
+				//	Position.
+					intersectBodies.head.position.setFromMatrixPosition(headBone.matrixWorld);
+					intersectBodies.body.position.setFromMatrixPosition(hipsBone.matrixWorld);
+					intersectBodies.leftUpleg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+					intersectBodies.rightUpleg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+					intersectBodies.leftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+					intersectBodies.rightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
+
+				//	Rotation.
+					intersectBodies.head.rotation.setFromRotationMatrix(headBone.matrixWorld);
+					intersectBodies.body.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
+					intersectBodies.leftUpleg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
+					intersectBodies.rightUpleg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
+					intersectBodies.leftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
+					intersectBodies.rightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
+
+				})();
 
 
 
