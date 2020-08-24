@@ -459,25 +459,35 @@
 				var rightindexBone = group.getObjectByName(prefix+"RightHandIndex1");
 
 				(function update(){
+
 					requestAnimationFrame( update );
 
-				//	Position.
-					intersectBodies.head.position.setFromMatrixPosition(headBone.matrixWorld);
-					intersectBodies.body.position.setFromMatrixPosition(hipsBone.matrixWorld);
-					intersectBodies.leftUpleg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
-					intersectBodies.rightUpleg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
-					intersectBodies.leftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
-					intersectBodies.rightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
-
-				//	Rotation.
-					intersectBodies.head.rotation.setFromRotationMatrix(headBone.matrixWorld);
-					intersectBodies.body.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
-					intersectBodies.leftUpleg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
-					intersectBodies.rightUpleg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
-					intersectBodies.leftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
-					intersectBodies.rightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
+					intersectEntities.head.matrixWorld.copy(headBone.matrixWorld);
+					intersectEntities.body.matrixWorld.copy(hipsBone.matrixWorld);
+					intersectEntities.leftLeg.matrixWorld.copy(leftlegBone.matrixWorld);
+					intersectEntities.rightLeg.matrixWorld.copy(rightlegBone.matrixWorld);
+					intersectEntities.leftUpleg.matrixWorld.copy(leftuplegBone.matrixWorld);
+					intersectEntities.rightUpleg.matrixWorld.copy(rightuplegBone.matrixWorld);
 
 				})();
+
+			//	(function update(){
+				//	requestAnimationFrame( update );
+				//	Position.
+				//	intersectBodies.head.position.setFromMatrixPosition(headBone.matrixWorld);
+				//	intersectBodies.body.position.setFromMatrixPosition(hipsBone.matrixWorld);
+				//	intersectBodies.leftUpleg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+				//	intersectBodies.rightUpleg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+				//	intersectBodies.leftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+				//	intersectBodies.rightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
+				//	Rotation.
+				//	intersectBodies.head.rotation.setFromRotationMatrix(headBone.matrixWorld);
+				//	intersectBodies.body.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
+				//	intersectBodies.leftUpleg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
+				//	intersectBodies.rightUpleg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
+				//	intersectBodies.leftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
+				//	intersectBodies.rightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
+			//	})();
 
 
 
