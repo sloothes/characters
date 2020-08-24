@@ -394,12 +394,14 @@
 				};
 
 				for ( var name in intersectBodies ){
-				//	intersectObjects.push( intersectBodies[name] ); // debug!
-					(function( mesh, entity ){
+					(function( name ){
+					//	intersectObjects.push( intersectBodies[name] ); // debug!
+						var mesh =  intersectBodies[ name ]; scene.add( mesh ); 
+						var entity = new YUKA.GameEntity(); entity.name = name;
 						mesh.matrixAutoUpdate = false; // important!
 						entity.setRenderComponent( mesh, sync ); // important!
-						scene.add( mesh ); entityManager.add( entity );
-					})( intersectBodies[name], new YUKA.GameEntity() );
+						entityManager.add( entity );
+					})( name );
 				}
 
 			//	scene.add(intersectBodies.body);
