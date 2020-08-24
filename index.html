@@ -283,6 +283,20 @@
 
 		<script>
 
+			const intersectObjects = [];  // debug!
+
+			renderer.domElement.addEventListener("click", function(e) {
+				var raycaster = new THREE.Raycaster();
+				camera.updateMatrixWorld(); // important!
+				raycaster.setFromCamera( mouse, camera );
+				var intersects = raycaster.intersectObjects( intersectObjects );
+				if ( intersects.length ) console.log( intersects );
+			});
+
+		</script>
+
+		<script>
+
 			var url = "/characters/paim/FemaleBasicLocomotionPack/idle.fbx";
 			var loader = new THREE.FBXLoader();
 			loader.load(url, function( group ){
@@ -357,6 +371,10 @@
 					rightLeg: intersectLibs.clone(),
 					rightUpleg: intersectLibs.clone(),
 				};
+
+				for ( var name in intersectBodies ){
+					intersectObjects.push( intersectBodies[name] ); // debug!
+				}
 
 				scene.add(intersectBodies.body);
 				scene.add(intersectBodies.head);
