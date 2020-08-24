@@ -382,7 +382,7 @@
 					leftLeg: new YUKA.GameEntity(), 
 					leftUpleg: new YUKA.GameEntity(), 
 					rightLeg: new YUKA.GameEntity(), 
-					rightUpleg: new YUKA.GameEntity(), 
+					rightUpleg: new YUKA.GameEntity()
 				};
 
 				intersectHead.geometry.translate(0,0.1,0);
@@ -406,6 +406,8 @@
 				scene.add(intersectEntities.leftUpleg._renderComponent);
 				scene.add(intersectEntities.rightLeg._renderComponent);
 				scene.add(intersectEntities.rightUpleg._renderComponent);
+
+				debugMode && console.log("intersectEntities:",intersectEntities);
 
 			//	var intersectBodies = {
 			//		head: intersectHead.clone(), 
