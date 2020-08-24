@@ -375,42 +375,65 @@
 					new THREE.BoxGeometry(0.1,0.5,0.1),
 					new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
 				);
+			
+				var intersectEntities = {
+					head: new YUKA.GameEntity(), 
+					body: new YUKA.GameEntity(), 
+					leftLeg: new YUKA.GameEntity(), 
+					leftUpleg: new YUKA.GameEntity(), 
+					rightLeg: new YUKA.GameEntity(), 
+					rightUpleg: new YUKA.GameEntity(), 
+				};
 
 				intersectHead.geometry.translate(0,0.1,0);
 				intersectBody.geometry.translate(0,0.25,0);
 				intersectLibs.geometry.translate(0,0.25,0);
 
-			//	intersectHead.matrixAutoUpdate = false; // important!
-			//	intersectBody.matrixAutoUpdate = false; // important!
-			//	intersectLibs.matrixAutoUpdate = false; // important!
+				intersectHead.matrixAutoUpdate = false; // important!
+				intersectBody.matrixAutoUpdate = false; // important!
+				intersectLibs.matrixAutoUpdate = false; // important!
 
-				var intersectBodies = {
-					head: intersectHead.clone(), 
-					body: intersectBody.clone(),
-					leftLeg: intersectLibs.clone(),
-					leftUpleg: intersectLibs.clone(),
-					rightLeg: intersectLibs.clone(),
-					rightUpleg: intersectLibs.clone(),
-				};
+				intersectEntities.head.setRenderComponent(intersectHead.clone(), sync);
+				intersectEntities.body.setRenderComponent(intersectBody.clone(), sync);
+				intersectEntities.leftLeg.setRenderComponent(intersectLibs.clone(), sync);
+				intersectEntities.leftUpleg.setRenderComponent(intersectLibs.clone(), sync);
+				intersectEntities.rightLeg.setRenderComponent(intersectLibs.clone(), sync);
+				intersectEntities.rightUpleg.setRenderComponent(intersectLibs.clone(), sync);
 
-				for ( var name in intersectBodies ) {
-					intersectObjects.push( intersectBodies[name] ); // debug!
-				}
+				scene.add(intersectEntities.head._renderComponent);
+				scene.add(intersectEntities.body._renderComponent);
+				scene.add(intersectEntities.leftLeg._renderComponent);
+				scene.add(intersectEntities.leftUpleg._renderComponent);
+				scene.add(intersectEntities.rightLeg._renderComponent);
+				scene.add(intersectEntities.rightUpleg._renderComponent);
 
-				//	(function( name ){
-				//		var mesh =  intersectBodies[ name ]; scene.add( mesh ); 
-				//		var entity = new YUKA.GameEntity(); entity.name = name;
-				//		mesh.matrixAutoUpdate = false; // important!
-				//		entity.setRenderComponent( mesh, sync ); // important!
-				//		entityManager.add( entity );
-				//	})( name );
+			//	var intersectBodies = {
+			//		head: intersectHead.clone(), 
+			//		body: intersectBody.clone(),
+			//		leftLeg: intersectLibs.clone(),
+			//		leftUpleg: intersectLibs.clone(),
+			//		rightLeg: intersectLibs.clone(),
+			//		rightUpleg: intersectLibs.clone(),
+			//	};
 
-				scene.add(intersectBodies.body);
-				scene.add(intersectBodies.head);
-				scene.add(intersectBodies.leftLeg);
-				scene.add(intersectBodies.rightLeg);
-				scene.add(intersectBodies.leftUpleg);
-				scene.add(intersectBodies.rightUpleg);
+			//	for ( var name in intersectBodies ) {
+			//		intersectObjects.push( intersectBodies[name] ); // debug!
+			//	}
+
+			//	(function( name ){
+			//		var mesh =  intersectBodies[ name ]; scene.add( mesh ); 
+			//		var entity = new YUKA.GameEntity(); entity.name = name;
+			//		mesh.matrixAutoUpdate = false; // important!
+			//		entity.setRenderComponent( mesh, sync ); // important!
+			//		entityManager.add( entity );
+			//	})( name );
+
+			//	scene.add(intersectBodies.body);
+			//	scene.add(intersectBodies.head);
+			//	scene.add(intersectBodies.leftLeg);
+			//	scene.add(intersectBodies.rightLeg);
+			//	scene.add(intersectBodies.leftUpleg);
+			//	scene.add(intersectBodies.rightUpleg);
 
 				var prefix = "mixamorig";
 				var hipsBone = group.getObjectByName(prefix+"Hips");
@@ -482,6 +505,13 @@
 
 				entity.health = 100;
 				entity.radius = radius;
+
+				entity.add(intersectEntities.head);
+				entity.add(intersectEntities.body);
+				entity.add(intersectEntities.leftLeg);
+				entity.add(intersectEntities.leftUpleg);
+				entity.add(intersectEntities.rightLeg);
+				entity.add(intersectEntities.rightUpleg);
 
 				if ( object ) entity.object = object; // optional.
 				if ( radiusHelper ) entity.radiusHelper = radiusHelper; // debug!
