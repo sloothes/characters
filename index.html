@@ -464,12 +464,12 @@
 
 					requestAnimationFrame( update );
 
-					intersectEntities.head.matrixWorld.copy(headBone.matrixWorld);
-				//	intersectEntities.body.matrixWorld.copy(hipsBone.matrixWorld);
-				//	intersectEntities.leftLeg.matrixWorld.copy(leftlegBone.matrixWorld);
-				//	intersectEntities.rightLeg.matrixWorld.copy(rightlegBone.matrixWorld);
-				//	intersectEntities.leftUpleg.matrixWorld.copy(leftuplegBone.matrixWorld);
-				//	intersectEntities.rightUpleg.matrixWorld.copy(rightuplegBone.matrixWorld);
+					intersectEntities.head.worldMatrix.copy(headBone.matrixWorld);
+					intersectEntities.body.worldMatrix.copy(hipsBone.matrixWorld);
+					intersectEntities.leftLeg.worldMatrix.copy(leftlegBone.matrixWorld);
+					intersectEntities.rightLeg.worldMatrix.copy(rightlegBone.matrixWorld);
+					intersectEntities.leftUpleg.worldMatrix.copy(leftuplegBone.matrixWorld);
+					intersectEntities.rightUpleg.worldMatrix.copy(rightuplegBone.matrixWorld);
 
 				})();
 
