@@ -283,17 +283,18 @@
 
 		<script>
 
-		//	var entity = new YUKA.GameEntity();
-		//	debugMode && console.log("entity:", entity);
+			var url = "/characters/paim/Paim.fbx";
+			var loader = new THREE.FBXLoader();
+			loader.load(url, function( group ){
 
-			(function(entity, group){
+				var radius = 1; // important!
 
-				var object = new THREE.Object3D(); // player container.
-				object.name = "character"; 
-				scene.add( object );
+			//	Player container.
+				var object = new THREE.Object3D();
+				object.name = "character"; scene.add( object );
 
 			//	Add group to scene.
-				var radius = 1; group.position.y = -radius; object.add( group );
+				if ( group ) { group.position.y = -radius; object.add( group ); }
 
 			//	Character controller.
 				var characterController = new MW.CharacterController( object, radius );
@@ -311,20 +312,23 @@
 					if ( value < -1 ) characterController.center.set(0, 1, 0);
 				});
 
-			//	Animation controller.
-				var animationController = new MW.AnimationController( group );
+				if ( group ) { 
 
-			//	Update animations.
-				var clock = new THREE.Clock();
-				(function update(){
-					requestAnimationFrame( update );
-					var delta = clock.getDelta();
-					animationController.update( delta );
-				})();
+				//	Animation controller.
+					var animationController = new MW.AnimationController( group );
 
-			//	Skeleton helper.
-				var skeletonHelper = new THREE.SkeletonHelper(group);
-				skeletonHelper.visible = true; scene.add( skeletonHelper );
+				//	Update animations.
+					var clock = new THREE.Clock();
+					(function update(){
+						requestAnimationFrame( update );
+						var delta = clock.getDelta();
+						animationController.update( delta );
+					})();
+
+				//	Skeleton helper.
+					var skeletonHelper = new THREE.SkeletonHelper(group);
+					skeletonHelper.visible = true; scene.add( skeletonHelper );
+				}
 
 			//	Radius helper.
 				var radiusHelper = (function( r ){
@@ -343,17 +347,19 @@
 
 
 
+			//	YUKA.
 
+				var entity = new YUKA.GameEntity();
 
-				entity.object = object; // optional.
-				entity.characterController = characterController;
-				entity.animationController = animationController;
-				entity.skeletonHelper = skeletonHelper; // debug!
-				entity.radiusHelper = radiusHelper; // debug!
+				if ( object ) entity.object = object; // optional.
+				if ( radiusHelper ) entity.radiusHelper = radiusHelper; // debug!
+				if ( skeletonHelper ) entity.skeletonHelper = skeletonHelper; // debug!
+				if ( characterController ) entity.characterController = characterController;
+				if ( animationController ) entity.animationController = animationController;
 
 				debugMode && console.log("entity:", entity);
 
-			})( new YUKA.GameEntity() )
+			});
 
 		</script>
 
