@@ -312,23 +312,112 @@
 					if ( value < -1 ) characterController.center.set(0, 1, 0);
 				});
 
-				if ( group ) { 
+			//	Animation controller.
+				var animationController = new MW.AnimationController( group );
 
-				//	Animation controller.
-					var animationController = new MW.AnimationController( group );
+			//	Update animations.
+				var clock = new THREE.Clock();
+				(function update(){
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					animationController.update( delta );
+				})();
 
-				//	Update animations.
-					var clock = new THREE.Clock();
-					(function update(){
-						requestAnimationFrame( update );
-						var delta = clock.getDelta();
-						animationController.update( delta );
-					})();
+			//	Skeleton helper.
+				var skeletonHelper = new THREE.SkeletonHelper(group);
+				skeletonHelper.visible = true; scene.add( skeletonHelper );
 
-				//	Skeleton helper.
-					var skeletonHelper = new THREE.SkeletonHelper(group);
-					skeletonHelper.visible = true; scene.add( skeletonHelper );
-				}
+			//	Intersect bodies.
+
+				var intersectHead = new THREE.Mesh(
+					new THREE.BoxGeometry(0.2,0.2,0.2),
+					new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+				); 
+
+				var intersectBody = new THREE.Mesh(
+					new THREE.BoxGeometry(0.3,0.5,0.3),
+					new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+				);
+
+				var intersectLibs = new THREE.Mesh(
+					new THREE.BoxGeometry(0.1,0.5,0.1),
+					new THREE.MeshNormalMaterial({transparent:true,opacity:0.5})
+				);
+
+				intersectHead.geometry.translate(0,0.1,0);
+				intersectBody.geometry.translate(0,0.25,0);
+				intersectLibs.geometry.translate(0,0.25,0);
+
+				var intersectBodies = {
+					head: intersectHead.clone(), 
+					body: intersectBody.clone(),
+					leftLeg: intersectLibs.clone(),
+					leftUpleg: intersectLibs.clone(),
+					rightLeg: intersectLibs.clone(),
+					rightUpleg: intersectLibs.clone(),
+				};
+
+				scene.add(intersectBodies.body);
+				scene.add(intersectBodies.head);
+				scene.add(intersectBodies.leftLeg);
+				scene.add(intersectBodies.rightLeg);
+				scene.add(intersectBodies.leftUpleg);
+				scene.add(intersectBodies.rightUpleg);
+
+				var prefix = "mixamorig";
+				var hipsBone = group.getObjectByName(prefix+"Hips");
+				var headBone = group.getObjectByName(prefix+"Head");
+				var bodyBone = group.getObjectByName(prefix+"Spine1");
+
+				var leftlegBone = group.getObjectByName(prefix+"LeftLeg");
+				var leftarmBone = group.getObjectByName(prefix+"LeftArm");
+				var lefthandBone = group.getObjectByName(prefix+"LeftHand");
+				var leftfootBone = group.getObjectByName(prefix+"LeftFoot");
+				var leftuplegBone = group.getObjectByName(prefix+"LeftUpLeg");
+				var lefttoeBone = group.getObjectByName(prefix+"LeftToeBase");
+				var leftforeBone = group.getObjectByName(prefix+"LeftForeArm");
+				var leftindexBone = group.getObjectByName(prefix+"LeftHandIndex1");
+
+				var rightlegBone = group.getObjectByName(prefix+"RightLeg");
+				var rightarmBone = group.getObjectByName(prefix+"RightArm");
+				var righthandBone = group.getObjectByName(prefix+"RightHand");
+				var rightfootBone = group.getObjectByName(prefix+"RightFoot");
+				var rightuplegBone = group.getObjectByName(prefix+"RightUpLeg");
+				var righttoeBone = group.getObjectByName(prefix+"RightToeBase");
+				var rightforeBone = group.getObjectByName(prefix+"RightForeArm");
+				var rightindexBone = group.getObjectByName(prefix+"RightHandIndex1");
+
+				(function update(){
+
+					requestAnimationFrame( update );
+
+				//	Position.
+					intersectBodies.head.position.setFromMatrixPosition(headBone.matrixWorld);
+					intersectBodies.body.position.setFromMatrixPosition(hipsBone.matrixWorld);
+					intersectBodies.leftUpleg.position.setFromMatrixPosition(leftuplegBone.matrixWorld);
+					intersectBodies.rightUpleg.position.setFromMatrixPosition(rightuplegBone.matrixWorld);
+					intersectBodies.leftLeg.position.setFromMatrixPosition(leftlegBone.matrixWorld);
+					intersectBodies.rightLeg.position.setFromMatrixPosition(rightlegBone.matrixWorld);
+
+				//	Rotation.
+					intersectBodies.head.rotation.setFromRotationMatrix(headBone.matrixWorld);
+					intersectBodies.body.rotation.setFromRotationMatrix(hipsBone.matrixWorld);
+					intersectBodies.leftUpleg.rotation.setFromRotationMatrix(leftuplegBone.matrixWorld);
+					intersectBodies.rightUpleg.rotation.setFromRotationMatrix(rightuplegBone.matrixWorld);
+					intersectBodies.leftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
+					intersectBodies.rightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
+
+				})();
+
+
+
+
+
+
+
+
+
+
 
 			//	Radius helper.
 				var radiusHelper = (function( r ){
@@ -341,15 +430,11 @@
 				})( radius ); 
 				object.add( radiusHelper ); 
 
-
-
-
-
-
-
 			//	YUKA.
 
 				var entity = new YUKA.GameEntity();
+
+				entity.health = 100;
 
 				if ( object ) entity.object = object; // optional.
 				if ( radiusHelper ) entity.radiusHelper = radiusHelper; // debug!
