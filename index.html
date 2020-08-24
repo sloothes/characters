@@ -283,6 +283,23 @@
 
 		<script>
 
+			const time = new YUKA.Time();
+			const entityManager = new YUKA.EntityManager();
+
+			(function update(){
+				requestAnimationFrame( update );
+				var dt = time.update().getDelta();
+				entityManager.update(dt);
+			})();
+
+			function sync( entity, renderComponent ) {
+				renderComponent.matrix.copy( entity.worldMatrix );
+			}
+
+		</script>
+
+		<script>
+
 			const intersectObjects = [];  // debug!
 
 			renderer.domElement.addEventListener("click", function(e) {
