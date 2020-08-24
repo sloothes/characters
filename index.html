@@ -380,6 +380,10 @@
 				intersectBody.geometry.translate(0,0.25,0);
 				intersectLibs.geometry.translate(0,0.25,0);
 
+				intersectHead.matrixAutoUpdate = false; // important!
+				intersectBody.matrixAutoUpdate = false; // important!
+				intersectLibs.matrixAutoUpdate = false; // important!
+
 				var intersectBodies = {
 					head: intersectHead.clone(), 
 					body: intersectBody.clone(),
@@ -390,7 +394,12 @@
 				};
 
 				for ( var name in intersectBodies ){
-					intersectObjects.push( intersectBodies[name] ); // debug!
+				//	intersectObjects.push( intersectBodies[name] ); // debug!
+					(function( mesh, entity ){
+						mesh.matrixAutoUpdate = false; // important!
+						entity.setRenderComponent( mesh, sync );
+						entityManager.add( entity ); // important!
+					})( intersectBodies[name], new YUKA.GameEntity() );
 				}
 
 				scene.add(intersectBodies.body);
