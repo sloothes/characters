@@ -314,6 +314,7 @@
 
 			//	Animation controller.
 				var animationController = new MW.AnimationController( group );
+				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
 
 			//	Update animations.
 				var clock = new THREE.Clock();
