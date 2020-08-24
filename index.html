@@ -518,12 +518,12 @@
 				entity.health = 100;
 				entity.radius = radius;
 
-				entity.add(intersectEntities.head);
-				entity.add(intersectEntities.body);
-				entity.add(intersectEntities.leftLeg);
-				entity.add(intersectEntities.leftUpleg);
-				entity.add(intersectEntities.rightLeg);
-				entity.add(intersectEntities.rightUpleg);
+				entityManager.add(intersectEntities.head);
+				entityManager.add(intersectEntities.body);
+				entityManager.add(intersectEntities.leftLeg);
+				entityManager.add(intersectEntities.leftUpleg);
+				entityManager.add(intersectEntities.rightLeg);
+				entityManager.add(intersectEntities.rightUpleg);
 
 				if ( object ) entity.object = object; // optional.
 				if ( radiusHelper ) entity.radiusHelper = radiusHelper; // debug!
