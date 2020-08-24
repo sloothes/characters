@@ -332,7 +332,7 @@
 
 			//	Radius helper.
 				var radiusHelper = (function( r ){
-					var sphere   = new THREE.SphereGeometry( r, 8, 6 );
+					var sphere   = new THREE.SphereGeometry( r, 10, 6 );
 					var geometry = new THREE.EdgesGeometry( sphere );
 					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
 					var segments = new THREE.LineSegments( geometry, material );
