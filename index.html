@@ -433,12 +433,13 @@
 			//	YUKA.
 
 				var entity = new YUKA.GameEntity();
-
 				entity.health = 100;
+				entity.radius = radius;
 
 				if ( object ) entity.object = object; // optional.
 				if ( radiusHelper ) entity.radiusHelper = radiusHelper; // debug!
 				if ( skeletonHelper ) entity.skeletonHelper = skeletonHelper; // debug!
+				if ( intersectBodies ) entity.intersectBodies = intersectBodies; // debug!
 				if ( characterController ) entity.characterController = characterController;
 				if ( animationController ) entity.animationController = animationController;
 
