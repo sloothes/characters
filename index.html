@@ -515,6 +515,74 @@
 				TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
 			);
 
+			(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
+
+				var interval, currentMotionName; 
+
+				function onTimescaleMouseDown(){
+					clearTimeout( interval ); // important!
+					interval = setTimeout( function update( button, step, min, max, name, animationController ){
+						if ( !name ) return clearTimeout( interval );
+						var value = animationController.motion[ name ].timeScale;
+						if ( isNaN(value) ) return clearTimeout( interval ); // important!
+						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+						if ( isNaN(value) ) return clearTimeout( interval ); // important!
+						scale_input.value = value.toFixed(2); animationController.motion[ name ].timeScale = value; 
+						interval = setTimeout( update, 20, button, step, min, max, name, animationController );
+					}, 500, this, 0.01, -1, 1, currentMotionName, character.animationController );
+				}
+
+				function onTimescaleMouseClick(){
+					clearTimeout( interval ); if ( !currentMotionName ) return;
+					(function( button, step, min, max, name, animationController ){
+						if ( !name ) return; if ( !animationController ) return;
+						var value = animationController.motion[ name ].timeScale; 
+						if ( isNaN(value) ) return; // important!
+						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+						if ( isNaN(value) ) return; scale_input.value = value.toFixed(2);
+						animationController.motion[ name ].timeScale = value; 
+					})( this, 0.01, -1, 1, currentMotionName, character.animationController );
+				}
+
+			//	TimeScale inputs.
+
+				watch( character.animationController, "currentMotionName", function(prop,action,value){
+					scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown );
+					scale_decrease.removeEventListener( "mousedown", onTimescaleMouseDown );
+					scale_increase.removeEventListener( "click", onTimescaleMouseClick );
+					scale_decrease.removeEventListener( "click", onTimescaleMouseClick );
+				});
+
+				watch( character.animationController, "currentMotionName", function(prop,action,value){
+					currentMotionName = value; character.animationController.motion[ value ].reset();
+					scale_input.value = character.animationController.motion[value].timeScale.toFixed(2);
+				});
+
+				watch( character.animationController, "currentMotionName", function(prop,action,value){
+					scale_increase.addEventListener( "mousedown", onTimescaleMouseDown );
+					scale_decrease.addEventListener( "mousedown", onTimescaleMouseDown );
+					scale_increase.addEventListener( "click", onTimescaleMouseClick );
+					scale_decrease.addEventListener( "click", onTimescaleMouseClick );
+				});
+
+			//	Pause button.
+
+				watch(pause_button, "onclick", function(prop,event,value){
+					animations_droplist.value = "";
+					character.animationController.play("mixamo.com");
+				});
+
+			})( 
+				TabUI.Character.tab.querySelector("input#character-file-input"),       // input,
+				TabUI.Character.tab.querySelector("div#animations-idle-button"),       // pause_button,
+				TabUI.Character.tab.querySelector("select#animations-droplist"),       // animations_droplist.
+				TabUI.Character.tab.querySelector("li#animations-timescale-increase"), // scale_increase,
+				TabUI.Character.tab.querySelector("li#animations-timescale-decrease"), // scale_decrease,
+				TabUI.Character.tab.querySelector("input#animations-timescale-input"), // scale_input,
+			);
+
 		//	Animation droplist.
 
 			(function(animations_droplist){
