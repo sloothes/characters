@@ -441,158 +441,154 @@
 				character.animationController = animationController;
 				character.characterController = characterController;
 
-			});
+				(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
 
-		</script>
+					var interval, currentMotionName; 
 
-		<script>
-
-			(function(input,animations_droplist){
-
-				var k = 0; // important!
-
-				watch( input, "onchange", function(prop, event, files){
-
-					if ( !input.files.length ) return;
-					if ( !character.animationController ) return; 
-
-					for ( var i = 0; i < input.files.length; i++ ) {
-
-						setTimeout(function( file ){
-
-							var filename = file.name.replace(".fbx", "");
-							var extension = file.name.split( "." ).pop().toLowerCase();
-
-							var reader = new FileReader();
-
-							reader.addEventListener( "progress", function ( e ) {
-								var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
-								var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
-								console.log( "Loading", filename, size, progress );
-							});
-
-							reader.addEventListener( "load", function ( e ) {
-
-								var data = reader.result;
-								var loader = new THREE.FBXLoader();
-								var group = loader.parse( data );
-								group.name = filename;
-								console.log( group );
-
-							//	Add animations.
-								console.log( group.animations );
-
-								if ( group.animations.length ) {
-									var mixer = character.animationController.mixer;
-									var object = character.animationController.object;
-									var animations = group.animations;
-								//	var animations_droplist = tab.querySelector("select#animations-droplist");
-									animations.forEach( function( clip ){
-										var name = filename; var text = ++k+"."+filename; 
-										character.animationController.motion[ name ] = mixer.clipAction( clip, object );
-										animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
-										function createOption(text, value){
-											var option = document.createElement("option");
-											option.text = text; option.value = value;
-											return option;
-										}
-									});
-								}
-
-								animations_droplist.value = "";
-
-							}, false );
-
-							reader.readAsArrayBuffer( file );
-
-						}, 0, input.files[i] );
+					function onTimescaleMouseDown(){
+						clearTimeout( interval ); // important!
+						interval = setTimeout( function update( button, step, min, max, name, animationController ){
+							if ( !name ) return clearTimeout( interval );
+							var value = animationController.motion[ name ].timeScale;
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+							if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							scale_input.value = value.toFixed(2); animationController.motion[ name ].timeScale = value; 
+							interval = setTimeout( update, 20, button, step, min, max, name, animationController );
+						}, 500, this, 0.01, -1, 1, currentMotionName, character.animationController );
 					}
 
-				});
+					function onTimescaleMouseClick(){
+						clearTimeout( interval ); if ( !currentMotionName ) return;
+						(function( button, step, min, max, name, animationController ){
+							if ( !name ) return; if ( !animationController ) return;
+							var value = animationController.motion[ name ].timeScale; 
+							if ( isNaN(value) ) return; // important!
+							if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+							if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+							if ( isNaN(value) ) return; scale_input.value = value.toFixed(2);
+							animationController.motion[ name ].timeScale = value; 
+						})( this, 0.01, -1, 1, currentMotionName, character.animationController );
+					}
 
-			})(
-				TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
-				TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
-			);
+				//	TimeScale inputs.
 
-			(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
+					watch( character.animationController, "currentMotionName", function(prop,action,value){
+						scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown );
+						scale_decrease.removeEventListener( "mousedown", onTimescaleMouseDown );
+						scale_increase.removeEventListener( "click", onTimescaleMouseClick );
+						scale_decrease.removeEventListener( "click", onTimescaleMouseClick );
+					});
 
-				var interval, currentMotionName; 
+					watch( character.animationController, "currentMotionName", function(prop,action,value){
+						currentMotionName = value; character.animationController.motion[ value ].reset();
+						scale_input.value = character.animationController.motion[value].timeScale.toFixed(2);
+					});
 
-				function onTimescaleMouseDown(){
-					clearTimeout( interval ); // important!
-					interval = setTimeout( function update( button, step, min, max, name, animationController ){
-						if ( !name ) return clearTimeout( interval );
-						var value = animationController.motion[ name ].timeScale;
-						if ( isNaN(value) ) return clearTimeout( interval ); // important!
-						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
-						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
-						if ( isNaN(value) ) return clearTimeout( interval ); // important!
-						scale_input.value = value.toFixed(2); animationController.motion[ name ].timeScale = value; 
-						interval = setTimeout( update, 20, button, step, min, max, name, animationController );
-					}, 500, this, 0.01, -1, 1, currentMotionName, character.animationController );
-				}
+					watch( character.animationController, "currentMotionName", function(prop,action,value){
+						scale_increase.addEventListener( "mousedown", onTimescaleMouseDown );
+						scale_decrease.addEventListener( "mousedown", onTimescaleMouseDown );
+						scale_increase.addEventListener( "click", onTimescaleMouseClick );
+						scale_decrease.addEventListener( "click", onTimescaleMouseClick );
+					});
 
-				function onTimescaleMouseClick(){
-					clearTimeout( interval ); if ( !currentMotionName ) return;
-					(function( button, step, min, max, name, animationController ){
-						if ( !name ) return; if ( !animationController ) return;
-						var value = animationController.motion[ name ].timeScale; 
-						if ( isNaN(value) ) return; // important!
-						if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
-						if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
-						if ( isNaN(value) ) return; scale_input.value = value.toFixed(2);
-						animationController.motion[ name ].timeScale = value; 
-					})( this, 0.01, -1, 1, currentMotionName, character.animationController );
-				}
+				//	Pause button.
 
-			//	TimeScale inputs.
+					watch(pause_button, "onclick", function(prop,event,value){
+						animations_droplist.value = "";
+						character.animationController.play("mixamo.com");
+					});
 
-				watch( character.animationController, "currentMotionName", function(prop,action,value){
-					scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown );
-					scale_decrease.removeEventListener( "mousedown", onTimescaleMouseDown );
-					scale_increase.removeEventListener( "click", onTimescaleMouseClick );
-					scale_decrease.removeEventListener( "click", onTimescaleMouseClick );
-				});
+				})( 
+					TabUI.Character.tab.querySelector("input#character-file-input"),       // input,
+					TabUI.Character.tab.querySelector("div#animations-idle-button"),       // pause_button,
+					TabUI.Character.tab.querySelector("select#animations-droplist"),       // animations_droplist.
+					TabUI.Character.tab.querySelector("li#animations-timescale-increase"), // scale_increase,
+					TabUI.Character.tab.querySelector("li#animations-timescale-decrease"), // scale_decrease,
+					TabUI.Character.tab.querySelector("input#animations-timescale-input")  // scale_input,
+				);
 
-				watch( character.animationController, "currentMotionName", function(prop,action,value){
-					currentMotionName = value; character.animationController.motion[ value ].reset();
-					scale_input.value = character.animationController.motion[value].timeScale.toFixed(2);
-				});
+				(function(input,animations_droplist){
 
-				watch( character.animationController, "currentMotionName", function(prop,action,value){
-					scale_increase.addEventListener( "mousedown", onTimescaleMouseDown );
-					scale_decrease.addEventListener( "mousedown", onTimescaleMouseDown );
-					scale_increase.addEventListener( "click", onTimescaleMouseClick );
-					scale_decrease.addEventListener( "click", onTimescaleMouseClick );
-				});
+					var k = 0; // important!
 
-			//	Pause button.
+					watch( input, "onchange", function(prop, event, files){
 
-				watch(pause_button, "onclick", function(prop,event,value){
-					animations_droplist.value = "";
-					character.animationController.play("mixamo.com");
-				});
+						if ( !input.files.length ) return;
+						if ( !character.animationController ) return; 
 
-			})( 
-				TabUI.Character.tab.querySelector("input#character-file-input"),       // input,
-				TabUI.Character.tab.querySelector("div#animations-idle-button"),       // pause_button,
-				TabUI.Character.tab.querySelector("select#animations-droplist"),       // animations_droplist.
-				TabUI.Character.tab.querySelector("li#animations-timescale-increase"), // scale_increase,
-				TabUI.Character.tab.querySelector("li#animations-timescale-decrease"), // scale_decrease,
-				TabUI.Character.tab.querySelector("input#animations-timescale-input")  // scale_input,
-			);
+						for ( var i = 0; i < input.files.length; i++ ) {
 
-		//	Animation droplist.
+							setTimeout(function( file ){
 
-			(function(animations_droplist){
+								var filename = file.name.replace(".fbx", "");
+								var extension = file.name.split( "." ).pop().toLowerCase();
 
-				watch( animations_droplist, "onchange", function(prop,event,name){
-					if ( !(character && character.animationController) ) return;
-					character.animationController.play( name );
-				});
+								var reader = new FileReader();
 
-			})( TabUI.Character.tab.querySelector("select#animations-droplist") );
+								reader.addEventListener( "progress", function ( e ) {
+									var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+									var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+									console.log( "Loading", filename, size, progress );
+								});
+
+								reader.addEventListener( "load", function ( e ) {
+
+									var data = reader.result;
+									var loader = new THREE.FBXLoader();
+									var group = loader.parse( data );
+									group.name = filename;
+									console.log( group );
+
+								//	Add animations.
+									console.log( group.animations );
+
+									if ( group.animations.length ) {
+										var mixer = character.animationController.mixer;
+										var object = character.animationController.object;
+										var animations = group.animations;
+									//	var animations_droplist = tab.querySelector("select#animations-droplist");
+										animations.forEach( function( clip ){
+											var name = filename; var text = ++k+"."+filename; 
+											character.animationController.motion[ name ] = mixer.clipAction( clip, object );
+											animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
+											function createOption(text, value){
+												var option = document.createElement("option");
+												option.text = text; option.value = value;
+												return option;
+											}
+										});
+									}
+
+									animations_droplist.value = "";
+
+								}, false );
+
+								reader.readAsArrayBuffer( file );
+
+							}, 0, input.files[i] );
+						}
+
+					});
+
+				})(
+					TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
+					TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
+				);
+
+			//	Animation droplist.
+
+				(function(animations_droplist){
+
+					watch( animations_droplist, "onchange", function(prop,event,name){
+						if ( !(character && character.animationController) ) return;
+						character.animationController.play( name );
+					});
+
+				})( TabUI.Character.tab.querySelector("select#animations-droplist") );
+
+			});
 
 		</script>
 
