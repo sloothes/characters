@@ -571,13 +571,14 @@
 										});
 									}
 
-									animations_droplist.value = "";
-
 								}, false );
 
 								reader.readAsArrayBuffer( file );
 
 							}, 0, input.files[i] );
+
+							setTimeout(function(){ animations_droplist && animations_droplist.value = ""; )};
+
 						}
 
 					});
