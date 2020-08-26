@@ -332,6 +332,14 @@
 				var animationController = new MW.AnimationController( group );
 				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
 
+				animationController.mixer.addEventListener("end", function(e){
+					debugMode && console.log("end event:", e);
+				});
+
+				animationController.mixer.addEventListener("loop", function(e){
+					debugMode && console.log("loop event:", e);
+				});
+
 			//	Update animations.
 				var clock = new THREE.Clock();
 				(function update(){
