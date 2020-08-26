@@ -337,11 +337,11 @@
 				} 
 
 				animationController.mixer.addEventListener("end", function(e){
-					debugMode && console.log("end event:", e);
+					debugMode && console.log("end event:", e); // debug!
 				});
 
 				animationController.mixer.addEventListener("loop", function(e){
-					debugMode && console.log("loop event:", e);
+					debugMode && console.log("loop event:", e); // debug!
 				});
 
 				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
