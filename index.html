@@ -297,6 +297,8 @@
 
 		<script>
 
+			const character = {};
+
 			var url = "/characters/paim/Poses/MaleStandingPose.fbx";
 			var loader = new THREE.FBXLoader();
 			loader.load(url, function( group ){
@@ -436,7 +438,92 @@
 
 				object.add( radiusHelper ); 
 
+				character.animationController = animationController;
+				character.characterController = characterController;
+				
 			});
+
+		</script>
+
+		<script>
+
+			(function(input,animations_droplist){
+
+				var k = 0; // important!
+
+				watch( input, "onchange", function(prop, event, files){
+
+					if ( !character ) return; if ( !input.files.length ) return;
+
+					for ( var i = 0; i < input.files.length; i++ ) {
+
+						setTimeout(function( file ){
+
+							var filename = file.name.replace(".fbx", "");
+							var extension = file.name.split( "." ).pop().toLowerCase();
+
+							var reader = new FileReader();
+
+							reader.addEventListener( "progress", function ( e ) {
+								var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+								var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+								console.log( "Loading", filename, size, progress );
+							});
+
+							reader.addEventListener( "load", function ( e ) {
+
+								var data = reader.result;
+								var loader = new THREE.FBXLoader();
+								var group = loader.parse( data );
+								group.name = filename;
+								console.log( group );
+
+							//	Add animations.
+								console.log( group.animations );
+
+								if ( group.animations.length ) {
+									var mixer = character.animationController.mixer;
+									var object = character.animationController.object;
+									var animations = group.animations;
+								//	var animations_droplist = tab.querySelector("select#animations-droplist");
+									animations.forEach( function( clip ){
+										var name = filename; var text = ++k+"."+filename; 
+										character.animationController.motion[ name ] = mixer.clipAction( clip, object );
+										animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
+										function createOption(text, value){
+											var option = document.createElement("option");
+											option.text = text; option.value = value;
+											return option;
+										}
+									});
+								}
+
+								animations_droplist.value = "";
+
+							}, false );
+
+							reader.readAsArrayBuffer( file );
+
+						}, 0, input.files[i] );
+					}
+
+				});
+
+			})(
+				TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
+				TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
+			);
+
+		//	Animation droplist.
+
+			(function(animations_droplist){
+
+				watch( animations_droplist, "onchange", function(prop,event,name){
+					if ( !(character && character.animationController) ) return;
+					character.animationController.play( name );
+				});
+
+			})( TabUI.Character.tab.querySelector("select#animations-droplist") );
 
 		</script>
 
