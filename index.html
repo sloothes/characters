@@ -330,7 +330,11 @@
 
 			//	Animation controller.
 				var animationController = new MW.AnimationController( group );
-				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
+
+				for (var name in animationController.motion) {
+					animationController.motion[ name ].setLoop( THREE.LoopOnce ); // important?
+					animationController.motion[ name ].clampWhenFinished = true;  // important?
+				} 
 
 				animationController.mixer.addEventListener("end", function(e){
 					debugMode && console.log("end event:", e);
@@ -339,6 +343,8 @@
 				animationController.mixer.addEventListener("loop", function(e){
 					debugMode && console.log("loop event:", e);
 				});
+
+				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
 
 			//	Update animations.
 				var clock = new THREE.Clock();
