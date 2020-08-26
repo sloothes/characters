@@ -336,8 +336,8 @@
 					animationController.motion[ name ].clampWhenFinished = true;  // important?
 				} 
 
-				animationController.mixer.addEventListener("end", function(e){
-					debugMode && console.log("end event:", e); // debug!
+				animationController.mixer.addEventListener("finished", function(e){
+					debugMode && console.log("finished event:", e); // debug!
 				});
 
 				animationController.mixer.addEventListener("loop", function(e){
