@@ -560,6 +560,8 @@
 										animations.forEach( function( clip ){
 											var name = filename; var text = ++k+"."+filename; 
 											character.animationController.motion[ name ] = mixer.clipAction( clip, object );
+											character.animationController.motion[ name ].setLoop( THREE.LoopOnce ); // important?
+											character.animationController.motion[ name ].clampWhenFinished = true;  // important?
 											animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
 											function createOption(text, value){
 												var option = document.createElement("option");
