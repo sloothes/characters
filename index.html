@@ -440,7 +440,7 @@
 
 				character.animationController = animationController;
 				character.characterController = characterController;
-				
+
 			});
 
 		</script>
@@ -453,7 +453,8 @@
 
 				watch( input, "onchange", function(prop, event, files){
 
-					if ( !character ) return; if ( !input.files.length ) return;
+					if ( !input.files.length ) return;
+					if ( !character.animationController ) return; 
 
 					for ( var i = 0; i < input.files.length; i++ ) {
 
