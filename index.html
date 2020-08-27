@@ -592,19 +592,14 @@
 											character.animationController.motion[ name ] = mixer.clipAction( clip, object );
 											character.animationController.motion[ name ].setLoop( THREE.LoopOnce ); // important?
 											character.animationController.motion[ name ].clampWhenFinished = true;  // important?
-											animations_droplist && animations_droplist.appendChild( createOption( text, name ) );
-											function createOption(text, value){
+											if ( animations_droplist ) {
 												var option = document.createElement("option");
-												option.text = text; option.value = value;
-												return option;
+												option.text = text; option.value = name;
+												animations_droplist.appendChild( option );
+												animations_droplist.value = ""; 
 											}
 										});
 									}
-
-									clearTimeout( interval ); 
-									interval = setTimeout(function(){ 
-										animations_droplist.value = ""; 
-									}, 100);
 
 								}, false );
 
