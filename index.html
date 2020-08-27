@@ -458,12 +458,12 @@
 						rotation:locomotionHelper.rotation,
 					});
 
-					setTimeout(function(){
+				//	setTimeout(function(){
 						characterController.center.x = locomotionHelper.position.x;
 						characterController.center.z = locomotionHelper.position.z;
-					//	characterController.direction = locomotionHelper.rotation.y + Math.PI;
+				//		characterController.direction = locomotionHelper.rotation.y + Math.PI;
 						animationController.play( Object.keys( animationController.motion )[0] );
-					});
+				//	});
 
 				}
 
