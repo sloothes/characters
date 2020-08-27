@@ -447,6 +447,7 @@
 				})();
 
 			//	Get the world position of the hip bone at end of animation.
+
 				animationController.mixer.addEventListener("loop", onAnimationEnd );
 				animationController.mixer.addEventListener("finished", onAnimationEnd );
 
@@ -457,10 +458,13 @@
 						rotation:locomotionHelper.rotation,
 					});
 
-					characterController.center.x = locomotionHelper.position.x;
-					characterController.center.z = locomotionHelper.position.z;
-					characterController.direction = locomotionHelper.rotation.y;
-					animationController.play( Object.keys( animationController.motion )[0] );
+					setTimeout(function(){
+						characterController.center.x = locomotionHelper.position.x;
+						characterController.center.z = locomotionHelper.position.z;
+						characterController.direction = locomotionHelper.rotation.y;
+						animationController.play( Object.keys( animationController.motion )[0] );
+					});
+
 				}
 
 			//	Radius helper.
