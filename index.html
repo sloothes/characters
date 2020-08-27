@@ -526,7 +526,7 @@
 
 				(function(input,animations_droplist){
 
-					var k = 0; // important!
+					var k = 0; var interval;
 
 					watch( input, "onchange", function(prop, event, files){
 
@@ -578,13 +578,16 @@
 										});
 									}
 
+									clearTimeout( interval ); 
+									interval = setTimeout(function(){ 
+										animations_droplist.value = ""; 
+									}, 500);
+
 								}, false );
 
 								reader.readAsArrayBuffer( file );
 
 							}, 0, input.files[i] );
-
-							animations_droplist && setTimeout(function(){ animations_droplist.value = ""; });
 
 						}
 
