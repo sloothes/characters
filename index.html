@@ -336,13 +336,13 @@
 					animationController.motion[ name ].clampWhenFinished = true;  // important?
 				} 
 
-				animationController.mixer.addEventListener("finished", function(e){
-				//	debugMode && console.log("finished event:", e); // debug!
-				});
-
-				animationController.mixer.addEventListener("loop", function(e){
-				//	debugMode && console.log("loop event:", e); // debug!
-				});
+			//	animationController.mixer.addEventListener("finished", function(e){
+			//		debugMode && console.log("finished event:", e); // debug!
+			//	});
+			//
+			//	animationController.mixer.addEventListener("loop", function(e){
+			//		debugMode && console.log("loop event:", e); // debug!
+			//	});
 
 				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
 
@@ -454,7 +454,6 @@
 
 				function onAnimationEnd(e){
 					e.position = locomotionHelper.position; debugMode && console.log( e );
-
 				}
 
 				//	characterController.center.x = locomotionHelper.position.x;
@@ -472,9 +471,11 @@
 					segments.name = "radius helper"; return segments;
 				})( radius ); object.add( radiusHelper ); // debug!
 
-			//
+			//	Character object.
+
 				character.animationController = animationController;
 				character.characterController = characterController;
+
 			//
 
 				(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
