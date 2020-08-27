@@ -385,6 +385,7 @@
 				};
 
 				for ( var name in intersectBodies ) {
+					intersectBodies[name].visible = false; // testing!
 					intersectObjects.push( intersectBodies[name] ); // debug!
 				}
 
@@ -586,7 +587,6 @@
 										var mixer = character.animationController.mixer;
 										var object = character.animationController.object;
 										var animations = group.animations;
-									//	var animations_droplist = tab.querySelector("select#animations-droplist");
 										animations.forEach( function( clip ){
 											var name = filename; var text = ++k+"."+filename; 
 											character.animationController.motion[ name ] = mixer.clipAction( clip, object );
