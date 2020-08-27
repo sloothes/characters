@@ -433,6 +433,11 @@
 				scene.add(intersectBodies.leftUpleg);
 				scene.add(intersectBodies.rightUpleg);
 
+			//	Experiment.
+				intersectBodies.body.addEventListener("click", function(e){
+					console.log( "click event:", e )
+				});
+
 				var prefix = "mixamorig";
 				var hipsBone = group.getObjectByName(prefix+"Hips");
 				var headBone = group.getObjectByName(prefix+"Head");
