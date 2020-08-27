@@ -442,7 +442,7 @@
 
 				//	Location helper.
 					locomotionHelper.position.setFromMatrixPosition(hipsBone.matrixWorld); // important!
-					locomotionHelper.rotation.setFromRotationMatrix(hipsBone.matrixWorld); // important!
+				//	locomotionHelper.rotation.setFromRotationMatrix(hipsBone.matrixWorld); // important!
 
 				})();
 
@@ -452,11 +452,7 @@
 				animationController.mixer.addEventListener("finished", onAnimationEnd );
 
 				function onAnimationEnd(e){
-
-					debugMode && console.log({
-						position:locomotionHelper.position,
-						rotation:locomotionHelper.rotation,
-					});
+					e.position = locomotionHelper.position; debugMode && console.log( e );
 
 				}
 
