@@ -507,14 +507,14 @@
 			//	YUKA.
 
 				var vehicle = new YUKA.Vehicle(); 
-			//	var seekBehavior = new YUKA.SeekBehavior( target );
-				var arriveBehavior = new YUKA.ArriveBehavior( target );
+				var seekBehavior = new YUKA.SeekBehavior( target );
+			//	var arriveBehavior = new YUKA.ArriveBehavior( target );
 
 				vehicle.maxSpeed = 10;
 				vehicle.neighborhoodRadius = 2;
 				vehicle.updateNeighborhood = true;
-			//	vehicle.steering.add( seekBehavior );
-				vehicle.steering.add( arriveBehavior );
+				vehicle.steering.add( seekBehavior );
+			//	vehicle.steering.add( arriveBehavior );
 			//	vehicle.steering.add( wanderBehavior );
 			//	vehicle.steering.add( separationBehavior );
 
