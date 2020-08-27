@@ -516,10 +516,10 @@
 			//	vehicle.steering.add( separationBehavior );
 
 				watch( vehicle.position, ["x", "z"], function(vector,action,value){
-					controller.center[vector] = value;
-				//	controller.movementSpeed  = vehicle.getSpeed();
+					characterController.center[vector] = value;
+				//	characterController.movementSpeed  = vehicle.getSpeed();
 					var direction = vehicle.rotation.toEuler( rotation ).y;
-					object.rotation.y = controller.direction = direction;
+					object.rotation.y = characterController.direction = direction;
 				});
 
 				entityManager.add( vehicle ); // important!
