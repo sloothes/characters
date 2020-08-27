@@ -501,6 +501,7 @@
 					segments.name = "radius helper"; return segments;
 				})( radius ); object.add( radiusHelper ); // debug!
 
+
 			//	YUKA.
 
 				var vehicle = new YUKA.Vehicle(); 
@@ -514,8 +515,6 @@
 			//	vehicle.steering.add( wanderBehavior );
 			//	vehicle.steering.add( separationBehavior );
 
-				entityManager.add( vehicle ); // important!
-
 				watch( vehicle.position, ["x", "z"], function(vector,action,value){
 					controller.center[vector] = value;
 				//	controller.movementSpeed  = vehicle.getSpeed();
@@ -523,6 +522,7 @@
 					object.rotation.y = controller.direction = direction;
 				});
 
+				entityManager.add( vehicle ); // important!
 
 			//	Character object.
 
