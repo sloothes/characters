@@ -422,8 +422,8 @@
 				};
 
 				for ( var name in intersectBodies ) {
-					intersectBodies[name].visible = false; // testing!
-					intersectObjects.push( intersectBodies[name] ); // debug!
+					intersectBodies[name].visible = false;\
+					intersectObjects.push( intersectBodies[name] );
 				}
 
 				scene.add(intersectBodies.body);
@@ -432,11 +432,6 @@
 				scene.add(intersectBodies.rightLeg);
 				scene.add(intersectBodies.leftUpleg);
 				scene.add(intersectBodies.rightUpleg);
-
-			//	Experiment.
-				intersectBodies.body.addEventListener("click", function(e){
-					console.log( "click event:", e )
-				});
 
 				var prefix = "mixamorig";
 				var hipsBone = group.getObjectByName(prefix+"Hips");
