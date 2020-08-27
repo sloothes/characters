@@ -361,9 +361,9 @@
 			//	Animation controller.
 				var animationController = new MW.AnimationController( group );
 
-			//	Update animation direction.
+			//	Update animation direction (instead of object direction).
 				watch(characterController, "direction", function(prop,action,value){
-					animationController.turn( value ); // important?
+					animationController.turn( value + Math.PI, false ); // important?
 				});
 
 			//	Once play animations.
