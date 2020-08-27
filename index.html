@@ -526,9 +526,11 @@
 
 				(function(input,animations_droplist){
 
-					var k = 0; var interval;
+					var k = 0;
 
 					watch( input, "onchange", function(prop, event, files){
+
+						var interval;
 
 						if ( !input.files.length ) return;
 						if ( !character.animationController ) return; 
