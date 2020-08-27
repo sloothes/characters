@@ -86,7 +86,8 @@
 
 	<body ontouchstart="">
 
-		<!-- script src="/js/yuka.js"></script -->
+
+		<script src="/js/yuka.js"></script>
 		<script src="/editor/js/TabUI.js"></script>
 
 		<script>
@@ -283,6 +284,35 @@
 
 		<script>
 
+		//	YUKA.js
+
+			const target = new YUKA.Vector3( 0, 1, 0 ); 
+
+		//	const seekBehavior = new YUKA.SeekBehavior( target );
+		//	const wanderBehavior = new YUKA.WanderBehavior();
+		//	const arriveBehavior = new YUKA.ArriveBehavior( target );
+		//	const separationBehavior = new YUKA.SeparationBehavior();
+
+			const time = new YUKA.Time();
+			const entityManager = new YUKA.EntityManager(); 
+
+			(function update() {
+				requestAnimationFrame( update );
+				var delta = time.update().getDelta();
+				entityManager.update( delta );
+			})();
+
+		//	function sync( entity, renderComponent ) {
+		//		renderComponent.matrix.copy( entity.worldMatrix );
+		//	}
+
+			watch( localPlayer.controller.center, ["x","z"], targetUpdate );
+			function targetUpdate(vector,action,value){ target[ vector ] = value; }
+
+		</script>
+
+		<script>
+
 			const intersectObjects = [];  // debug!
 
 			renderer.domElement.addEventListener("click", function(e) {
@@ -471,8 +501,32 @@
 					segments.name = "radius helper"; return segments;
 				})( radius ); object.add( radiusHelper ); // debug!
 
+			//	YUKA.
+
+				var vehicle = new YUKA.Vehicle(); 
+			//	var seekBehavior = new YUKA.SeekBehavior( target );
+				var arriveBehavior = new YUKA.ArriveBehavior( target );
+
+				vehicle.neighborhoodRadius = 2;
+				vehicle.updateNeighborhood = true;
+			//	vehicle.steering.add( seekBehavior );
+				vehicle.steering.add( arriveBehavior );
+			//	vehicle.steering.add( wanderBehavior );
+			//	vehicle.steering.add( separationBehavior );
+
+				entityManager.add( vehicle ); // important!
+
+				watch( vehicle.position, ["x", "z"], function(vector,action,value){
+					controller.center[vector] = value;
+				//	controller.movementSpeed  = vehicle.getSpeed();
+					var direction = vehicle.rotation.toEuler( rotation ).y;
+					object.rotation.y = controller.direction = direction;
+				});
+
+
 			//	Character object.
 
+				character.vehicle = vehicle;
 				character.animationController = animationController;
 				character.characterController = characterController;
 
