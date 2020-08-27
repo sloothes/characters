@@ -459,10 +459,10 @@
 					});
 
 				//	setTimeout(function(){
-						characterController.center.x = locomotionHelper.position.x;
-						characterController.center.z = locomotionHelper.position.z;
-				//		characterController.direction = locomotionHelper.rotation.y + Math.PI;
-						animationController.play( Object.keys( animationController.motion )[0] );
+				//	characterController.center.x = locomotionHelper.position.x;
+				//	characterController.center.z = locomotionHelper.position.z;
+				//	characterController.direction = locomotionHelper.rotation.y + Math.PI;
+				//	animationController.play( Object.keys( animationController.motion )[0] );
 				//	});
 
 				}
@@ -476,9 +476,7 @@
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "radius helper"; 
 					return segments;
-				})( radius ); 
-
-			//	object.add( radiusHelper ); 
+				})( 0.9 ); object.add( radiusHelper ); // debug!
 
 				character.animationController = animationController;
 				character.characterController = characterController;
