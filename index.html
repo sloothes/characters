@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 
-		<title>character (v0.0.5)</title>
+		<title>character (v0.0.6)</title>
 
 		<meta charset="utf-8">
 		<meta name="generator" content="Three.js Editor">
@@ -493,32 +493,31 @@
 				//	characterController.direction = locomotionHelper.rotation.y + Math.PI;
 				//	animationController.play( Object.keys( animationController.motion )[0] );
 
-			//	YUKA.
+				//	YUKA.
 
-				var vehicle = new YUKA.Vehicle(); 
-				var seekBehavior = new YUKA.SeekBehavior( target );
-			//	var arriveBehavior = new YUKA.ArriveBehavior( target );
-
-				vehicle.maxSpeed = 6;
-				vehicle.neighborhoodRadius = 2;
-				vehicle.updateNeighborhood = true;
-				vehicle.steering.add( seekBehavior );
-			//	vehicle.steering.add( arriveBehavior );
-			//	vehicle.steering.add( wanderBehavior );
-			//	vehicle.steering.add( separationBehavior );
-
-				watch( vehicle.position, ["x", "z"], function(vector,action,value){
-					characterController.center[vector] = value;
-				//	characterController.movementSpeed  = vehicle.getSpeed();
-					var direction = vehicle.rotation.toEuler( new THREE.Euler() ).y;
-					object.rotation.y = characterController.direction = direction;
-				});
-
-				entityManager.add( vehicle ); // important!
+				//	var characterVehicle = new YUKA.Vehicle(); 
+				//	var seekBehavior = new YUKA.SeekBehavior( target );
+				//	var arriveBehavior = new YUKA.ArriveBehavior( target );
+				//
+				//	characterVehicle.maxSpeed = 6;
+				//	characterVehicle.neighborhoodRadius = 2;
+				//	characterVehicle.updateNeighborhood = true;
+				//	characterVehicle.steering.add( seekBehavior );
+				//	characterVehicle.steering.add( arriveBehavior );
+				//	characterVehicle.steering.add( wanderBehavior );
+				//	characterVehicle.steering.add( separationBehavior );
+				//
+				//	watch( characterVehicle.position, ["x", "z"], function(vector,action,value){
+				//		characterController.center[vector] = value;
+				//	//	characterController.movementSpeed  = characterVehicle.getSpeed();
+				//		var direction = characterVehicle.rotation.toEuler( new THREE.Euler() ).y;
+				//		object.rotation.y = characterController.direction = direction;
+				//	});
+				//
+				//	entityManager.add( characterVehicle ); // important!
 
 			//	Character object.
 
-				character.vehicle = vehicle;
 				character.animationController = animationController;
 				character.characterController = characterController;
 
