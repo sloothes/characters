@@ -518,7 +518,7 @@
 				watch( vehicle.position, ["x", "z"], function(vector,action,value){
 					characterController.center[vector] = value;
 				//	characterController.movementSpeed  = vehicle.getSpeed();
-					var direction = vehicle.rotation.toEuler( rotation ).y;
+					var direction = vehicle.rotation.toEuler( new THREE.Euler() ).y;
 					object.rotation.y = characterController.direction = direction;
 				});
 
