@@ -453,19 +453,17 @@
 
 				function onAnimationEnd(e){
 
-					debugMode && console.log("locomotion:", {
+					debugMode && console.log({
 						position:locomotionHelper.position,
 						rotation:locomotionHelper.rotation,
 					});
 
-				//	setTimeout(function(){
+				}
+
 				//	characterController.center.x = locomotionHelper.position.x;
 				//	characterController.center.z = locomotionHelper.position.z;
 				//	characterController.direction = locomotionHelper.rotation.y + Math.PI;
 				//	animationController.play( Object.keys( animationController.motion )[0] );
-				//	});
-
-				}
 
 			//	Radius helper.
 
