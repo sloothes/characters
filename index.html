@@ -440,20 +440,21 @@
 
 				})();
 
+				character.animationController = animationController;
+				character.characterController = characterController;
+
 			//	Radius helper.
+
 				var radiusHelper = (function( r ){
 					var sphere   = new THREE.SphereGeometry( r, 10, 6 );
 					var geometry = new THREE.EdgesGeometry( sphere );
 					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
 					var segments = new THREE.LineSegments( geometry, material );
-					segments.name = "radius helper";
+					segments.name = "radius helper"; 
 					return segments;
 				})( radius ); 
 
-				object.add( radiusHelper ); 
-
-				character.animationController = animationController;
-				character.characterController = characterController;
+			//	object.add( radiusHelper ); 
 
 				(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
 
