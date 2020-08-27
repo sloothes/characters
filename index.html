@@ -337,11 +337,11 @@
 				} 
 
 				animationController.mixer.addEventListener("finished", function(e){
-					debugMode && console.log("finished event:", e); // debug!
+				//	debugMode && console.log("finished event:", e); // debug!
 				});
 
 				animationController.mixer.addEventListener("loop", function(e){
-					debugMode && console.log("loop event:", e); // debug!
+				//	debugMode && console.log("loop event:", e); // debug!
 				});
 
 				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
@@ -418,6 +418,8 @@
 				var rightforeBone = group.getObjectByName(prefix+"RightForeArm");
 				var rightindexBone = group.getObjectByName(prefix+"RightHandIndex1");
 
+				var locomotionHelper = new THREE.Object3D(); // important!
+
 				(function update(){
 
 					requestAnimationFrame( update );
@@ -438,10 +440,28 @@
 					intersectBodies.leftLeg.rotation.setFromRotationMatrix(leftlegBone.matrixWorld);
 					intersectBodies.rightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
 
+				//	Location helper.
+					locomotionHelper.position.setFromMatrixPosition(hipsBone.matrixWorld); // important!
+					locomotionHelper.rotation.setFromRotationMatrix(hipsBone.matrixWorld); // important!
+
 				})();
 
-				character.animationController = animationController;
-				character.characterController = characterController;
+			//	Get the world position of the hip bone at end of animation.
+				animationController.mixer.addEventListener("loop", onAnimationEnd );
+				animationController.mixer.addEventListener("finished", onAnimationEnd );
+
+				function onAnimationEnd(e){
+
+					debugMode && console.log("locomotion:", {
+						position:locomotionHelper.position,
+						rotation:locomotionHelper.rotation,
+					});
+
+					characterController.center.x = locomotionHelper.position.x;
+					characterController.center.z = locomotionHelper.position.z;
+					characterController.direction = locomotionHelper.rotation.y;
+					animationController.play( Object.keys( animationController.motion )[0] );
+				}
 
 			//	Radius helper.
 
@@ -455,6 +475,11 @@
 				})( radius ); 
 
 			//	object.add( radiusHelper ); 
+
+				character.animationController = animationController;
+				character.characterController = characterController;
+
+			//
 
 				(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
 
