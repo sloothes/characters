@@ -471,7 +471,7 @@
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "radius helper"; 
 					return segments;
-				})( 0.9 ); object.add( radiusHelper ); // debug!
+				})( radius ); object.add( radiusHelper ); // debug!
 
 				character.animationController = animationController;
 				character.characterController = characterController;
