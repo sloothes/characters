@@ -289,7 +289,7 @@
 				var row = document.createElement("h3"); row.textContent = "Behaviour:";
 				var select = document.createElement("select"); select.id = "behaviour-droplist";
 				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
-				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;float:right;";
 				row.appendChild( select ); tab.appendChild( row );
 
 				watch( select, "onchange", function(prop,event,value){
@@ -304,7 +304,7 @@
 
 			(function( tab ){
 
-				var row = document.createElement("h3"); row.textContent = "maxForce:"; row.style.cssText = "margin:10px 15px 0 0;height:40px;";
+				var row = document.createElement("h3"); row.textContent = "maxForce:"; row.style.cssText = "margin:15px 0 10px 0;height:40px;";
 				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
 				var prev = document.createElement("li"); prev.id = "steering-maxforce-decrease"; 
 				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
@@ -321,7 +321,7 @@
 					debugMode && console.log({item:input,event:event,maxForce:value});
 				});
 
-			//	input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", value); });
+				input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", input.value); });
 
 			})( TabUI.Steering.tab );
 
@@ -1216,7 +1216,7 @@
 
 				(function(entity,behaviour_droplist,increase,decrease,input){
 
-					var interval; 
+					var interval;
 
 					function onMouseDown(){
 						clearTimeout( interval ); // important!
@@ -1227,9 +1227,9 @@
 							if (button === increase) value = THREE.Math.clamp(value+step,min,max);
 							if (button === decrease) value = THREE.Math.clamp(value-step,min,max);
 							if ( isNaN(value) ) return clearTimeout( interval ); // important!
-							entity.maxForce = round(value, 3); input.value = value.toFixed(3); 
+							entity.maxForce = round(value, n); input.value = value.toFixed(n); 
 							interval = setTimeout( update, 20, button, step, min, max );
-						}, 500, this, 0.001, -10, 10 );
+						}, 500, this, step, min, max );
 					}
 
 					function onMouseClick(){
@@ -1239,27 +1239,28 @@
 							if (button === increase) value = THREE.Math.clamp(value+step,min,max);
 							if (button === decrease) value = THREE.Math.clamp(value-step,min,max);
 							if ( isNaN(value) ) return; 
-							entity.maxForce = round(value, 3); input.value = value.toFixed(3); 
-						})( this, 0.001, -10, 10 );
+							entity.maxForce = round(value, n); input.value = value.toFixed(n); 
+						})( this, step, min, max );
 					}
 
 				//	maxForce inputs.
+
+					var min = 0, max = 1, step = 0.0001, n = 4;
 
 					increase.addEventListener( "click", onMouseClick );
 					decrease.addEventListener( "click", onMouseClick );
 					increase.addEventListener( "mousedown", onMouseDown );
 					decrease.addEventListener( "mousedown", onMouseDown );
 
-					input.addEventListener( "change", function(){
-						var min = -10; var max = 10;
+					watch( input, "onchange", function(prop,event,value){
 						if ( !entity ) return input.value = "";
 						if ( isNaN(input.value) ) return input.value = "";
-						var value = round( input.value, 3 ); 
+						var value = round( input.value, n ); 
 						entity.maxForce = THREE.Math.clamp( value,min,max );
-						input.value = entity.maxForce.toFixed(3); 
+						input.value = entity.maxForce.toFixed(n); 
 					});
 
-					input.value = entity.maxForce.toFixed(3); // important!
+					input.value = entity.maxForce.toFixed(n); // important!
 
 				})( entity,
 					TabUI.Steering.tab.querySelector("select#behaviour-droplist"),     // behaviour_droplist.
