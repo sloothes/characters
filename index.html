@@ -919,7 +919,7 @@
 
 			const character = {};
 
-			(function( url ){
+			(function( url, character ){
 
 				var loader = new THREE.FBXLoader();
 				loader.load(url, function( group ){
@@ -1473,10 +1473,9 @@
 
 					})( TabUI.Steering.tab.querySelector("select#behaviour-droplist") );
 
-
 				});
 
-			})("/characters/paim/SlowRun.fbx");
+			})("/characters/paim/SlowRun.fbx", character);
 
 		</script>
 
