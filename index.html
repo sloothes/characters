@@ -375,9 +375,9 @@
 				constructor: Entity,
 
 				update: function () {
-					this.velocity.clampLength(0, this.maxSpeed);
-					this.velocity.setY(0);
-					this.position.add(this.velocity);
+					this.velocity.clampLength( 0, this.maxSpeed );
+					this.velocity.setY( 0 );
+					this.position.add( this.velocity );
 				},
 
 
@@ -781,6 +781,7 @@
 
 		<script>
 
+			const entities = [];
 			const character = {};
 
 			var url = "/characters/paim/Idle(1).fbx";
@@ -791,8 +792,10 @@
 
 			//	Player entity.
 				var mesh = group.getObjectByProperty("type", "SkinnedMesh");
-				var object = new SteeringEntity( mesh ); object.name = "character entity"; 
-				scene.add( object );
+				var object = new SteeringEntity( mesh ); 
+				object.name = "seek character"; 
+				object.maxSpeed = 5; object.maxForce = 1;
+				scene.add( object ); entities.push( object );
 
 			//	Add group to scene.
 				group.position.y = -radius; object.add( group );
@@ -840,8 +843,35 @@
 				(function update(){
 					requestAnimationFrame( update );
 					var delta = clock.getDelta();
+
+				//	object.maxSpeed=params.maxSpeed;
+				//	object.maxForce=params.maxForce;
+				//	object.setAnimation();
+
+					var target = localPlayer.controller.center;
+					if ( object.position.distanceTo(target) > 10 ) {
+						object.seek( localPlayer.controller.center );
+						object.separation(entities, 2, 20); 
+						object.lookWhereGoing( true );
+					} else {
+						object.idle(); object.lookAt( target );
+					}
+
+					object.update();
+
 					animationController.update( delta );
 				})();
+
+				function setAnimation() {
+					if ( object.velocity.length() <= 1 )
+						animationController.play("idle");
+					else if( object.velocity.length() > 1 && object.velocity.length() <= 8 )
+						animationController.play("walk");
+					else if ( object.velocity.length() > 8 && object.velocity.length() <= 12 )
+						animationController.play("jogging");
+					else if ( object.velocity.length() > 12 )
+						animationController.play("run");
+				}
 
 			//	Skeleton helper.
 
@@ -964,6 +994,8 @@
 
 			//	Character object.
 
+				character.mesh = mesh;
+				character.entity = object;
 				character.radiusHelper = radiusHelper;
 				character.skeletonHelper = skeletonHelper;
 				character.animationController = animationController;
