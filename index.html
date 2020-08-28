@@ -791,24 +791,28 @@
 				var radius = 1;
 				var maxSpeed = 5; 
 				var maxForce = 0.001;
+				var seekDistance = 1.8;
+				var maxSeparation = 100;
+				var tooCloseDistance = 0.1;
+				var numSamplesSmoothing = 20;
 
 			//	Player entity.
 				var mesh = group.getObjectByProperty("type", "SkinnedMesh");
-				var object = new SteeringEntity( mesh ); 
-				object.name = "seek character"; 
-				object.radius = radius;
-				object.seekDistance = 5;
-				object.maxSpeed = maxSpeed; 
-				object.maxForce = maxForce;
-				object.maxSeparation = 100;
-				object.tooCloseDistance = 0.1;
-				object.numSamplesForSmoothing = 20;
-				scene.add( object ); 
+				var entity = new SteeringEntity( mesh ); 
+				entity.name = "seek character"; 
+				entity.radius = radius;
+				entity.seekDistance = seekDistance;
+				entity.maxSpeed = maxSpeed; 
+				entity.maxForce = maxForce;
+				entity.maxSeparation = maxSeparation;
+				entity.tooCloseDistance = tooCloseDistance;
+				entity.numSamplesForSmoothing = numSamplesSmoothing;
+				scene.add( entity ); 
 
 			//	Add group to scene.
 				group.position.y = -radius; 
-				object.position.y = radius;
-				object.add( group );
+				entity.position.y = radius;
+				entity.add( group );
 
 			//	Character controller.
 			//	var characterController = new MW.CharacterController( object, radius );
@@ -816,12 +820,10 @@
 			//	characterController.maxSlopeGradient = 0.5;
 			//	characterController.velocity = object.velocity; // testing!
 			//	world.add( characterController ); // important!
-
 			//	Reset controller center.
 			//	watch(characterController.center, "y", function(prop,action,value){
 			//		if ( value < -1 ) characterController.center.set(0, 1, 0);
 			//	});
-
 
 			//	Animation controller.
 				var animationController = new MW.AnimationController( group );
@@ -849,38 +851,38 @@
 					requestAnimationFrame( update );
 					var delta = clock.getDelta();
 
-				//	object.maxSpeed = maxSpeed;
-				//	object.maxForce = maxForce;
-				//	object.setAnimation();
+				//	entity.maxSpeed = maxSpeed;
+				//	entity.maxForce = maxForce;
+				//	entity.setAnimation();
 
 					var target = localPlayer.controller.center;
-					if ( object.position.distanceTo(target) > object.seekDistance ) {
-						object.seek( localPlayer.controller.center );
-						object.separation(entities, object.radius, object.maxSeparation); 
-						object.lookWhereGoing( true );
+					if ( entity.position.distanceTo(target) > entity.seekDistance ) {
+						entity.seek( localPlayer.controller.center );
+						entity.separation(entities, entity.radius, entity.maxSeparation); 
+						entity.lookWhereGoing( true );
 					} else {
-						object.idle(); 
-						object.lookAt(target.x, object.position.y, target.z);
+						entity.idle(); 
+						entity.lookAt(target.x, entity.position.y, target.z);
 					}
 
-					object.update();
+					entity.update();
 					animationController.update( delta );
 
 				})();
 
 				function setAnimation() {
 				//	demo.
-					if ( object.velocity.length() <= 1 ) 
+					if ( entity.velocity.length() <= 1 ) 
 						animationController.play("idle");
-					else if( object.velocity.length() > 1 && object.velocity.length() <= 8 )
+					else if( entity.velocity.length() > 1 && entity.velocity.length() <= 8 )
 						animationController.play("walk");
-					else if ( object.velocity.length() > 8 && object.velocity.length() <= 12 )
+					else if ( entity.velocity.length() > 8 && entity.velocity.length() <= 12 )
 						animationController.play("jogging");
-					else if ( object.velocity.length() > 12 )
+					else if ( entity.velocity.length() > 12 )
 						animationController.play("run");
 				}
 
-				entities.push( object );
+				entities.push( entity );
 
 			//	Skeleton helper.
 
@@ -996,13 +998,13 @@
 					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "radius helper"; return segments;
-				})( radius ); object.add( radiusHelper ); // debug!
+				})( radius ); entity.add( radiusHelper ); // debug!
 
 
 			//	Character object.
 
 				character.mesh = mesh;
-				character.entity = object;
+				character.entity = entity;
 				character.radiusHelper = radiusHelper;
 				character.skeletonHelper = skeletonHelper;
 				character.animationController = animationController;
