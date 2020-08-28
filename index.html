@@ -341,7 +341,7 @@
 				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
 
 				watch( input, "onchange", function(prop,event,value){
-					debugMode && console.log({item:input,event:event,seekDistance:value});
+					debugMode && console.log({item:input,event:event,seekDist:value});
 				});
 
 				input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", input.value); });
@@ -350,7 +350,7 @@
 
 			(function( tab ){
 
-				var row = document.createElement("h3"); row.textContent = "seekdist:"; row.style.cssText = "margin:10px 0 10px 0;height:40px;";
+				var row = document.createElement("h3"); row.textContent = "seekDist:"; row.style.cssText = "margin:10px 0 10px 0;height:40px;";
 				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
 				var prev = document.createElement("li"); prev.id = "steering-seekdist-decrease"; 
 				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
@@ -364,7 +364,7 @@
 				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
 
 				watch( input, "onchange", function(prop,event,value){
-					debugMode && console.log({item:input,event:event,seekDistance:value});
+					debugMode && console.log({item:input,event:event,seekDist:value});
 				});
 
 				input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", input.value); });
@@ -885,7 +885,7 @@
 				var radius = 1;
 				var maxSpeed = 5; 
 				var maxForce = 0.0015;
-				var seekDistance = 1.75;
+				var seekDist = 1.75;
 				var maxSeparation = 100;
 				var tooCloseDistance = 0.1;
 				var numSamplesSmoothing = 20;
@@ -895,7 +895,7 @@
 				var entity = new SteeringEntity( mesh ); 
 				entity.name = "seek character"; 
 				entity.radius = radius;
-				entity.seekDistance = seekDistance;
+				entity.seekDist = seekDist;
 				entity.maxSpeed = maxSpeed; 
 				entity.maxForce = maxForce;
 				entity.maxSeparation = maxSeparation;
@@ -950,7 +950,7 @@
 				//	entity.setAnimation();
 
 					var target = localPlayer.controller.center;
-					if ( entity.position.distanceTo(target) > entity.seekDistance ) {
+					if ( entity.position.distanceTo(target) > entity.seekDist ) {
 						entity.seek( localPlayer.controller.center );
 						entity.separation(entities, entity.radius, entity.maxSeparation); 
 						entity.lookWhereGoing( true );
@@ -1376,12 +1376,12 @@
 						clearTimeout( interval ); // important!
 						interval = setTimeout( function update( button, step, min, max ){
 							if ( !entity ) return clearTimeout( interval );
-							var value = entity.seekDistance;
+							var value = entity.seekDist;
 							if ( isNaN(value) ) return clearTimeout( interval ); // important!
 							if (button === increase) value = THREE.Math.clamp(value+step,min,max);
 							if (button === decrease) value = THREE.Math.clamp(value-step,min,max);
 							if ( isNaN(value) ) return clearTimeout( interval ); // important!
-							entity.seekDistance = round(value, n); input.value = value.toFixed(n); 
+							entity.seekDist = round(value, n); input.value = value.toFixed(n); 
 							interval = setTimeout( update, 20, button, step, min, max );
 						}, 500, this, step, min, max );
 					}
@@ -1389,15 +1389,15 @@
 					function onMouseClick(){
 						clearTimeout( interval ); if ( !entity ) return;
 						(function( button, step, min, max ){
-							var value = entity.seekDistance; if ( isNaN(value) ) return; // important!
+							var value = entity.seekDist; if ( isNaN(value) ) return; // important!
 							if (button === increase) value = THREE.Math.clamp(value+step,min,max);
 							if (button === decrease) value = THREE.Math.clamp(value-step,min,max);
 							if ( isNaN(value) ) return; 
-							entity.seekDistance = round(value, n); input.value = value.toFixed(n); 
+							entity.seekDist = round(value, n); input.value = value.toFixed(n); 
 						})( this, step, min, max );
 					}
 
-				//	seekDistance inputs.
+				//	seekDist inputs.
 
 					var min = 0, max = 100, step = 0.01, n = 3;
 
@@ -1410,11 +1410,11 @@
 						if ( !value ) return input.value = "";
 						if ( !entity ) return input.value = "";
 						if ( isNaN(value) ) return input.value = "";
-						entity.seekDistance = round( THREE.Math.clamp( value,min,max ), n);
-						input.value = entity.seekDistance.toFixed(n); 
+						entity.seekDist = round( THREE.Math.clamp( value,min,max ), n);
+						input.value = entity.seekDist.toFixed(n); 
 					});
 
-					input.value = entity.seekDistance.toFixed(n); // important!
+					input.value = entity.seekDist.toFixed(n); // important!
 
 				})( entity,
 					TabUI.Steering.tab.querySelector("li#steering-seekdist-increase"), // increase,
