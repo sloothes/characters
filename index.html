@@ -790,7 +790,7 @@
 
 				var radius = 1;
 				var maxSpeed = 5; 
-				var maxForce = 0.1;
+				var maxForce = 0.001;
 
 			//	Player entity.
 				var mesh = group.getObjectByProperty("type", "SkinnedMesh");
@@ -799,7 +799,7 @@
 				object.radius = radius;
 				object.maxSpeed = maxSpeed; 
 				object.maxForce = maxForce;
-				object.tooCloseDistance = 1;
+				object.tooCloseDistance = 0.01;
 				scene.add( object ); 
 
 			//	Add group to scene.
@@ -851,10 +851,10 @@
 				//	object.setAnimation();
 
 					var target = localPlayer.controller.center;
-					if ( object.position.distanceTo(target) > 2 ) {
+					if ( object.position.distanceTo(target) > 1 ) {
 					//	characterController.isRunning = true;
 						object.seek( localPlayer.controller.center );
-						object.separation(entities, 50, 20); 
+						object.separation(entities, 3, 1); 
 						object.lookWhereGoing( true );
 					} else {
 						object.idle(); 
