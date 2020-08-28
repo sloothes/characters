@@ -1012,7 +1012,7 @@
 				};
 
 				for ( var name in intersectBodies ) {
-					intersectBodies[name].visible = true;
+					intersectBodies[name].visible = false;
 					intersectObjects.push( intersectBodies[name] );
 				}
 
@@ -1094,7 +1094,8 @@
 					var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "radius helper"; return segments;
-				})( radius ); entity.add( radiusHelper ); // debug!
+				})( radius ); 
+				radiusHelper.visible = false; entity.add( radiusHelper ); // debug!
 
 
 			//	Character object.
