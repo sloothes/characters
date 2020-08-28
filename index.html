@@ -788,17 +788,22 @@
 			var loader = new THREE.FBXLoader();
 			loader.load(url, function( group ){
 
-				var radius = 1; // important!
+				var radius = 1;
+				var maxSpeed = 6; 
+				var maxForce = 3;
 
 			//	Player entity.
 				var mesh = group.getObjectByProperty("type", "SkinnedMesh");
 				var object = new SteeringEntity( mesh ); 
 				object.name = "seek character"; 
-				object.maxSpeed = 5; object.maxForce = 1;
-				scene.add( object ); entities.push( object );
+				object.maxSpeed = maxSpeed; 
+				object.maxForce = maxForce;
+				scene.add( object ); 
+				entities.push( object );
 
 			//	Add group to scene.
-				group.position.y = -radius; object.add( group );
+				group.position.y = -radius; 
+				object.add( group );
 
 			//	Character controller.
 				var characterController = new MW.CharacterController( object, radius );
@@ -859,11 +864,7 @@
 						object.lookWhereGoing( true );
 					} else {
 						object.idle(); 
-						var vector = new THREE.Vector3(
-							localPlayer.controller.center.x,
-							object.position.y,
-							localPlayer.controller.center.z
-						); object.lookAt( vector );
+						animationController.turn( characterController.center.angle );
 					}
 
 					object.update();
