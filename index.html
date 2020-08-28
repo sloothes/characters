@@ -282,7 +282,7 @@
 
 		<script>
 
-		//	ThreeVehicle.js
+		//	ThreeVehicle.js (aka ThreeSteer.js)
 
 			Entity = function (mesh) {
 
@@ -528,7 +528,6 @@
 					this.steeringForce.set(0, 0, 0);
 				},
 
-
 				wander: function () {
 
 					var center = this.velocity.clone().normalize().setLength(this.wanderDistance);
@@ -749,7 +748,6 @@
 				return this.perp().dot(vector) < 0 ? -1 : 1;
 			}
 
-
 			Object.defineProperty(THREE.Vector3.prototype, "angle", {
 
 				enumerable: true,
@@ -791,12 +789,13 @@
 
 				var radius = 1; // important!
 
-			//	Player container.
-				var object = new THREE.Object3D();
-				object.name = "character"; scene.add( object );
+			//	Player entity.
+				var mesh = group.getObjectByProperty("type", "SkinnedMesh");
+				var object = new SteeringEntity( mesh ); object.name = "character entity"; 
+				scene.add( object );
 
 			//	Add group to scene.
-				if ( group ) { group.position.y = -radius; object.add( group ); }
+				group.position.y = -radius; object.add( group ); }
 
 			//	Character controller.
 				var characterController = new MW.CharacterController( object, radius );
@@ -876,7 +875,7 @@
 				};
 
 				for ( var name in intersectBodies ) {
-					intersectBodies[name].visible = false;
+					intersectBodies[name].visible = true;
 					intersectObjects.push( intersectBodies[name] );
 				}
 
@@ -951,29 +950,6 @@
 				//	characterController.center.z = locomotionHelper.position.z;
 				//	characterController.direction = locomotionHelper.rotation.y + Math.PI;
 				//	animationController.play( Object.keys( animationController.motion )[0] );
-
-				//	YUKA.
-
-				//	var characterVehicle = new YUKA.Vehicle(); 
-				//	var seekBehavior = new YUKA.SeekBehavior( target );
-				//	var arriveBehavior = new YUKA.ArriveBehavior( target );
-				//
-				//	characterVehicle.maxSpeed = 6;
-				//	characterVehicle.neighborhoodRadius = 2;
-				//	characterVehicle.updateNeighborhood = true;
-				//	characterVehicle.steering.add( seekBehavior );
-				//	characterVehicle.steering.add( arriveBehavior );
-				//	characterVehicle.steering.add( wanderBehavior );
-				//	characterVehicle.steering.add( separationBehavior );
-				//
-				//	watch( characterVehicle.position, ["x", "z"], function(vector,action,value){
-				//		characterController.center[vector] = value;
-				//	//	characterController.movementSpeed  = characterVehicle.getSpeed();
-				//		var direction = characterVehicle.rotation.toEuler( new THREE.Euler() ).y;
-				//		object.rotation.y = characterController.direction = direction;
-				//	});
-				//
-				//	entityManager.add( characterVehicle ); // important!
 
 			//	Radius helper.
 
