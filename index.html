@@ -286,7 +286,7 @@
 
 			Entity = function (mesh) {
 
-				THREE.Object3D.apply(this);
+				THREE.Group.apply(this);
 
 				this.mesh = mesh;
 				this.mass = 1;
@@ -301,7 +301,7 @@
 				this.velocitySamples = []
 				this.numSamplesForSmoothing = 20
 
-				Object.defineProperty(Entity.prototype, 'width', {
+				Object.defineProperty(Entity.prototype, "width", {
 					enumerable: true,
 					configurable: true,
 					get: function () {
@@ -310,7 +310,7 @@
 
 				});
 
-				Object.defineProperty(Entity.prototype, 'height', {
+				Object.defineProperty(Entity.prototype, "height", {
 					enumerable: true,
 					configurable: true,
 					get: function () {
@@ -319,7 +319,7 @@
 
 				});
 
-				Object.defineProperty(Entity.prototype, 'depth', {
+				Object.defineProperty(Entity.prototype, "depth", {
 					enumerable: true,
 					configurable: true,
 					get: function () {
@@ -328,7 +328,7 @@
 
 				});
 
-				Object.defineProperty(Entity.prototype, 'forward', {
+				Object.defineProperty(Entity.prototype, "forward", {
 					enumerable: true,
 					configurable: true,
 					get: function () {
@@ -337,7 +337,7 @@
 
 				});
 
-				Object.defineProperty(Entity.prototype, 'backward', {
+				Object.defineProperty(Entity.prototype, "backward", {
 					enumerable: true,
 					configurable: true,
 					get: function () {
@@ -346,7 +346,7 @@
 
 				});
 
-				Object.defineProperty(Entity.prototype, 'left', {
+				Object.defineProperty(Entity.prototype, "left", {
 					enumerable: true,
 					configurable: true,
 					get: function () {
@@ -355,7 +355,7 @@
 
 				});
 
-				Object.defineProperty(Entity.prototype, 'right', {
+				Object.defineProperty(Entity.prototype, "right", {
 					enumerable: true,
 					configurable: true,
 					get: function () {
@@ -735,7 +735,7 @@
 			}
 
 
-			Object.defineProperty(THREE.Vector3.prototype, 'angle', {
+			Object.defineProperty(THREE.Vector3.prototype, "angle", {
 				enumerable: true,
 				configurable: true,
 				get: function () {
