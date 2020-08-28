@@ -884,17 +884,15 @@
 
 				//	object is THREE.Group.
 					group.name = "Assian Girl";
-				//	var s = 1; group.scale.set(s,s,s); // important!
+					var s = 0.01; group.scale.set(s,s,s); // important!
 					group.position.y = -localPlayer.controller.radius;
 					debugMode && console.log( group ); 
 
 				//	Add group to scene before animation controller.
 					localPlayer.add( group ); 
-					localPlayer.controller.center.x = 0;
-					localPlayer.controller.center.z = -130;
 					localPlayer.controller.isRunning = true;
 					localPlayer.controller.direction += Math.PI; // important!
-					localPlayer.controller.movementSpeed = 5.01; // debug!
+					localPlayer.controller.movementSpeed = 5; // debug!
 					localPlayer.getObjectByName("local helper").visible = false;
 
 					localPlayer.animationController = new MW.AnimationController( group );
@@ -906,6 +904,9 @@
 						requestAnimationFrame( update );
 						var delta = clock.getDelta();
 						localPlayer.animationController.update( delta );
+						if ( localPlayer.controller.center.y < -1 ) {
+							localPlayer.controller.center.set(0,1,0);
+						}
 					})();
 
 				});
@@ -1120,7 +1121,7 @@
 					animationController.mixer.addEventListener("loop", onAnimationEnd );
 					animationController.mixer.addEventListener("finished", onAnimationEnd );
 
-					function onAnimationEnd(e){ debugMode && console.log( e ); }
+				//	function onAnimationEnd(e){ debugMode && console.log( e ); }
 
 					//	characterController.center.x = locomotionHelper.position.x;
 					//	characterController.center.z = locomotionHelper.position.z;
@@ -1642,7 +1643,7 @@
 					scene.add( entity ); 
 
 				//	Add group to scene.
-					var s = 0.009; 
+					var s = 0.1; 
 					group.scale.set( s,s,s );
 					group.position.y = -radius; 
 					entity.position.y = radius;
@@ -1709,7 +1710,7 @@
 					scene.add( entity ); 
 
 				//	Add group to scene.
-					var s = 0.009; 
+					var s = 0.1; 
 					group.scale.set( s,s,s );
 					group.position.y = -radius; 
 					entity.position.y = radius;
