@@ -799,24 +799,23 @@
 				object.maxSpeed = maxSpeed; 
 				object.maxForce = maxForce;
 				scene.add( object ); 
-				entities.push( object );
 
 			//	Add group to scene.
 				group.position.y = -radius; 
 				object.add( group );
 
 			//	Character controller.
-				var characterController = new MW.CharacterController( object, radius );
-				characterController.movementSpeed = 5; 
-				characterController.maxSlopeGradient = 0.5;
-				characterController.velocity = object.velocity; // testing!
+			//	var characterController = new MW.CharacterController( object, radius );
+			//	characterController.movementSpeed = 5; 
+			//	characterController.maxSlopeGradient = 0.5;
+			//	characterController.velocity = object.velocity; // testing!
+			//	world.add( characterController ); // important!
 
 			//	Reset controller center.
-				watch(characterController.center, "y", function(prop,action,value){
-					if ( value < -1 ) characterController.center.set(0, 1, 0);
-				});
+			//	watch(characterController.center, "y", function(prop,action,value){
+			//		if ( value < -1 ) characterController.center.set(0, 1, 0);
+			//	});
 
-				world.add( characterController ); // important!
 
 			//	Animation controller.
 				var animationController = new MW.AnimationController( group );
@@ -850,14 +849,14 @@
 
 					var target = localPlayer.controller.center;
 					if ( object.position.distanceTo(target) > 1 ) {
-						characterController.isRunning = true;
+					//	characterController.isRunning = true;
 						object.seek( localPlayer.controller.center );
 						object.separation(entities, 2, 20); 
 						object.lookWhereGoing( true );
 					} else {
 						object.idle(); 
-						characterController.isRunning = false;
-						characterController.direction = target.angle;
+					//	characterController.isRunning = false;
+					//	characterController.direction = target.angle;
 					}
 
 					object.update();
@@ -876,6 +875,8 @@
 					else if ( object.velocity.length() > 12 )
 						animationController.play("run");
 				}
+
+				entities.push( object );
 
 			//	Skeleton helper.
 
@@ -909,7 +910,7 @@
 				};
 
 				for ( var name in intersectBodies ) {
-					intersectBodies[name].visible = false;
+					intersectBodies[name].visible = true;
 					intersectObjects.push( intersectBodies[name] );
 				}
 
@@ -943,7 +944,7 @@
 				var rightforeBone = group.getObjectByName(prefix+"RightForeArm");
 				var rightindexBone = group.getObjectByName(prefix+"RightHandIndex1");
 
-				var locomotionHelper = new THREE.Object3D(); // important!
+			//	var locomotionHelper = new THREE.Object3D(); // important!
 
 				(function update(){
 
@@ -966,7 +967,7 @@
 					intersectBodies.rightLeg.rotation.setFromRotationMatrix(rightlegBone.matrixWorld);
 
 				//	Location helper.
-					locomotionHelper.position.setFromMatrixPosition(hipsBone.matrixWorld); // important!
+				//	locomotionHelper.position.setFromMatrixPosition(hipsBone.matrixWorld); // important!
 				//	locomotionHelper.rotation.setFromRotationMatrix(hipsBone.matrixWorld); // important!
 
 				})();
@@ -976,9 +977,7 @@
 				animationController.mixer.addEventListener("loop", onAnimationEnd );
 				animationController.mixer.addEventListener("finished", onAnimationEnd );
 
-				function onAnimationEnd(e){
-					e.position = locomotionHelper.position; debugMode && console.log( e );
-				}
+				function onAnimationEnd(e){ debugMode && console.log( e ); }
 
 				//	characterController.center.x = locomotionHelper.position.x;
 				//	characterController.center.z = locomotionHelper.position.z;
@@ -1003,7 +1002,7 @@
 				character.radiusHelper = radiusHelper;
 				character.skeletonHelper = skeletonHelper;
 				character.animationController = animationController;
-				character.characterController = characterController;
+			//	character.characterController = characterController;
 
 			//	Character Tab UI.
 
