@@ -875,49 +875,10 @@
 
 		<script>
 
-			(function( url ){
-
-				var loader = new THREE.FBXLoader();
-				loader.load( url, function( group ){
-
-				//	object is THREE.Group.
-					group.name = "Paim";
-				//	var s = 1; group.scale.set(s,s,s); // important!
-					group.position.y = -localPlayer.controller.radius;
-					debugMode && console.log( group ); 
-
-				//	Add group to scene before animation controller.
-					localPlayer.add( group ); 
-					localPlayer.controller.center.x = 0;
-					localPlayer.controller.center.z = -130;
-					localPlayer.controller.isRunning = true;
-					localPlayer.controller.direction += Math.PI; // important!
-					localPlayer.controller.movementSpeed = 5; // debug!
-					localPlayer.getObjectByName("local helper").visible = false;
-
-					localPlayer.animationController = new MW.AnimationController( group );
-					debugMode && console.log( "animationController:", localPlayer.animationController );
-					localPlayer.animationController.play("mixamo.com"); // important!
-
-					var clock = new THREE.Clock();
-					(function update(){
-						requestAnimationFrame( update );
-						var delta = clock.getDelta();
-						localPlayer.animationController.update( delta );
-					})();
-
-				});
-
-			})("/characters/paim/SlowRun.fbx");
-
-		</script>
-
-		<script>
-
 			const entities = [];
 			const character = {};
 
-			var url = "/characters/paim/Idle(1).fbx";
+			var url = "/characters/paim/SlowRun.fbx";
 			var loader = new THREE.FBXLoader();
 			loader.load(url, function( group ){
 
@@ -960,12 +921,13 @@
 
 			//	Animation controller.
 				var animationController = new MW.AnimationController( group );
+				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
 
 			//	Once play animations.
-				for (var name in animationController.motion) {
-					animationController.motion[ name ].setLoop( THREE.LoopOnce ); // important?
-					animationController.motion[ name ].clampWhenFinished = true;  // important?
-				} 
+			//	for (var name in animationController.motion) {
+			//		animationController.motion[ name ].setLoop( THREE.LoopOnce ); // important?
+			//		animationController.motion[ name ].clampWhenFinished = true;  // important?
+			//	} 
 
 			//	animationController.mixer.addEventListener("finished", function(e){
 			//		debugMode && console.log("finished event:", e); // debug!
@@ -975,7 +937,6 @@
 			//		debugMode && console.log("loop event:", e); // debug!
 			//	});
 
-				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
 
 			//	Update.
 				var clock = new THREE.Clock();
