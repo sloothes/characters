@@ -967,24 +967,24 @@
 
 				})();
 
-				function setAnimation() {
-				//	demo.
-					if ( entity.velocity.length() <= 1 ) 
-						animationController.play("idle");
-					else if( entity.velocity.length() > 1 && entity.velocity.length() <= 8 )
-						animationController.play("walk");
-					else if ( entity.velocity.length() > 8 && entity.velocity.length() <= 12 )
-						animationController.play("jogging");
-					else if ( entity.velocity.length() > 12 )
-						animationController.play("run");
-				}
+			//	function setAnimation(){
+			//	//	demo.
+			//		if ( entity.velocity.length() <= 1 ) 
+			//			animationController.play("idle");
+			//		else if( entity.velocity.length() > 1 && entity.velocity.length() <= 8 )
+			//			animationController.play("walk");
+			//		else if ( entity.velocity.length() > 8 && entity.velocity.length() <= 12 )
+			//			animationController.play("jogging");
+			//		else if ( entity.velocity.length() > 12 )
+			//			animationController.play("run");
+			//	}
 
 				entities.push( entity ); // important!
 
 			//	Skeleton helper.
 
 				var skeletonHelper = new THREE.SkeletonHelper(group);
-				skeletonHelper.visible = false; scene.add( skeletonHelper );
+				skeletonHelper.visible = true; scene.add( skeletonHelper );
 
 			//	Intersect bodies.
 
@@ -1013,7 +1013,7 @@
 				};
 
 				for ( var name in intersectBodies ) {
-					intersectBodies[name].visible = false;
+					intersectBodies[name].visible = true;
 					intersectObjects.push( intersectBodies[name] );
 				}
 
@@ -1096,8 +1096,8 @@
 					var segments = new THREE.LineSegments( geometry, material );
 					segments.name = "radius helper"; return segments;
 				})( radius ); 
-				radiusHelper.visible = false; entity.add( radiusHelper ); // debug!
 
+				radiusHelper.visible = true; entity.add( radiusHelper ); // debug!
 
 			//	Character object.
 
