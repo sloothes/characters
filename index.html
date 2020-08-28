@@ -877,46 +877,6 @@
 
 		<script>
 
-			(function( url ){
-
-				var loader = new THREE.FBXLoader();
-				loader.load( url, function( group ){
-
-				//	object is THREE.Group.
-					group.name = "Assian Girl";
-					var s = 0.022; group.scale.set(s,s,s); // important!
-					group.position.y = -localPlayer.controller.radius;
-					debugMode && console.log( group ); 
-
-				//	Add group to scene before animation controller.
-					localPlayer.add( group ); 
-					localPlayer.controller.isRunning = true;
-					localPlayer.controller.direction += Math.PI; // important!
-					localPlayer.controller.movementSpeed = 5; // debug!
-					localPlayer.getObjectByName("local helper").visible = false;
-
-					localPlayer.animationController = new MW.AnimationController( group );
-					debugMode && console.log( "animationController:", localPlayer.animationController );
-					localPlayer.animationController.play("mixamo.com"); // important!
-
-					var clock = new THREE.Clock();
-					(function update(){
-						requestAnimationFrame( update );
-						var delta = clock.getDelta();
-						localPlayer.animationController.update( delta );
-						if ( localPlayer.controller.center.y < -1 ) {
-							localPlayer.controller.center.set(0,1,0);
-						}
-					})();
-
-				});
-
-			})("/marathon/characters/asiangirl/SlowRun.fbx");
-
-		</script>
-
-		<script>
-
 			const character = {};
 
 			var url = "/characters/paim/SlowRun.fbx";
@@ -1474,6 +1434,46 @@
 				})( TabUI.Steering.tab.querySelector("select#behaviour-droplist") );
 
 			});
+
+		</script>
+
+		<script>
+/*
+			(function( url ){
+
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+				//	object is THREE.Group.
+					group.name = "Assian Girl";
+					var s = 0.022; group.scale.set(s,s,s); // important!
+					group.position.y = -localPlayer.controller.radius;
+					debugMode && console.log( group ); 
+
+				//	Add group to scene before animation controller.
+					localPlayer.add( group ); 
+					localPlayer.controller.isRunning = false;
+					localPlayer.controller.direction += Math.PI; // important!
+					localPlayer.controller.movementSpeed = 5; // debug!
+					localPlayer.getObjectByName("local helper").visible = false;
+
+					localPlayer.animationController = new MW.AnimationController( group );
+					debugMode && console.log( "animationController:", localPlayer.animationController );
+					localPlayer.animationController.play("mixamo.com"); // important!
+
+					var clock = new THREE.Clock();
+					(function update(){
+						requestAnimationFrame( update );
+						var delta = clock.getDelta();
+						localPlayer.animationController.update( delta );
+						if ( localPlayer.controller.center.y < -1 ) {
+							localPlayer.controller.center.set(0,1,0);
+						}
+					})();
+
+				});
+*/
+			})("/marathon/characters/asiangirl/SlowRun.fbx");
 
 		</script>
 
