@@ -851,7 +851,7 @@
 				//	object.setAnimation();
 
 					var target = localPlayer.controller.center;
-					if ( object.position.distanceTo(target) > 1 ) {
+					if ( object.position.distanceTo(target) > 5 ) {
 					//	characterController.isRunning = true;
 						object.seek( localPlayer.controller.center );
 						object.separation(entities, 3, 1); 
