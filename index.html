@@ -796,6 +796,7 @@
 				var mesh = group.getObjectByProperty("type", "SkinnedMesh");
 				var object = new SteeringEntity( mesh ); 
 				object.name = "seek character"; 
+				object.radius = radius;
 				object.maxSpeed = maxSpeed; 
 				object.maxForce = maxForce;
 				object.tooCloseDistance = 1;
