@@ -846,15 +846,15 @@
 					requestAnimationFrame( update );
 					var delta = clock.getDelta();
 
-					object.maxSpeed = maxSpeed;
-					object.maxForce = maxForce;
+				//	object.maxSpeed = maxSpeed;
+				//	object.maxForce = maxForce;
 				//	object.setAnimation();
 
 					var target = localPlayer.controller.center;
-					if ( object.position.distanceTo(target) > 10 ) {
+					if ( object.position.distanceTo(target) > 5 ) {
 					//	characterController.isRunning = true;
 						object.seek( localPlayer.controller.center );
-						object.separation(entities, 2, 20); 
+						object.separation(entities, 50, 20); 
 						object.lookWhereGoing( true );
 					} else {
 						object.idle(); 
