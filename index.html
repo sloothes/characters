@@ -282,11 +282,11 @@
 
 		<script>
 
-		//	ThreeSteeringBehavior.js
+		//	ThreeVehicle.js
 
 			Entity = function (mesh) {
 
-				THREE.Group.apply(this);
+				THREE.Object3D.apply(this);
 
 				this.mesh = mesh;
 				this.mass = 1;
@@ -370,7 +370,8 @@
 
 			}
 
-			Entity.prototype = Object.assign(Object.create(THREE.Group.prototype), {
+			Entity.prototype = Object.assign(Object.create(THREE.Object3D.prototype), {
+
 				constructor: Entity,
 
 				update: function () {
@@ -658,6 +659,7 @@
 				},
 
 				followPath: function (path, loop, thresholdRadius = 1) {
+
 					var wayPoint = path[this.pathIndex]
 					if (wayPoint == null)
 						return;
@@ -679,6 +681,7 @@
 
 
 				avoid: function (obstacles) {
+
 					var dynamic_length = this.velocity.length() / this.maxSpeed;
 					var ahead = this.position.clone().add(this.velocity.clone().normalize().multiplyScalar(dynamic_length))
 					var ahead2 = this.position.clone().add(this.velocity.clone().normalize().multiplyScalar(this.avoidDistance * .5));
@@ -702,11 +705,13 @@
 				},
 
 				update: function () {
+
 					this.steeringForce.clampLength(0, this.maxForce);
 					this.steeringForce.divideScalar(this.mass);
 					this.velocity.add(this.steeringForce);
 					this.steeringForce.set(0, 0, 0);
 					Entity.prototype.update.call(this);
+
 				}
 			});
 
