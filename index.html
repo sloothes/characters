@@ -809,23 +809,17 @@
 				var characterController = new MW.CharacterController( object, radius );
 				characterController.movementSpeed = 5; 
 				characterController.maxSlopeGradient = 0.5;
-				world.add( characterController ); // important!
-
-			//	Update object direction.
-			//	watch(characterController, "direction", function(prop,action,value){
-			//		object.rotation.y = value + Math.PI;
-			//	});
+				characterController.velocity = object.velocity; // testing!
 
 			//	Reset controller center.
 				watch(characterController.center, "y", function(prop,action,value){
 					if ( value < -1 ) characterController.center.set(0, 1, 0);
 				});
 
+				world.add( characterController ); // important!
+
 			//	Animation controller.
 				var animationController = new MW.AnimationController( group );
-
-			//	Update animation direction (instead of object direction).
-			//	watch(localPlayer.controller.center, ["x", "z"], function(prop,action,value){});
 
 			//	Once play animations.
 				for (var name in animationController.motion) {
@@ -843,37 +837,37 @@
 
 				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
 
-			//	Update animations.
+			//	Update.
 				var clock = new THREE.Clock();
 				(function update(){
 
 					requestAnimationFrame( update );
 					var delta = clock.getDelta();
 
-				//	object.maxSpeed=params.maxSpeed;
-				//	object.maxForce=params.maxForce;
-				//	object.setAnimation();
-
 					object.maxSpeed = 6;
 					object.maxForce = 3;
+				//	object.setAnimation();
 
 					var target = localPlayer.controller.center;
-					if ( object.position.distanceTo(target) > 10 ) {
+					if ( object.position.distanceTo(target) > 1 ) {
+						characterController.isRunning = true;
 						object.seek( localPlayer.controller.center );
 						object.separation(entities, 2, 20); 
 						object.lookWhereGoing( true );
 					} else {
 						object.idle(); 
-						animationController.turn( characterController.center.angle );
+						characterController.isRunning = false;
+						characterController.direction = target.angle;
 					}
 
 					object.update();
-
 					animationController.update( delta );
+
 				})();
 
 				function setAnimation() {
-					if ( object.velocity.length() <= 1 )
+				//	demo.
+					if ( object.velocity.length() <= 1 ) 
 						animationController.play("idle");
 					else if( object.velocity.length() > 1 && object.velocity.length() <= 8 )
 						animationController.play("walk");
