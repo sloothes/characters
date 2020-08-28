@@ -844,8 +844,8 @@
 					requestAnimationFrame( update );
 					var delta = clock.getDelta();
 
-					object.maxSpeed = 6;
-					object.maxForce = 3;
+					object.maxSpeed = maxSpeed;
+					object.maxForce = maxForce;
 				//	object.setAnimation();
 
 					var target = localPlayer.controller.center;
