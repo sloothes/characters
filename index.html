@@ -1211,7 +1211,6 @@
 				})( TabUI.Character.tab.querySelector("select#animations-droplist") );
 
 
-
 			//	Steering Tab UI.
 
 				(function(entity,behaviour_droplist,increase,decrease,input){
@@ -1253,10 +1252,10 @@
 					decrease.addEventListener( "mousedown", onMouseDown );
 
 					watch( input, "onchange", function(prop,event,value){
+						if ( !value ) return input.value = "";
 						if ( !entity ) return input.value = "";
-						if ( isNaN(input.value) ) return input.value = "";
-						var value = round( input.value, n ); 
-						entity.maxForce = THREE.Math.clamp( value,min,max );
+						if ( isNaN(value) ) return input.value = "";
+						entity.maxForce = round( THREE.Math.clamp( value,min,max ), n);
 						input.value = entity.maxForce.toFixed(n); 
 					});
 
