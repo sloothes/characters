@@ -841,6 +841,7 @@
 			//	Update animations.
 				var clock = new THREE.Clock();
 				(function update(){
+
 					requestAnimationFrame( update );
 					var delta = clock.getDelta();
 
@@ -848,13 +849,21 @@
 				//	object.maxForce=params.maxForce;
 				//	object.setAnimation();
 
+					object.maxSpeed = 6;
+					object.maxForce = 3;
+
 					var target = localPlayer.controller.center;
 					if ( object.position.distanceTo(target) > 10 ) {
 						object.seek( localPlayer.controller.center );
 						object.separation(entities, 2, 20); 
 						object.lookWhereGoing( true );
 					} else {
-						object.idle(); object.lookAt( target );
+						object.idle(); 
+						var vector = new THREE.Vector3(
+							localPlayer.controller.center.x,
+							object.position.y,
+							localPlayer.controller.center.z
+						); object.lookAt( vector );
 					}
 
 					object.update();
