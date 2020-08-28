@@ -282,6 +282,53 @@
 
 		<script>
 
+			TabUI.add( "Steering", "steering-tab" ); TabUI.append("Steering");
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "Behaviour:";
+				var select = document.createElement("select"); select.id = "behaviour-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				row.appendChild( select ); tab.appendChild( row );
+
+				watch( select, "onchange", function(prop,event,value){
+					debugMode && console.log({item:select,event:event,value:value});
+				});
+
+				select.addEventListener( "change", function(){
+					callWatchers( select, "onchange", "change", select.value );
+				});
+
+			})( TabUI.Steering.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "maxForce:"; row.style.cssText = "margin:10px 15px 0 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "steering-maxforce-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "steering-maxforce-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "steering-maxforce-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,maxForce:value});
+				});
+
+			//	input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", value); });
+
+			})( TabUI.Steering.tab );
+
+		</script>
+
+		<script>
+
 		//	ThreeSteeringBehaviour.js (aka ThreeSteer.js)
 
 			Entity = function (mesh) {
@@ -1162,6 +1209,63 @@
 					});
 
 				})( TabUI.Character.tab.querySelector("select#animations-droplist") );
+
+
+
+			//	Steering Tab UI.
+
+				(function(entity,behaviour_droplist,increase,decrease,input){
+
+					var interval; 
+
+					function onMouseDown(){
+						clearTimeout( interval ); // important!
+						interval = setTimeout( function update( button, step, min, max ){
+							if ( !entity ) return clearTimeout( interval );
+							var value = entity.maxForce;
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							if (button === increase) value = THREE.Math.clamp(value+step, min,max);
+							if (button === decrease) value = THREE.Math.clamp(value-step, min,max);
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							entity.maxForce = round(value, 3); input.value = value.toFixed(3); 
+							interval = setTimeout( update, 20, button, step, min, max );
+						}, 500, this, 0.001, -10, 10 );
+					}
+
+					function onMouseClick(){
+						clearTimeout( interval ); if ( !entity ) return;
+						(function( button, step, min, max ){
+							var value = entity.maxForce; if ( isNaN(value) ) return; // important!
+							if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+							if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+							if ( isNaN(value) ) return; 
+							entity.maxForce = round(value, 3); input.value = value.toFixed(3); 
+						})( this, 001, -10, 10 );
+					}
+
+				//	maxForce inputs.
+
+					increase.addEventListener( "click", onMouseClick );
+					decrease.addEventListener( "click", onMouseClick );
+
+					increase.addEventListener( "mousedown", onMouseDown );
+					decrease.addEventListener( "mousedown", onMouseDown );
+
+				})( entity,
+					TabUI.Steering.tab.querySelector("select#behaviour-droplist"),     // behaviour_droplist.
+					TabUI.Steering.tab.querySelector("li#steering-maxforce-increase"), // increase,
+					TabUI.Steering.tab.querySelector("li#steering-maxforce-decrease"), // decrease,
+					TabUI.Steering.tab.querySelector("input#steering-maxforce-input")  // input.
+				);
+
+			//	Behaviour droplist.
+
+				(function(behaviour_droplist){
+
+					watch( behaviour_droplist, "onchange", function(prop,event,name){;});
+
+				})( TabUI.Steering.tab.querySelector("select#behaviour-droplist") );
+
 
 			});
 
