@@ -797,9 +797,12 @@
 				var object = new SteeringEntity( mesh ); 
 				object.name = "seek character"; 
 				object.radius = radius;
+				object.seekDistance = 5;
 				object.maxSpeed = maxSpeed; 
 				object.maxForce = maxForce;
-				object.tooCloseDistance = 0.01;
+				object.maxSeparation = 100;
+				object.tooCloseDistance = 0.1;
+				object.numSamplesForSmoothing = 20;
 				scene.add( object ); 
 
 			//	Add group to scene.
@@ -851,15 +854,13 @@
 				//	object.setAnimation();
 
 					var target = localPlayer.controller.center;
-					if ( object.position.distanceTo(target) > 5 ) {
-					//	characterController.isRunning = true;
+					if ( object.position.distanceTo(target) > object.seekDistance ) {
 						object.seek( localPlayer.controller.center );
-						object.separation(entities, 3, 1); 
+						object.separation(entities, object.radius, object.maxSeparation); 
 						object.lookWhereGoing( true );
 					} else {
 						object.idle(); 
-					//	characterController.isRunning = false;
-					//	characterController.direction = target.angle;
+						object.lookAt(target.x, object.position.y, target.z);
 					}
 
 					object.update();
