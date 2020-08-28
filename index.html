@@ -795,7 +795,7 @@
 				scene.add( object );
 
 			//	Add group to scene.
-				group.position.y = -radius; object.add( group ); }
+				group.position.y = -radius; object.add( group );
 
 			//	Character controller.
 				var characterController = new MW.CharacterController( object, radius );
@@ -875,7 +875,7 @@
 				};
 
 				for ( var name in intersectBodies ) {
-					intersectBodies[name].visible = true;
+					intersectBodies[name].visible = false;
 					intersectObjects.push( intersectBodies[name] );
 				}
 
