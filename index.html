@@ -304,7 +304,7 @@
 
 			(function( tab ){
 
-				var row = document.createElement("h3"); row.textContent = "maxForce:"; row.style.cssText = "margin:15px 0 10px 0;height:40px;";
+				var row = document.createElement("h3"); row.textContent = "maxForce:"; row.style.cssText = "margin:20px 0 10px 0;height:40px;";
 				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
 				var prev = document.createElement("li"); prev.id = "steering-maxforce-decrease"; 
 				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
@@ -327,7 +327,30 @@
 
 			(function( tab ){
 
-				var row = document.createElement("h3"); row.textContent = "maxForce:"; row.style.cssText = "margin:15px 0 10px 0;height:40px;";
+				var row = document.createElement("h3"); row.textContent = "maxSpeed:"; row.style.cssText = "margin:10px 0 10px 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "steering-maxspeed-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "steering-maxspeed-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "steering-maxspeed-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,seekDistance:value});
+				});
+
+				input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", input.value); });
+
+			})( TabUI.Steering.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "seekdist:"; row.style.cssText = "margin:10px 0 10px 0;height:40px;";
 				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
 				var prev = document.createElement("li"); prev.id = "steering-seekdist-decrease"; 
 				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
@@ -1289,6 +1312,60 @@
 					TabUI.Steering.tab.querySelector("li#steering-maxforce-increase"), // increase,
 					TabUI.Steering.tab.querySelector("li#steering-maxforce-decrease"), // decrease,
 					TabUI.Steering.tab.querySelector("input#steering-maxforce-input")  // input.
+				);
+
+				(function(entity,increase,decrease,input){
+
+					var interval;
+
+					function onMouseDown(){
+						clearTimeout( interval ); // important!
+						interval = setTimeout( function update( button, step, min, max ){
+							if ( !entity ) return clearTimeout( interval );
+							var value = entity.maxSpeed;
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							if (button === increase) value = THREE.Math.clamp(value+step,min,max);
+							if (button === decrease) value = THREE.Math.clamp(value-step,min,max);
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							entity.maxSpeed = round(value, n); input.value = value.toFixed(n); 
+							interval = setTimeout( update, 20, button, step, min, max );
+						}, 500, this, step, min, max );
+					}
+
+					function onMouseClick(){
+						clearTimeout( interval ); if ( !entity ) return;
+						(function( button, step, min, max ){
+							var value = entity.maxSpeed; if ( isNaN(value) ) return; // important!
+							if (button === increase) value = THREE.Math.clamp(value+step,min,max);
+							if (button === decrease) value = THREE.Math.clamp(value-step,min,max);
+							if ( isNaN(value) ) return; 
+							entity.maxSpeed = round(value, n); input.value = value.toFixed(n); 
+						})( this, step, min, max );
+					}
+
+				//	maxSpeed inputs.
+
+					var min = 0, max = 100, step = 0.001, n = 3;
+
+					increase.addEventListener( "click", onMouseClick );
+					decrease.addEventListener( "click", onMouseClick );
+					increase.addEventListener( "mousedown", onMouseDown );
+					decrease.addEventListener( "mousedown", onMouseDown );
+
+					watch( input, "onchange", function(prop,event,value){
+						if ( !value ) return input.value = "";
+						if ( !entity ) return input.value = "";
+						if ( isNaN(value) ) return input.value = "";
+						entity.maxSpeed = round( THREE.Math.clamp( value,min,max ), n);
+						input.value = entity.maxSpeed.toFixed(n); 
+					});
+
+					input.value = entity.maxSpeed.toFixed(n); // important!
+
+				})( entity,
+					TabUI.Steering.tab.querySelector("li#steering-maxspeed-increase"), // increase,
+					TabUI.Steering.tab.querySelector("li#steering-maxspeed-decrease"), // decrease,
+					TabUI.Steering.tab.querySelector("input#steering-maxspeed-input")  // input.
 				);
 
 				(function(entity,increase,decrease,input){
