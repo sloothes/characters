@@ -1111,7 +1111,7 @@
 
 			//	Character Tab UI.
 
-				(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
+				setTimeout(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
 
 					var interval, currentMotionName; 
 
@@ -1170,7 +1170,7 @@
 						character.animationController.play("mixamo.com");
 					});
 
-				})( 
+				}, null, 
 					TabUI.Character.tab.querySelector("input#character-file-input"),       // input,
 					TabUI.Character.tab.querySelector("div#animations-idle-button"),       // pause_button,
 					TabUI.Character.tab.querySelector("select#animations-droplist"),       // animations_droplist.
@@ -1179,7 +1179,7 @@
 					TabUI.Character.tab.querySelector("input#animations-timescale-input")  // scale_input,
 				);
 
-				(function(input,animations_droplist){
+				setTimeout(function(input,animations_droplist){
 
 					var k = 0;
 
@@ -1244,26 +1244,26 @@
 
 					});
 
-				})(
+				}, null,
 					TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
 					TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
 				);
 
 			//	Animation droplist.
 
-				(function(animations_droplist){
+				setTimeout(function(animations_droplist){
 
 					watch( animations_droplist, "onchange", function(prop,event,name){
 						if ( !(character && character.animationController) ) return;
 						character.animationController.play( name );
 					});
 
-				})( TabUI.Character.tab.querySelector("select#animations-droplist") );
+				}, null, TabUI.Character.tab.querySelector("select#animations-droplist") );
 
 
 			//	Steering Tab UI.
 
-				(function(entity,increase,decrease,input){
+				setTimeout(function(increase,decrease,input){
 
 					var interval;
 
@@ -1311,13 +1311,13 @@
 
 					input.value = entity.maxForce.toFixed(n); // important!
 
-				})( entity,
+				}, null,
 					TabUI.Steering.tab.querySelector("li#steering-maxforce-increase"), // increase,
 					TabUI.Steering.tab.querySelector("li#steering-maxforce-decrease"), // decrease,
 					TabUI.Steering.tab.querySelector("input#steering-maxforce-input")  // input.
 				);
 
-				(function(entity,increase,decrease,input){
+				setTimeout(function(increase,decrease,input){
 
 					var interval;
 
@@ -1365,13 +1365,13 @@
 
 					input.value = entity.maxSpeed.toFixed(n); // important!
 
-				})( entity,
+				}, null,
 					TabUI.Steering.tab.querySelector("li#steering-maxspeed-increase"), // increase,
 					TabUI.Steering.tab.querySelector("li#steering-maxspeed-decrease"), // decrease,
 					TabUI.Steering.tab.querySelector("input#steering-maxspeed-input")  // input.
 				);
 
-				(function(entity,increase,decrease,input){
+				setTimeout(function(increase,decrease,input){
 
 					var interval;
 
@@ -1419,7 +1419,7 @@
 
 					input.value = entity.seekDist.toFixed(n); // important!
 
-				})( entity,
+				}, null,
 					TabUI.Steering.tab.querySelector("li#steering-seekdist-increase"), // increase,
 					TabUI.Steering.tab.querySelector("li#steering-seekdist-decrease"), // decrease,
 					TabUI.Steering.tab.querySelector("input#steering-seekdist-input")  // input.
@@ -1427,11 +1427,11 @@
 
 			//	Behaviour droplist.
 
-				(function(behaviour_droplist){
+				setTimeout(function(behaviour_droplist){
 
 					watch( behaviour_droplist, "onchange", function(prop,event,name){;});
 
-				})( TabUI.Steering.tab.querySelector("select#behaviour-droplist") );
+				}, null, TabUI.Steering.tab.querySelector("select#behaviour-droplist") );
 
 			});
 
