@@ -419,6 +419,17 @@
 			character.characterController.maxSlopeGradient = character.maxSlopeGradient;
 			world.add( character.characterController );
 
+			watch( character, "radius", function(prop,action,value){
+				character.characterController.radius = value;
+			});
+			watch( character, "movementSpeed", function(prop,action,value){
+				character.characterController.movementSpeed = value;
+			});
+			watch( character, "maxSlopeGradient", function(prop,action,value){
+				character.characterController.maxSlopeGradient = value;
+			});
+
+
 		//	Radius helper.
 			character.radiusHelper = (function( r ){
 				var sphere   = new THREE.SphereGeometry( r, 10, 6 );
@@ -429,6 +440,10 @@
 			})( character.radius ); 
 			character.radiusHelper.visible = character.helpersIsVisible; 
 			character.object.add( character.radiusHelper ); // debug!
+
+			watch( character, "helpersIsVisible", function(prop,action,value){
+				character.radiusHelper.visible = value;
+			});
 
 
 
