@@ -419,6 +419,20 @@
 			character.characterController.maxSlopeGradient = character.maxSlopeGradient;
 			world.add( character.characterController );
 
+		//	Radius helper.
+			character.radiusHelper = (function( r ){
+				var sphere   = new THREE.SphereGeometry( r, 10, 6 );
+				var geometry = new THREE.EdgesGeometry( sphere );
+				var material = new THREE.LineBasicMaterial( { color: 0xffff00 } );
+				var segments = new THREE.LineSegments( geometry, material );
+				segments.name = "radius helper"; return segments;
+			})( character.radius ); 
+			character.radiusHelper.visible = character.helpersIsVisible; 
+			character.object.add( character.radiusHelper ); // debug!
+
+
+
+
 			character.loader.load( character.url, function( group ){
 				debugMode && console.log( "group:", group );
 
