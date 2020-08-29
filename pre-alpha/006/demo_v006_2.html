@@ -1475,6 +1475,274 @@
 
 		<script>
 
+			(function( url ){
+
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+					var radius = 1;
+					var maxForce = 0.0009;
+					var maxSpeed = 0.060; 
+					var seekDist = 0.150;
+					var maxSeparation = 100;
+					var tooCloseDistance = 0.1;
+					var numSamplesSmoothing = 20;
+
+				//	Player entity.
+					var mesh = group.getObjectByProperty("type", "SkinnedMesh");
+					var entity = new SteeringEntity( mesh ); 
+					entity.name = "ncp character"; 
+					entity.radius = radius;
+					entity.seekDist = seekDist;
+					entity.maxSpeed = maxSpeed; 
+					entity.maxForce = maxForce;
+					entity.maxSeparation = maxSeparation;
+					entity.tooCloseDistance = tooCloseDistance;
+					entity.numSamplesForSmoothing = numSamplesSmoothing;
+					scene.add( entity ); 
+
+				//	Add group to scene.
+					var s = 0.009; 
+					group.scale.set( s,s,s );
+					group.position.y = -radius; 
+					entity.position.y = radius;
+					entity.add( group );
+
+				//	Animation controller.
+					entity.animationController = new MW.AnimationController( group );
+					entity.animationController.play("mixamo.com");
+
+					var clock = new THREE.Clock();
+					(function update(){
+						requestAnimationFrame( update );
+						var delta = clock.getDelta();
+
+						var target = localPlayer.controller.center;
+						if ( entity.position.distanceTo(target) > entity.seekDist ) {
+							entity.seek( localPlayer.controller.center );
+							entity.separation(entities, entity.radius, entity.maxSeparation); 
+							entity.lookWhereGoing( true );
+						} else {
+							entity.idle(); 
+							entity.lookAt(target.x, entity.position.y, target.z);
+						}
+
+						entity.update();
+					//
+						entity.animationController.update( delta );
+
+					})();
+
+					entities.push( entity ); // important!
+				});
+
+			})("/marathon/characters/peasantgirl/SlowRun.fbx");
+
+		</script>
+
+		<script>
+
+			(function( url ){
+
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+					var radius = 1;
+					var maxForce = 0.0015;
+					var maxSpeed = 0.050; 
+					var seekDist = 0.150;
+					var maxSeparation = 100;
+					var tooCloseDistance = 0.1;
+					var numSamplesSmoothing = 20;
+
+				//	Player entity.
+					var mesh = group.getObjectByProperty("type", "SkinnedMesh");
+					var entity = new SteeringEntity( mesh ); 
+					entity.name = "ncp character"; 
+					entity.radius = radius;
+					entity.seekDist = seekDist;
+					entity.maxSpeed = maxSpeed; 
+					entity.maxForce = maxForce;
+					entity.maxSeparation = maxSeparation;
+					entity.tooCloseDistance = tooCloseDistance;
+					entity.numSamplesForSmoothing = numSamplesSmoothing;
+					scene.add( entity ); 
+
+				//	Add group to scene.
+					var s = 0.01; 
+					group.scale.set( s,s,s );
+					group.position.y = -radius; 
+					entity.position.y = radius;
+					entity.add( group );
+
+				//	Animation controller.
+					entity.animationController = new MW.AnimationController( group );
+					entity.animationController.play("mixamo.com");
+
+					var clock = new THREE.Clock();
+					(function update(){
+						requestAnimationFrame( update );
+						var delta = clock.getDelta();
+
+						var target = localPlayer.controller.center;
+						if ( entity.position.distanceTo(target) > entity.seekDist ) {
+							entity.seek( localPlayer.controller.center );
+							entity.separation(entities, entity.radius, entity.maxSeparation); 
+							entity.lookWhereGoing( true );
+						} else {
+							entity.idle(); 
+							entity.lookAt(target.x, entity.position.y, target.z);
+						}
+
+						entity.update();
+					//
+						entity.animationController.update( delta );
+
+					})();
+
+					entities.push( entity ); // important!
+				});
+
+			})("/marathon/characters/arissa/SlowRun.fbx");
+
+		</script>
+
+		<script>
+
+			(function( url ){
+
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+					var radius = 1;
+					var maxForce = 0.0012;
+					var maxSpeed = 0.065; 
+					var seekDist = 0.150;
+					var maxSeparation = 100;
+					var tooCloseDistance = 0.1;
+					var numSamplesSmoothing = 20;
+
+				//	Player entity.
+					var mesh = group.getObjectByProperty("type", "SkinnedMesh");
+					var entity = new SteeringEntity( mesh ); 
+					entity.name = "ncp character"; 
+					entity.radius = radius;
+					entity.seekDist = seekDist;
+					entity.maxSpeed = maxSpeed; 
+					entity.maxForce = maxForce;
+					entity.maxSeparation = maxSeparation;
+					entity.tooCloseDistance = tooCloseDistance;
+					entity.numSamplesForSmoothing = numSamplesSmoothing;
+					scene.add( entity ); 
+
+				//	Add group to scene.
+					var s = 0.024; 
+					group.scale.set( s,s,s );
+					group.position.y = -1.1; 
+					entity.position.y = radius;
+					entity.add( group );
+
+				//	Animation controller.
+					entity.animationController = new MW.AnimationController( group );
+					entity.animationController.play("mixamo.com");
+
+					var clock = new THREE.Clock();
+					(function update(){
+						requestAnimationFrame( update );
+						var delta = clock.getDelta();
+
+						var target = localPlayer.controller.center;
+						if ( entity.position.distanceTo(target) > entity.seekDist ) {
+							entity.seek( localPlayer.controller.center );
+							entity.separation(entities, entity.radius, entity.maxSeparation); 
+							entity.lookWhereGoing( true );
+						} else {
+							entity.idle(); 
+							entity.lookAt(target.x, entity.position.y, target.z);
+						}
+
+						entity.update();
+					//
+						entity.animationController.update( delta );
+
+					})();
+
+					entities.push( entity ); // important!
+				});
+
+			})("/marathon/characters/funkygirl/SlowRun.fbx");
+
+		</script>
+
+		<script>
+
+			(function( url ){
+
+				var loader = new THREE.FBXLoader();
+				loader.load( url, function( group ){
+
+					var radius = 1;
+					var maxForce = 0.0025;
+					var maxSpeed = 0.070; 
+					var seekDist = 0.150;
+					var maxSeparation = 100;
+					var tooCloseDistance = 0.1;
+					var numSamplesSmoothing = 20;
+
+				//	Player entity.
+					var mesh = group.getObjectByProperty("type", "SkinnedMesh");
+					var entity = new SteeringEntity( mesh ); 
+					entity.name = "ncp character"; 
+					entity.radius = radius;
+					entity.seekDist = seekDist;
+					entity.maxSpeed = maxSpeed; 
+					entity.maxForce = maxForce;
+					entity.maxSeparation = maxSeparation;
+					entity.tooCloseDistance = tooCloseDistance;
+					entity.numSamplesForSmoothing = numSamplesSmoothing;
+					scene.add( entity ); 
+
+				//	Add group to scene.
+					var s = 0.024; 
+					group.scale.set( s,s,s );
+					group.position.y = -1.1; 
+					entity.position.y = radius;
+					entity.add( group );
+
+				//	Animation controller.
+					entity.animationController = new MW.AnimationController( group );
+					entity.animationController.play("mixamo.com");
+
+					var clock = new THREE.Clock();
+					(function update(){
+						requestAnimationFrame( update );
+						var delta = clock.getDelta();
+
+						var target = localPlayer.controller.center;
+						if ( entity.position.distanceTo(target) > entity.seekDist ) {
+							entity.seek( localPlayer.controller.center );
+							entity.separation(entities, entity.radius, entity.maxSeparation); 
+							entity.lookWhereGoing( true );
+						} else {
+							entity.idle(); 
+							entity.lookAt(target.x, entity.position.y, target.z);
+						}
+
+						entity.update();
+					//
+						entity.animationController.update( delta );
+
+					})();
+
+					entities.push( entity ); // important!
+				});
+
+			})("/marathon/characters/schoolgirl/SlowRun.fbx");
+
+		</script>
+
+		<script>
+
 			TabUI.Steering.role.classList.add("active");
 			TabUI.Steering.tab.classList.add("in","active");
 			TabUI.Steering.pill.scrollIntoViewIfNeeded(false);
