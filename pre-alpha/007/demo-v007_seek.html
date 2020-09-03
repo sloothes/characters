@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>Game (pre-alpha)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/validator.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/editor/js/TabUI.js"></script>
+		<script src="/editor/js/three.js"></script>
+		<script src="/editor/js/MeshWalk.js"></script>
+		<script src="/editor/js/UVsDebug.js"></script>
+		<script src="/editor/js/FBXLoader.js"></script>
+		<script src="/editor/js/VirtualInput.js"></script>
+		<script src="/editor/js/KeyboardState.js"></script>
+		<script src="/editor/js/EditorControls.js"></script>
+		<script src="/editor/js/camera-controls.js"></script>
+		<script src="/editor/js/SubdivisionModifier.js"></script>
+		<script src="/editor/js/three-pathfinding.umd.js"></script>
+		<script src="/characters/js/ThreeSteeringBehaviours.js"></script>
+
+		<script src="/threejs/r96/examples/js/loaders/MTLLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/OBJLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/TGALoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/DDSLoader.js"></script>
+
+		<script src="/core/helpers.js"></script>
+		<script src="/core/enviroment.js"></script>
+		<script src="/core/localPlayer.js"></script>
+		<script src="/core/cameraControls.js"></script>
+		<script src="/core/keyboardState.js"></script>
+		<script src="/core/keyInputControls.js"></script>
+		<script src="/core/joystickControls.js"></script>
+		<script src="/core/keyboard.js"></script>
+
+		<script>
+
+		//	THREE.Loader.Handlers.add( /.tga/, new THREE.TGALoader() );
+		//	THREE.Loader.Handlers.add( /.dds/, new THREE.DDSLoader() );
+
+		</script>
+
+		<script>
+
+			const debugMode = true;
+			const Signal = signals.Signal;
+			const RAD2DEG = 57.29577951308232;
+			const DEG2RAD = 0.017453292519943295;
+			document.body.appendChild( createSidePanel() );
+
+		</script>
+
+		<script>
+
+			TabUI.add( "Character", "character-tab" ); TabUI.append("Character");
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "Animation";
+				var select = document.createElement("select"); select.id = "animations-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				row.appendChild( select ); tab.appendChild( row );
+
+				watch( select, "onchange", function(prop,event,value){
+					debugMode && console.log({item:select,event:event,value:value});
+				});
+
+				select.addEventListener( "change", function(){
+					callWatchers( select, "onchange", "change", select.value );
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "timescl:"; row.style.cssText = "margin:10px 15px 0 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "animations-timescale-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "animations-timescale-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "animations-timescale-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,timescale:value});
+				});
+
+			//	input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", timescale); });
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("div"); row.style.cssText = "margin:10px 15px 0 0;height:35px;text-align:center;";
+				var idlebutton = document.createElement("div"); idlebutton.id = "animations-idle-button"; idlebutton.textContent = "Pause";
+				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+				idlebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				watch( idlebutton, "onclick", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,value:value});
+				});
+
+				idlebutton.addEventListener( "click", function(){
+					callWatchers( idlebutton, "onclick", "click", "mixamo.com");
+				});
+
+				var button = document.createElement("div"); button.id = "animations-import-button"; button.textContent = "Import animations";
+				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				var input = document.createElement("input"); input.type = "file"; input.id = "animations-file-input";
+				input.style.display = "none"; input.setAttribute("multiple", ""); button.appendChild( input );
+				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
+				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "character-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input );
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;display:none;"
+				var button = document.createElement("div"); button.id = "local-player-import-button"; button.textContent = "Import Local Player";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "local-player-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input ); 
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+
+		//	player-controller-tab-ui.js
+
+			TabUI.add( "Controller", "controller-tab" ); TabUI.append("Controller");
+
+			const player_droplist = (function( tab ){
+
+			//	Players droplist. When option is selected, switches to EditMode.
+				var row = document.createElement("h3"); row.textContent = "Player:"; row.style.cssText = "height:40px;"
+				var select = document.createElement("select"); select.id = "player-controller-droplist";
+				select.style.cssText  = "width:170px;color:#000;float:right;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;margin-right:15px;";
+
+				(function(){
+					var option = document.createElement("option");
+					option.text = "character"; option.value = ""; 
+					select.appendChild( option );
+				})();
+
+				row.appendChild( select ); tab.appendChild( row );
+
+				return select;
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	isGrounded input.
+				var row = document.createElement("h3"); row.textContent = "grounded:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "grounded-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "grounded-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "grounded-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	isIdling input.
+				var row = document.createElement("h3"); row.textContent = "idling:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "idling-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "idling-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "idling-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	isJumping input.
+				var row = document.createElement("h3"); row.textContent = "jumping:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "jumping-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "jumping-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "jumping-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	isOnSlope input.
+				var row = document.createElement("h3"); row.textContent = "on slope:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "slope-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "slope-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "slope-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	isRunning input.
+				var row = document.createElement("h3"); row.textContent = "running:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "running-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "running-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "running-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	maxSlopeGradient input.
+				var row = document.createElement("h3"); row.textContent = "maxslop:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "max-slope-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "max-slope-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "max-slope-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	movementSpeed input.
+				var row = document.createElement("h3"); row.textContent = "speed:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "speed-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "speed-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "speed-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+			(function( tab ){
+
+			//	direction input.
+				var row = document.createElement("h3"); row.textContent = "direction:"; row.style.cssText = "margin:10px 15px 10px 0;height:30px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:170px;height:40px;float:right;";
+				var prev = document.createElement("li"); prev.id = "direction-decrease"; prev.innerHTML = "&#9668;"; 
+				prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "direction-increase"; next.innerHTML = "&#9658;";
+				next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+				var input = document.createElement("input"); input.id = "direction-input";
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText  = "color:#000;border:none;display:inline;width:80px;margin:0px 5px;"
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+			})( TabUI.Controller.tab );
+
+		</script>
+
+		<script>
+
+			TabUI.add( "StateMachine", "statemacine-tab" ); TabUI.append("StateMachine");
+
+			const state_droplist = (function( tab ){
+
+			//	State droplist. When option is selected, switches to state.
+				var row = document.createElement("h3"); row.textContent = "State:"; row.style.cssText = "height:40px;"
+				var select = document.createElement("select"); select.id = "state-machine-droplist";
+				select.style.cssText  = "width:170px;color:#000;float:right;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;margin-right:15px;";
+
+				(function(){
+					var option = document.createElement("option");
+					option.text = "Idle"; option.value = "IDLE"; 
+					select.appendChild( option );
+				})();
+
+				row.appendChild( select ); tab.appendChild( row );
+
+				return select;
+
+			})( TabUI.StateMachine.tab );
+
+			TabUI.StateMachine.role.classList.add("active");
+			TabUI.StateMachine.tab.classList.add("in","active");
+			TabUI.StateMachine.pill.scrollIntoViewIfNeeded(false);
+
+		</script>
+
+		<script>
+
+			localPlayer.getObjectByName("local helper").visible = true;
+
+		//	Camera control front direction arrow.
+
+			const frontDirectionArrow = new THREE.ArrowHelper( 
+				new THREE.Vector3(0,0,-1),     // direction,
+				localPlayer.controller.center, // origin,
+				localPlayer.controller.radius  // length.
+			);
+
+		//	Update origin.
+			watch( localPlayer.controller, "center", function(vector,action,value){
+				frontDirectionArrow.position[ vector ] = value;
+			});
+
+		//	Update direction.
+			watch( cameraControls, "frontAngle", function(prop,action,value){
+				frontDirectionArrow.rotation.z = -value; // -cameraControls.frontAngle;
+			});
+			
+			scene.add( frontDirectionArrow );
+
+		//	Local Player front direction arrow.
+
+			const localPlayerDirection = new THREE.ArrowHelper( 
+				new THREE.Vector3(0,0,-1),     // direction,
+				localPlayer.controller.center, // origin,
+				localPlayer.controller.radius, // length,
+				new THREE.Color(0,1,0)         // color.
+			);
+
+		//	Update origin.
+			watch( localPlayer.controller, "center", function(vector,action,value){
+				localPlayerDirection.position[ vector ] = value;
+			});
+
+		//	Update direction.
+			watch( localPlayer.controller, "direction", function(prop,action,value){
+				localPlayerDirection.rotation.z = value; // localPlayer.controller.direction; 
+			});
+
+			scene.add( localPlayerDirection );
+
+		</script>
+
+		<script>
+
+			var helper = (function(){
+
+				var helper = new THREE.Object3D(); // helper.
+				var material = new THREE.LineBasicMaterial( { color: 0xffffff } );
+
+			//	haircross.
+
+				(function(x){
+					var geometry = new THREE.Geometry();
+					geometry.vertices.push(
+						new THREE.Vector3( -x, 0, 0 ),
+						new THREE.Vector3(  x, 0, 0 )
+					);
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "axis x"; helper.add( segments );
+				})( 0.1 );
+
+				(function(y){
+					var geometry = new THREE.Geometry();
+					geometry.vertices.push(
+						new THREE.Vector3( 0,-y, 0 ),
+						new THREE.Vector3( 0, y, 0 )
+					);
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "axis y"; helper.add( segments );
+				})( 0.1 );
+
+				(function(z){
+					var geometry = new THREE.Geometry();
+					geometry.vertices.push(
+						new THREE.Vector3( 0, 0,-z ),
+						new THREE.Vector3( 0, 0, z )
+					);
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "axis z"; helper.add( segments );
+				})( 0.1 );
+
+			//	cycles.
+
+				(function(r){
+					var cycleGeometry = new THREE.CircleGeometry(r,32);
+					var geometry = new THREE.EdgesGeometry( cycleGeometry );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "plane xy"; helper.add( segments );
+				})( 0.04 );
+
+				(function(r){
+					var cycleGeometry = new THREE.CircleGeometry(r,32).rotateX(-Math.PI/2);
+					var geometry = new THREE.EdgesGeometry( cycleGeometry );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "plane xz"; helper.add( segments );
+				})( 0.04 );
+
+				(function(r){
+					var cycleGeometry = new THREE.CircleGeometry(r,32).rotateY(-Math.PI/2);
+					var geometry = new THREE.EdgesGeometry( cycleGeometry );
+					var segments = new THREE.LineSegments( geometry, material );
+					segments.name = "plane yz"; helper.add( segments );
+				})( 0.04 );
+
+				return helper;
+
+			})();
+
+		</script>
+
+		<script>
+
+		//	var geometry = new THREE.BoxGeometry();
+		//	var material = new THREE.MeshBasicMaterial();
+		//	var mesh = new THREE.Mesh(geometry, material);
+
+			var radius = 1;
+			const directionHelper = new THREE.ArrowHelper( 
+				new THREE.Vector3(0,0,1), // direction,
+				new THREE.Vector3(0,0,0), // origin,
+				radius,                   // length,
+				new THREE.Color(0,1,0)    // color.
+			);
+
+			var entity = new SteeringEntity( helper.clone() ); 
+			entity.lookAtDirection = true; // important!
+			entity.maxSpeed = 0.1; entity.maxForce = 0.005;
+			scene.add( entity );
+
+			(function update(){
+				requestAnimationFrame( update );
+
+				var position = localPlayer.controller.center;
+				if ( entity.position.distanceTo( position ) > radius ) {
+
+					entity.seek( position );
+				//	entity.arrive( position );
+
+					if ( entity.lookAtDirection ) 
+						entity.lookWhereGoing( true );
+					else
+						entity.rotation.set(0,0,0);
+
+				} else {
+
+					entity.idle();
+
+					if (entity.lookAtDirection)
+						entity.lookAt(position.x, entity.position.y, position.z);
+					else
+						entity.rotation.set(0,0,0)
+
+				}
+
+				entity.update();
+
+			})();
+
+			takeCameraLight(entity);
+			takeCameraControls(entity);
+
+
+		</script>
+
+		<script>
+
+		//	var radius = 1;
+		//	var controller = new MW.CharacterController( object, radius );
+		//	world.add( controller );
+
+		//	scene.add( helper.clone() ); // helper.scale.set(10,10,10); 
+		//	watch( controller, "center", function(vector,action,value){
+		//		helper.position[vector] = value;
+		//	});
+
+		</script>
+
+		<script>
+
+		//	const entities = [];
+		//	var mesh = new THREE.Mesh( 
+		//		new THREE.SphereGeometry(radius), 
+		//		new THREE.MeshBasicMaterial({wireframe:true}) 
+		//	);
+
+		//	var entity = new Entity( mesh.clone() ); 
+		//	entities.push( entity ); 
+		//	entity.position.y = radius; 
+		//	scene.add( entity );
+		//	(function update(){
+		//		requestAnimationFrame( update );
+		//		entity.update();
+		//	})();
+
+		//	Character controller.
+		//	var player = new MW.CharacterController( entity, radius );
+		//	watch( player, "velocity", function(prop,action,value){
+		//		console.log({prop:prop,action:action,value:value});
+		//	});
+
+		</script>
+
+		<script>
+
+		//	TabUI.Character.role.classList.add("active");
+		//	TabUI.Character.tab.classList.add("in","active");
+		//	TabUI.Character.pill.scrollIntoViewIfNeeded(false);
+
+		</script>
+
+	</body>
+</html>
