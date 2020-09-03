@@ -407,7 +407,8 @@
 				skeletonHelper: null,
 				radiusHelper: null,
 				intersectBodies: {},
-				helpersIsVisible: false,
+				helpersIsVisible: true,
+				takeCameraControls: true,
 			};
 
 		//	Character object.
@@ -445,8 +446,11 @@
 				character.radiusHelper.visible = value;
 			});
 
-
-
+			watch( character, "takeCameraControls", function(prop,action,value){
+				if ( value !== true ) return;
+				takeCameraLight( character.characterController.object );
+				takeCameraControls( character.characterController.object );
+			});
 
 			character.loader.load( character.url, function( group ){
 				debugMode && console.log( "group:", group );
@@ -483,9 +487,11 @@
 					character.animationController.update( delta );
 				})();
 
+				if ( character.takeCameraControls ) {
+					takeCameraLight( character.characterController.object );
+					takeCameraControls( character.characterController.object );
+				}
 			});
-
-
 
 		</script>
 
