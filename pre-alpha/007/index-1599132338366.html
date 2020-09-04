@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>Seek character demo (v0.0.6)</title>
+
+		<meta charset="utf-8">
+		<meta name="generator" content="Three.js Editor">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+		<link rel="stylesheet" href="/css/joystick.css">
+		<link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/bootbox-dialoges.css">
+		<link rel="stylesheet" href="/css/jcrop.css">
+
+		<script src="/js/watch.js"></script>
+		<script src="/js/Objectid.js"></script>
+		<script src="/js/jquery.min.js"></script> 
+		<script src="/js/system.min.js"></script>
+		<script src="/js/signals.min.js"></script>
+		<script src="/js/inflate.min.js"></script>
+		<script src="/js/zangodb.min.js"></script>
+		<script src="/js/bootstrap.min.js"></script>
+		<script src="/js/validator.min.js"></script>
+		<script src="/js/hold-event.min.js"></script>
+		<script src="/js/jcrop.js"></script>
+
+		<style>
+
+			body {
+				margin: 0px;
+				font-size: 13px;
+				font-family: sans-serif;
+				background-repeat: repeat;
+				background-image: url("https://i.imgur.com/rnZZU0i.png") !important;
+				overflow: hidden;
+			}
+
+			#loading-bar {
+				width:100%;
+				height:100%;
+				top:0; left:0;
+				position:fixed;
+				display:flex;
+				align-items:center;
+				justify-content:center;
+			}
+
+			.middle > * {
+				top:0; 
+				left:0;
+				right:0;
+				bottom:0;
+				margin:auto;
+				position:absolute;
+			}
+
+			#joystick1 {
+				right: calc(40px + 370px);
+			}
+			
+			#jumpButton {
+				right: calc(105px + 370px);
+			}
+
+			.btn-matcap,
+			.btn-terrain {
+				padding:0;
+				float:left;
+				width:55px;
+				height:55px;
+				border:1px solid;
+				border-radius:4px;
+				margin-right:4px;
+				margin-bottom:4px;
+				display:inline-block;
+			}
+
+			.btn-matcap + .btn-matcap,
+			.btn-terrain + .btn-terrain {
+				margin-right:4px;
+			}
+
+		</style>
+	</head>
+
+	<body ontouchstart="">
+
+		<script src="/editor/js/TabUI.js"></script>
+
+		<script>
+			const debugMode = true;
+			const Signal = signals.Signal;
+			const RAD2DEG = 57.29577951308232;
+			const DEG2RAD = 0.017453292519943295;
+			document.body.appendChild( createSidePanel() );
+		</script>
+
+	<!-- THREE.js -->
+
+		<script src="/editor/js/three.js"></script>
+		<script src="/editor/js/MeshWalk.js"></script>
+		<script src="/editor/js/UVsDebug.js"></script>
+		<script src="/editor/js/FBXLoader.js"></script>
+		<script src="/editor/js/VirtualInput.js"></script>
+		<script src="/editor/js/KeyboardState.js"></script>
+		<script src="/editor/js/EditorControls.js"></script>
+		<script src="/editor/js/camera-controls.js"></script>
+		<script src="/editor/js/SubdivisionModifier.js"></script>
+		<script src="/editor/js/three-pathfinding.umd.js"></script>
+
+		<script src="/threejs/r96/examples/js/loaders/MTLLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/OBJLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/GLTFLoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/TGALoader.js"></script>
+		<script src="/threejs/r96/examples/js/loaders/DDSLoader.js"></script>
+
+		<script>
+
+		//	THREE.Loader.Handlers.add( /.tga/, new THREE.TGALoader() );
+		//	THREE.Loader.Handlers.add( /.dds/, new THREE.DDSLoader() );
+
+		</script>
+
+		<script src="/threejs/r96/examples/js/exporters/GLTFExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/STLExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/OBJExporter.js"></script>
+		<script src="/threejs/r96/examples/js/exporters/ColladaExporter.js"></script>
+
+	<!-- Water.js -->
+
+		<script src="/editor/js/Ocean_fft.js"></script>
+		<script src="/editor/js/MirrorRenderer.js"></script>
+		<script src="/editor/js/WaterMaterial.js"></script>
+
+	<!-- Engine.js -->
+
+		<script src="/core/helpers.js"></script>
+		<script src="/core/keyboard.js"></script>
+		<script src="/core/enviroment.js"></script>
+		<script src="/core/localPlayer.js"></script>
+		<script src="/core/cameraControls.js"></script>
+		<script src="/core/keyboardState.js"></script>
+		<script src="/core/keyInputControls.js"></script>
+		<script src="/core/joystickControls.js"></script>
+
+		<script>
+
+			TabUI.add( "Character", "character-tab" ); TabUI.append("Character");
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "Animation";
+				var select = document.createElement("select"); select.id = "animations-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;";
+				row.appendChild( select ); tab.appendChild( row );
+
+				watch( select, "onchange", function(prop,event,value){
+					debugMode && console.log({item:select,event:event,value:value});
+				});
+
+				select.addEventListener( "change", function(){
+					callWatchers( select, "onchange", "change", select.value );
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "timescl:"; row.style.cssText = "margin:10px 15px 0 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "animations-timescale-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "animations-timescale-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "animations-timescale-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,timescale:value});
+				});
+
+			//	input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", timescale); });
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("div"); row.style.cssText = "margin:10px 15px 0 0;height:35px;text-align:center;";
+				var idlebutton = document.createElement("div"); idlebutton.id = "animations-idle-button"; idlebutton.textContent = "Reset";
+				idlebutton.style.cssText = "max-width:120px;width:100px;float:left;height:40px;font-size:large;";
+				idlebutton.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				watch( idlebutton, "onclick", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,value:value});
+				});
+
+				idlebutton.addEventListener( "click", function(){
+					callWatchers( idlebutton, "onclick", "click", "mixamo.com");
+				});
+
+				var button = document.createElement("div"); button.id = "animations-import-button"; button.textContent = "Import animations";
+				button.style.cssText = "min-width:60%;width:180px;float:right;height:40px;font-size:large;";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+
+				var input = document.createElement("input"); input.type = "file"; input.id = "animations-file-input";
+				input.style.display = "none"; input.setAttribute("multiple", ""); button.appendChild( input );
+				row.appendChild( idlebutton ); row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
+				var button = document.createElement("div"); button.id = "character-import-button"; button.textContent = "Import Character";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "character-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input );
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.style.cssText = "height:30px;margin-bottom:20px;"
+				var button = document.createElement("div"); button.id = "local-player-import-button"; button.textContent = "Import Local Player";
+				button.classList.add( "form-control", "btn", "btn-primary", "btn-white-outline", "gradient-btn" );
+				button.style.cssText = "width:-webkit-fill-available;float:right;height:40px;font-size:large;margin-right:15px;";
+
+				var input = document.createElement("input"); 
+				input.type = "file"; input.id = "local-player-file-input";
+				input.style.cssText = "display:none;"; button.appendChild( input ); 
+				row.appendChild( button ); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,files:value});
+				});
+
+				input.addEventListener( "change", function(){
+					callWatchers( input, "onchange", "change", input.files);
+				});
+
+				button.addEventListener( "click", function(){
+					input.value = ""; input.click();
+				});
+
+			})( TabUI.Character.tab );
+
+		</script>
+
+		<script>
+
+			TabUI.add( "Steering", "steering-tab" ); TabUI.append("Steering");
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "Behaviour:";
+				var select = document.createElement("select"); select.id = "behaviour-droplist";
+				select.style.cssText = "width:180px;color:#000;border:1px solid;border-radius:4px;";
+				select.style.cssText += "padding:2px 4px 4px 4px;font-size:20px;margin-left:10px;float:right;";
+				row.appendChild( select ); tab.appendChild( row );
+
+				watch( select, "onchange", function(prop,event,value){
+					debugMode && console.log({item:select,event:event,value:value});
+				});
+
+				select.addEventListener( "change", function(){
+					callWatchers( select, "onchange", "change", select.value );
+				});
+
+			})( TabUI.Steering.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "maxForce:"; row.style.cssText = "margin:20px 0 10px 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "steering-maxforce-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "steering-maxforce-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "steering-maxforce-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,maxForce:value});
+				});
+
+				input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", input.value); });
+
+			})( TabUI.Steering.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "maxSpeed:"; row.style.cssText = "margin:10px 0 10px 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "steering-maxspeed-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "steering-maxspeed-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "steering-maxspeed-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,seekDist:value});
+				});
+
+				input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", input.value); });
+
+			})( TabUI.Steering.tab );
+
+			(function( tab ){
+
+				var row = document.createElement("h3"); row.textContent = "seekDist:"; row.style.cssText = "margin:10px 0 10px 0;height:40px;";
+				var vect = document.createElement("div"); vect.style.cssText = "width:180px;text-align:center;float:right;";
+				var prev = document.createElement("li"); prev.id = "steering-seekdist-decrease"; 
+				prev.innerHTML = "&#9668;"; prev.style.display = "inline"; prev.classList.add("btn","btn-primary","get-prev-btn","pull-left");
+				var next = document.createElement("li"); next.id = "steering-seekdist-increase";
+				next.innerHTML = "&#9658;"; next.style.display = "inline"; next.classList.add("btn","btn-primary","get-next-btn","pull-right");
+
+				var input = document.createElement("input"); input.id = "steering-seekdist-input"; 
+				input.setAttribute("placeholder", "value" ); input.classList.add("form-control","text-center");
+				input.style.cssText = "color:#000;border:none;display:inline;width:90px;margin:0;";
+				input.style.cssText += "text-align:center;font-size:large;font-weigth:bold;background:none;";
+				vect.appendChild(prev); vect.appendChild(input); vect.appendChild(next); row.appendChild(vect); tab.appendChild( row );
+
+				watch( input, "onchange", function(prop,event,value){
+					debugMode && console.log({item:input,event:event,seekDist:value});
+				});
+
+				input.addEventListener( "change", function(){ callWatchers( input, "onchange", "change", input.value); });
+
+			})( TabUI.Steering.tab );
+
+
+		</script>
+
+		<script>
+
+		//	ThreeSteeringBehaviour.js (aka ThreeSteer.js)
+
+			Entity = function (mesh) {
+
+				THREE.Object3D.apply(this);
+
+				this.mesh = mesh;
+				this.mass = 1;
+				this.maxSpeed = 5;
+
+				this.position = new THREE.Vector3(0, 0, 0);
+				this.velocity = new THREE.Vector3(0, 0, 0);
+
+				this.box = new THREE.Box3().setFromObject(mesh);
+				this.raycaster = new THREE.Raycaster();
+
+				this.velocitySamples = [];
+				this.numSamplesForSmoothing = 20;
+
+				Object.defineProperty(Entity.prototype, "width", {
+					enumerable: true,
+					configurable: true,
+					get: function () {
+						return (this.box.max.x - this.box.min.x);
+					}
+
+				});
+
+				Object.defineProperty(Entity.prototype, "height", {
+					enumerable: true,
+					configurable: true,
+					get: function () {
+						return (this.box.max.y - this.box.min.y);
+					}
+
+				});
+
+				Object.defineProperty(Entity.prototype, "depth", {
+					enumerable: true,
+					configurable: true,
+					get: function () {
+						return (this.box.max.z - this.box.min.z);
+					}
+
+				});
+
+				Object.defineProperty(Entity.prototype, "forward", {
+					enumerable: true,
+					configurable: true,
+					get: function () {
+						return new THREE.Vector3(0, 0, -1).applyQuaternion(this.quaternion).negate();
+					}
+
+				});
+
+				Object.defineProperty(Entity.prototype, "backward", {
+					enumerable: true,
+					configurable: true,
+					get: function () {
+						return this.forward.clone().negate();
+					}
+
+				});
+
+				Object.defineProperty(Entity.prototype, "left", {
+					enumerable: true,
+					configurable: true,
+					get: function () {
+						return this.forward.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI * 0.5);
+					}
+
+				});
+
+				Object.defineProperty(Entity.prototype, "right", {
+					enumerable: true,
+					configurable: true,
+					get: function () {
+						return this.left.clone().negate();
+					}
+
+				});
+
+				this.add(this.mesh);
+
+				this.radius = 200; // temp
+
+			}
+
+			Entity.prototype = Object.assign(Object.create(THREE.Object3D.prototype), {
+
+				constructor: Entity,
+
+				update: function () {
+					this.velocity.clampLength( 0, this.maxSpeed );
+					this.velocity.setY( 0 );
+					this.position.add( this.velocity );
+				},
+
+
+				bounce: function (box) {
+
+					if (this.position.x > box.max.x) {
+						this.position.setX(box.max.x);
+						this.velocity.angle = this.velocity.angle + 0.1;
+					}
+
+					if (this.position.x < box.min.x) {
+						this.position.setX(box.min.x);
+						this.velocity.angle = this.velocity.angle + 0.1;
+					}
+
+					if (this.position.z > box.max.z) {
+						this.position.setZ(box.max.z);
+						this.velocity.angle = this.velocity.angle + 0.1;
+					}
+
+					if (this.position.z < box.min.z) {
+						this.position.setZ(box.min.z);
+						this.velocity.angle = this.velocity.angle + 0.1;
+					}
+
+					if (this.position.y > box.max.y) {
+						this.position.setY(box.max.y);
+					}
+
+					if (this.position.y < box.min.y) {
+						this.position.setY(-box.min.y);
+					}
+				},
+
+				wrap: function (box) {
+					if (this.position.x > box.max.x) {
+						this.position.setX(box.min.x + 1);
+					}
+
+					else if (this.position.x < box.min.x) {
+						this.position.setX(box.max.x - 1);
+					}
+
+					if (this.position.z > box.max.z) {
+						this.position.setZ(box.min.z + 1);
+
+					}
+					else if (this.position.z < box.min.z) {
+						this.position.setZ(box.max.z - 1);
+					}
+
+					if (this.position.y > box.max.y) {
+						this.position.setY(box.min.y + 1);
+					}
+
+					else if (this.position.y < box.min.y) {
+						this.position.setY(box.max.y + 1);
+					}
+				},
+
+
+				lookWhereGoing: function (smoothing) {
+					var direction = this.position.clone().add(this.velocity).setY(this.position.y);
+
+					if (smoothing) {
+						if (this.velocitySamples.length == this.numSamplesForSmoothing) {
+							this.velocitySamples.shift();
+						}
+
+						this.velocitySamples.push(this.velocity.clone().setY(this.position.y));
+						direction.set(0, 0, 0);
+						for (var v = 0; v < this.velocitySamples.length; v++) {
+							direction.add(this.velocitySamples[v]);
+						}
+						direction.divideScalar(this.velocitySamples.length);
+						direction = this.position.clone().add(direction).setY(this.position.y);
+					}
+
+					this.lookAt(direction);
+				}
+			});
+
+			SteeringEntity = function (mesh) {
+
+				Entity.call(this, mesh);
+
+				this.maxForce = 5;
+				this.arrivalThreshold = 400;
+
+				this.wanderAngle = 0;
+				this.wanderDistance = 10;
+				this.wanderRadius = 5;
+				this.wanderRange = 1;
+
+				this.avoidDistance = 400;
+				this.avoidBuffer = 20; // NOT USED.
+
+				this.inSightDistance = 200;
+				this.tooCloseDistance = 60;
+
+				this.pathIndex = 0;
+
+				this.steeringForce = new THREE.Vector3(0, 0, 0);
+			}
+
+			SteeringEntity.prototype = Object.assign(Object.create(Entity.prototype), {
+
+				constructor: SteeringEntity,
+
+				seek: function (position) {
+					var desiredVelocity = position.clone().sub(this.position);
+					desiredVelocity.normalize().setLength(this.maxSpeed).sub(this.velocity);
+					this.steeringForce.add(desiredVelocity);
+				},
+
+				flee: function (position) {
+					var desiredVelocity = position.clone().sub(this.position);
+					desiredVelocity.normalize().setLength(this.maxSpeed).sub(this.velocity);
+					this.steeringForce.sub(desiredVelocity);
+				},
+
+				arrive: function (position) {
+					var desiredVelocity = position.clone().sub(this.position);
+					desiredVelocity.normalize();
+					var distance = this.position.distanceTo(position);
+					if (distance > this.arrivalThreshold)
+						desiredVelocity.setLength(this.maxSpeed);
+					else
+						desiredVelocity.setLength(this.maxSpeed * distance / this.arrivalThreshold);
+					desiredVelocity.sub(this.velocity);
+					this.steeringForce.add(desiredVelocity);
+				},
+
+				pursue: function (target) {
+					var lookAheadTime = this.position.distanceTo(target.position) / this.maxSpeed;
+					var predictedTarget = target.position.clone().add(target.velocity.clone().setLength(lookAheadTime));
+					this.seek(predictedTarget);
+				},
+
+				evade: function (target) {
+					var lookAheadTime = this.position.distanceTo(target.position) / this.maxSpeed;
+					var predictedTarget = target.position.clone().sub(target.velocity.clone().setLength(lookAheadTime));
+					this.flee(predictedTarget);
+				},
+
+				idle: function () {
+					this.velocity.setLength(0);
+					this.steeringForce.set(0, 0, 0);
+				},
+
+				wander: function () {
+
+					var center = this.velocity.clone().normalize().setLength(this.wanderDistance);
+					var offset = new THREE.Vector3(1, 1, 1);
+					offset.setLength(this.wanderRadius);
+					offset.x = Math.sin(this.wanderAngle) * offset.length();
+					offset.z = Math.cos(this.wanderAngle) * offset.length();
+					offset.y = Math.sin(this.wanderAngle) * offset.length();
+
+					this.wanderAngle += Math.random() * this.wanderRange - this.wanderRange * 0.5;
+					center.add(offset);
+					center.setY(0);
+					this.steeringForce.add(center);
+				},
+
+				interpose: function (targetA, targetB) {
+
+					var midPoint = targetA.position.clone().add(targetB.position.clone()).divideScalar(2);
+					var timeToMidPoint = this.position.distanceTo(midPoint) / this.maxSpeed;
+					var pointA = targetA.position.clone().add(targetA.velocity.clone().multiplyScalar(timeToMidPoint));
+					var pointB = targetB.position.clone().add(targetB.velocity.clone().multiplyScalar(timeToMidPoint));
+					midPoint = pointA.add(pointB).divideScalar(2);
+					this.seek(midPoint);
+
+				},
+
+				separation: function (entities, separationRadius = 300, maxSeparation = 100) {
+
+					var neighborCount = 0;
+					var force = new THREE.Vector3(0, 0, 0);
+
+					for (var i = 0; i < entities.length; i++) {
+						if (entities[i] != this && entities[i].position.distanceTo(this.position) <= separationRadius) {
+							force.add(entities[i].position.clone().sub(this.position));
+							neighborCount++;
+						}
+					}
+
+					if (neighborCount != 0) {
+						force.divideScalar(neighborCount);
+						force.negate();
+					}
+
+					force.normalize();
+					force.multiplyScalar(maxSeparation);
+					this.steeringForce.add(force);
+				},
+
+				isOnLeaderSight: function (leader, ahead, leaderSightRadius) {
+					return (ahead.distanceTo(this.position) <= leaderSightRadius || leader.position.distanceTo(this.position) <= leaderSightRadius);
+				},
+
+				followLeader: function (leader, entities, distance = 400, separationRadius = 300, maxSeparation = 100, leaderSightRadius = 1600, arrivalThreshold = 200) {
+
+					var tv = leader.velocity.clone();
+					tv.normalize().multiplyScalar(distance);
+					var ahead = leader.position.clone().add(tv);
+					tv.negate();
+					var behind = leader.position.clone().add(tv);
+
+					if (this.isOnLeaderSight(leader, ahead, leaderSightRadius)) {
+						this.evade(leader);
+					}
+
+					this.arrivalThreshold = arrivalThreshold;
+					this.arrive(behind);
+					this.separation(entities, separationRadius, maxSeparation);
+
+				},
+
+				getNeighborAhead: function (entities) {
+
+					var res;
+					var maxQueueAhead = 500;
+					var maxQueueRadius = 500;
+					var qa = this.velocity.clone().normalize().multiplyScalar(maxQueueAhead);
+					var ahead = this.position.clone().add(qa);
+
+					for (var i = 0; i < entities.length; i++) {
+						var distance = ahead.distanceTo(entities[i].position);
+						if (entities[i] != this && distance <= maxQueueRadius) {
+							res = entities[i];
+							break;
+						}
+					}
+
+					return res;
+				},
+
+				queue: function (entities, maxQueueRadius = 500) {
+
+					var neighbor = this.getNeighborAhead(entities);
+					var brake = new THREE.Vector3(0, 0, 0);
+					var v = this.velocity.clone();
+					if (neighbor != null) {
+						brake = this.steeringForce.clone().negate().multiplyScalar(0.8);
+						v.negate().normalize();
+						brake.add(v);
+						if (this.position.distanceTo(neighbor.position) <= maxQueueRadius) {
+							this.velocity.multiplyScalar(0.3);
+						}
+					}
+
+					this.steeringForce.add(brake);
+				},
+
+				inSight: function (entity) {
+
+					if (this.position.distanceTo(entity.position) > this.inSightDistance) return false;
+
+					var heading = this.velocity.clone().normalize();
+					var difference = entity.position.clone().sub(this.position);
+					var dot = difference.dot(heading);
+					if (dot < 0) return false;
+					return true;
+
+				},
+
+				flock: function (entities) {
+
+					var averageVelocity = this.velocity.clone();
+					var averagePosition = new THREE.Vector3(0, 0, 0);
+					var inSightCount = 0;
+					for (var i = 0; i < entities.length; i++) {
+						if (entities[i] != this && this.inSight(entities[i])) {
+							averageVelocity.add(entities[i].velocity);
+							averagePosition.add(entities[i].position);
+							if (this.position.distanceTo(entities[i].position) < this.tooCloseDistance) {
+								this.flee(entities[i].position);
+							}
+							inSightCount++;
+						}
+					}
+
+					if (inSightCount > 0) {
+						averageVelocity.divideScalar(inSightCount);
+						averagePosition.divideScalar(inSightCount);
+						this.seek(averagePosition);
+						this.steeringForce.add(averageVelocity.sub(this.velocity));
+					}
+
+				},
+
+				followPath: function (path, loop, thresholdRadius = 1) {
+
+					var wayPoint = path[this.pathIndex];
+					if (wayPoint == null) return;
+
+					if (this.position.distanceTo(wayPoint) < thresholdRadius) {
+						if (this.pathIndex >= path.length - 1) {
+							if (loop)
+								this.pathIndex = 0;
+						} else {
+							this.pathIndex++;
+						}
+					}
+
+					if (this.pathIndex >= path.length - 1 && !loop)
+						this.arrive(wayPoint);
+					else
+						this.seek(wayPoint);
+				},
+
+
+				avoid: function (obstacles) {
+
+					var dynamic_length = this.velocity.length() / this.maxSpeed;
+					var ahead = this.position.clone().add(this.velocity.clone().normalize().multiplyScalar(dynamic_length));
+					var ahead2 = this.position.clone().add(this.velocity.clone().normalize().multiplyScalar(this.avoidDistance * .5));
+
+				//	get most threatening.
+					var mostThreatening = null;
+					for (var i = 0; i < obstacles.length; i++) {
+						if (obstacles[i] === this) continue;
+						var collision = obstacles[i].position.distanceTo(ahead) <= obstacles[i].radius || obstacles[i].position.distanceTo(ahead2) <= obstacles[i].radius;
+						if (collision && (mostThreatening == null || this.position.distanceTo(obstacles[i].position) < this.position.distanceTo(mostThreatening.position))) {
+							mostThreatening = obstacles[i];
+						}
+					}
+
+				//	end.
+					var avoidance = new THREE.Vector3(0, 0, 0);
+					if (mostThreatening != null) {
+						avoidance = ahead.clone().sub(mostThreatening.position).normalize().multiplyScalar(100);
+					}
+
+					this.steeringForce.add(avoidance);
+				},
+
+				update: function () {
+
+					this.steeringForce.clampLength(0, this.maxForce);
+					this.steeringForce.divideScalar(this.mass);
+					this.velocity.add(this.steeringForce);
+					this.steeringForce.set(0, 0, 0);
+					Entity.prototype.update.call(this);
+				}
+
+			});
+
+		//	Returns a random number between min (inclusive) and max (exclusive)
+			Math.getRandomArbitrary = function (min, max) {
+				return Math.random() * (max - min) + min;
+			}
+
+		//	Returns a random integer between min (inclusive) and max (inclusive)
+		//	Using Math.round() will give you a non-uniform distribution!
+
+			Math.getRandomInt = function (min, max) {
+				return Math.floor(Math.random() * (max - min + 1)) + min;
+			}
+
+			THREE.Vector3.prototype.perp = function () {
+				return new THREE.Vector3(-this.z, 0, this.x);
+			}
+
+			THREE.Vector3.prototype.sign = function (vector) {
+				return this.perp().dot(vector) < 0 ? -1 : 1;
+			}
+
+			Object.defineProperty(THREE.Vector3.prototype, "angle", {
+
+				enumerable: true,
+				configurable: true,
+				get: function () {
+					return Math.atan2(this.z, this.x);
+				},
+
+				set: function (value) {
+					this.x = Math.cos(value) * this.length();
+					this.z = Math.sin(value) * this.length();
+				}
+
+			});
+
+		</script>
+
+		<script>
+
+			const intersectObjects = [];  // debug!
+
+			renderer.domElement.addEventListener("click", function(e) {
+				var raycaster = new THREE.Raycaster();
+				camera.updateMatrixWorld(); // important!
+				raycaster.setFromCamera( mouse, camera );
+				var intersects = raycaster.intersectObjects( intersectObjects );
+				if ( intersects.length ) console.log( intersects );
+			});
+
+		</script>
+
+		<script>
+
+			const entities = [];
+			const character = {};
+
+			var url = "/characters/paim/Idle(1).fbx";
+			var loader = new THREE.FBXLoader();
+			loader.load(url, function( group ){
+
+			//	Add group to scene.
+			//	var radius = 1;
+			//	group.position.y = -radius; 
+				scene.add( group ); debugMode && console.log( group );
+
+			//	Animation controller.
+				var animationController = new MW.AnimationController( group );
+
+			//	Once play animations.
+				for (var name in animationController.motion) {
+					animationController.motion[ name ].setLoop( THREE.LoopOnce ); // important?
+					animationController.motion[ name ].clampWhenFinished = true;  // important?
+				} 
+
+				animationController.mixer.addEventListener("finished", function(e){
+					debugMode && console.log("finished event:", e); // debug!
+				//	e.action.reset(); // debug! looping!
+				});
+
+			//	animationController.mixer.addEventListener("loop", function(e){
+			//		debugMode && console.log("loop event:", e); // debug!
+			//	});
+
+				animationController.play( Object.keys( animationController.motion )[0] ); // debug!
+
+			//	Update.
+				var clock = new THREE.Clock();
+				(function update(){
+
+					requestAnimationFrame( update );
+					var delta = clock.getDelta();
+					animationController.update( delta );
+
+				})();
+
+			//	Skeleton helper.
+
+				var skeletonHelper = new THREE.SkeletonHelper(group);
+				skeletonHelper.visible = true; scene.add( skeletonHelper );
+
+			//	Character Tab UI.
+
+				(function(input,pause_button,animations_droplist,scale_increase,scale_decrease,scale_input){
+
+					var interval, currentMotionName; 
+
+					function onTimescaleMouseDown(){
+						clearTimeout( interval ); // important!
+						interval = setTimeout( function update( button, step, min, max, name, animationController ){
+							if ( !name ) return clearTimeout( interval );
+							var value = animationController.motion[ name ].timeScale;
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+							if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+							if ( isNaN(value) ) return clearTimeout( interval ); // important!
+							scale_input.value = value.toFixed(2); animationController.motion[ name ].timeScale = value; 
+							interval = setTimeout( update, 20, button, step, min, max, name, animationController );
+						}, 500, this, 0.01, -1, 1, currentMotionName, character.animationController );
+					}
+
+					function onTimescaleMouseClick(){
+						clearTimeout( interval ); if ( !currentMotionName ) return;
+						(function( button, step, min, max, name, animationController ){
+							if ( !name ) return; if ( !animationController ) return;
+							var value = animationController.motion[ name ].timeScale; 
+							if ( isNaN(value) ) return; // important!
+							if (button === scale_increase) value = THREE.Math.clamp(value+step, min,max);
+							if (button === scale_decrease) value = THREE.Math.clamp(value-step, min,max);
+							if ( isNaN(value) ) return; scale_input.value = value.toFixed(2);
+							animationController.motion[ name ].timeScale = value; 
+						})( this, 0.01, -1, 1, currentMotionName, character.animationController );
+					}
+
+				//	TimeScale inputs.
+
+					watch( animationController, "currentMotionName", function(prop,action,value){
+						scale_increase.removeEventListener( "mousedown", onTimescaleMouseDown );
+						scale_decrease.removeEventListener( "mousedown", onTimescaleMouseDown );
+						scale_increase.removeEventListener( "click", onTimescaleMouseClick );
+						scale_decrease.removeEventListener( "click", onTimescaleMouseClick );
+					});
+
+					watch( animationController, "currentMotionName", function(prop,action,value){
+						currentMotionName = value; animationController.motion[ value ].reset();
+						scale_input.value = animationController.motion[value].timeScale.toFixed(2);
+					});
+
+					watch( animationController, "currentMotionName", function(prop,action,value){
+						scale_increase.addEventListener( "mousedown", onTimescaleMouseDown );
+						scale_decrease.addEventListener( "mousedown", onTimescaleMouseDown );
+						scale_increase.addEventListener( "click", onTimescaleMouseClick );
+						scale_decrease.addEventListener( "click", onTimescaleMouseClick );
+					});
+
+				//	Pause button.
+
+					watch(pause_button, "onclick", function(prop,event,value){
+						animations_droplist.value = "";
+						animationController.play("mixamo.com");
+						animationController.motion["mixamo.com"].reset();
+					});
+
+				})( 
+					TabUI.Character.tab.querySelector("input#character-file-input"),       // input,
+					TabUI.Character.tab.querySelector("div#animations-idle-button"),       // pause_button,
+					TabUI.Character.tab.querySelector("select#animations-droplist"),       // animations_droplist.
+					TabUI.Character.tab.querySelector("li#animations-timescale-increase"), // scale_increase,
+					TabUI.Character.tab.querySelector("li#animations-timescale-decrease"), // scale_decrease,
+					TabUI.Character.tab.querySelector("input#animations-timescale-input")  // scale_input,
+				);
+
+				(function(input,animations_droplist){
+
+					var k = 0;
+
+					watch( input, "onchange", function(prop, event, files){
+
+						var interval;
+
+						if ( !input.files.length ) return;
+						if ( !animationController ) return; 
+
+						for ( var i = 0; i < input.files.length; i++ ) {
+
+							setTimeout(function( file ){
+
+								var filename = file.name.replace(".fbx", "");
+								var extension = file.name.split( "." ).pop().toLowerCase();
+
+								var reader = new FileReader();
+
+								reader.addEventListener( "progress", function ( e ) {
+									var size = "(" + Math.floor( e.total / 1000 ).format() + " KB)";
+									var progress = Math.floor( ( e.loaded / e.total ) * 100 ) + "%";
+									console.log( "Loading", filename, size, progress );
+								});
+
+								reader.addEventListener( "load", function ( e ) {
+
+									var data = reader.result;
+									var loader = new THREE.FBXLoader();
+									var group = loader.parse( data );
+									group.name = filename;
+									console.log( group );
+
+								//	Add animations.
+									console.log( group.animations );
+
+									if ( group.animations.length ) {
+										var mixer = animationController.mixer;
+										var object = animationController.object;
+										var animations = group.animations;
+										animations.forEach( function( clip ){
+											var name = filename; var text = ++k+"."+filename; 
+											animationController.motion[ name ] = mixer.clipAction( clip, object );
+											animationController.motion[ name ].setLoop( THREE.LoopOnce ); // important?
+											animationController.motion[ name ].clampWhenFinished = true;  // important?
+											if ( animations_droplist ) {
+												var option = document.createElement("option");
+												option.text = text; option.value = name;
+												animations_droplist.appendChild( option );
+												animations_droplist.value = ""; 
+											}
+										});
+									}
+
+								}, false );
+
+								reader.readAsArrayBuffer( file );
+
+							}, 0, input.files[i] );
+
+						}
+
+					});
+
+				})(
+					TabUI.Character.tab.querySelector("input#animations-file-input"), // input,
+					TabUI.Character.tab.querySelector("select#animations-droplist")   // animations_droplist.
+				);
+
+			//	Animation droplist.
+
+				(function(animations_droplist){
+
+					watch( animations_droplist, "onchange", function(prop,event,name){
+						if ( !animationController ) return;
+						animationController.play( name );
+						animationController.motion[ name ].reset();
+					});
+
+				})( TabUI.Character.tab.querySelector("select#animations-droplist") );
+
+			//	Take camera controls.
+				takeCameraLight( group ); takeCameraControls( group, 1 );
+				
+			});
+
+		</script>
+
+		<script>
+
+			TabUI.Character.role.classList.add("active");
+			TabUI.Character.tab.classList.add("in","active");
+			TabUI.Character.pill.scrollIntoViewIfNeeded(false);
+
+		//	localPlayer.visible = false;
+		//	localPlayer.controller.movementSpeed = 2; // cameraControls.offset.y = 0.5;
+		//	cameraControls.radius = cameraControls.maxRadius = cameraControls.minRadius = 0.1;
+
+		</script>
+
+	</body>
+</html>
